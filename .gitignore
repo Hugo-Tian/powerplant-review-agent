@@ -1,0 +1,29 @@
+# virtual envs / deps
+.venv/
+.demo-venv/
+.jiuwen-venv/
+.local-deps/
+__pycache__/
+*.py[cod]
+node_modules/
+frontend-vue/dist/
+_legacy/frontend/dist/
+*.tsbuildinfo
+frontend-vue/test-results/
+frontend-vue/playwright-report/
+
+# local data
+*.sqlite3
+*.sqlite3-journal
+*.sqlite3-wal
+*.sqlite3-shm
+logs/
+
+# secrets - never commit (template: llm.env.example.bat)
+llm.env.bat
+.env
+
+# personal / IDE files not part of the open-source work
+*.docx
+.idea/
+.claude/settings.local.json
