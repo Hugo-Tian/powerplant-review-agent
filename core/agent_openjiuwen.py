@@ -19,7 +19,7 @@ import json
 import threading
 import time
 import uuid
-from typing import Any, Optional
+from typing import Optional
 
 from core.agent import (MAX_TOOL_CALLS, RESULT_CHARS, SYSTEM_PROMPT, TOOL_LABELS, TOOLS,
                         ReviewToolbox, validate_conclusion)
@@ -121,25 +121,22 @@ def _make_tools(toolbox: ReviewToolbox, trace: _Trace) -> list:
     return tools
 
 
-def _run_coro(coro):
-    """Run a coroutine whether or not the caller already has an event loop (FastAPI sync routes don't)."""
-    try:
-        asyncio.get_running_loop()
-    except RuntimeError:
-        return asyncio.run(coro)
-    box: dict[str, Any] = {}
+_LOOP: Optional[asyncio.AbstractEventLoop] = None
+_LOOP_LOCK = threading.Lock()
 
-    def target():
-        try:
-            box["value"] = asyncio.run(coro)
-        except BaseException as exc:  # noqa: BLE001
-            box["error"] = exc
-    t = threading.Thread(target=target)
-    t.start()
-    t.join()
-    if "error" in box:
-        raise box["error"]
-    return box["value"]
+
+def _run_coro(coro):
+    """Run a coroutine on one long-lived background event loop, from any thread.
+
+    openJiuwen caches its async HTTP client across agents; that client is bound to the loop it
+    was created on. A fresh ``asyncio.run`` per investigation closed that loop, so every second
+    run failed with "Event loop is closed"."""
+    global _LOOP
+    with _LOOP_LOCK:
+        if _LOOP is None or _LOOP.is_closed():
+            _LOOP = asyncio.new_event_loop()
+            threading.Thread(target=_LOOP.run_forever, name="openjiuwen-loop", daemon=True).start()
+    return asyncio.run_coroutine_threadsafe(coro, _LOOP).result()
 
 
 class JiuwenReviewAgent:

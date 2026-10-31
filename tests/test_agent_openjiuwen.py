@@ -42,6 +42,8 @@ class FakeOpenAI:
         async def chat(request: Request):
             body = await request.json()
             self.requests.append(body)
+            if len(body["messages"]) <= 2:  # a new investigation (system + user) replays the script
+                self.turn = 0
             step = self.script[min(self.turn, len(self.script) - 1)]
             self.turn += 1
             msg = {"role": "assistant", "content": step.get("content", "")}
@@ -102,6 +104,20 @@ class OpenJiuwenAgentTests(unittest.TestCase):
         run = self.run_script(greedy)
         self.assertEqual(len(run["steps"]), 8)  # MAX_TOOL_CALLS; later calls get an error, not data
         self.assertIn(run["status"], ("ok", "incomplete"))
+
+    def test_consecutive_runs_in_one_app(self):
+        # openJiuwen caches its async HTTP client; a fresh event loop per run used to fail every 2nd run
+        with FakeOpenAI(SCRIPT) as fake, TemporaryDirectory() as tmp:
+            cfg = LLMConfig("openai", "k", "deepseek-flash", f"http://127.0.0.1:{fake.port}/v1")
+            app = create_app(Path(tmp) / "t.sqlite3", llm_config=cfg,
+                             llm_client=LLMClient(cfg, ScriptedModel([]).transport()), agent_engine="openjiuwen")
+            with TestClient(app) as c:
+                r = [x for x in REQUESTS if "汽轮机" in x["order"]["title"]][0]
+                c.post("/predict", json={"order": r["order"], "profile": r["profile"]})
+                row = c.get(f"/orders?user_id={r['profile']['user_id']}").json()["items"][0]
+                url = f"/predictions/{row['latest_prediction']['prediction_id']}/agent-review"
+                runs = [c.post(url).json() for _ in range(3)]
+        self.assertEqual([x["status"] for x in runs], ["ok"] * 3, [x.get("error") for x in runs])
 
     def test_react_loop_drives_our_tools_and_guardrails_apply(self):
         with FakeOpenAI(SCRIPT) as fake, TemporaryDirectory() as tmp:

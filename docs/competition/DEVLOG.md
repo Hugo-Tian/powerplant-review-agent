@@ -38,3 +38,17 @@
 - openjiuwen 需要 Python 3.11–3.13：新增 `setup_openjiuwen.bat`（建 `.jiuwen-venv`）与 `requirements-openjiuwen.txt`；`start_demo.bat` 优先使用该环境。
 - 新增 `tests/test_agent_openjiuwen.py`：用本地假 OpenAI 兼容服务驱动 ReActAgent 完整走一轮调查，验证工具调用、证据护栏、步数预算、DeepSeek 关闭思考参数。
 - 合规材料：Apache-2.0 `LICENSE`、`NOTICE`、`THIRD_PARTY_NOTICES.md`、数据来源说明、既有基础与新增贡献说明；`.gitignore` 排除密钥、虚拟环境、论文文件；初始化 Git 仓库。
+
+## 2026-10-31 openJiuwen 引擎真实模型实测与修复
+
+- 首次用真实 DeepSeek（`deepseek-flash`，关闭思考）跑 openJiuwen 引擎：汽轮机专工的前 8 条重点审核工单，两个引擎各跑一遍（数据库副本，不影响演示库）。
+- **问题**：openJiuwen 引擎成功、失败交替出现（8 次成功 4 次），失败的都在第 0 步报 `RuntimeError: Event loop is closed`。原因：每次调查都用 `asyncio.run` 新建并关闭事件循环，而 openJiuwen 会缓存异步 HTTP 客户端，这个客户端绑定在已关闭的循环上。批量预审、连续点击都会触发。原有测试每个应用只跑一轮，所以没发现。**修复**：所有 openJiuwen 调用改在一个常驻后台事件循环上执行（`_run_coro`）；新增测试 `test_consecutive_runs_in_one_app`（同一应用连续调查 3 次）。
+- 修复后结果（对照模拟审核规则、数据为模拟工单，非真实效果）：
+
+  | 引擎 | 成功 | 明确结论与规则一致 | 建议分平均误差（模型原分） | 平均步数 | 耗时中位 |
+  |---|---|---|---|---|---|
+  | openJiuwen ReActAgent | 8/8 | 8/8 | 0.023（0.045） | 6.6 | 8.9 秒 |
+  | 内置循环 | 8/8 | 8/8 | 0.023（0.045） | 6.9 | 8.2 秒 |
+
+  两个引擎对 8 条工单的建议（推送 / 不推送）完全一致。样本只有 8 条，只能说明两个引擎表现相当，不足以区分优劣。
+- **观察**：openJiuwen 会严格按工具 schema 校验参数。模型 3 次给 `recent_unit_orders` 多传了 schema 里没有的 `unit_no`，被拒后自行改正并继续调查，不影响结论；内置引擎遇到这种情况会直接忽略多余参数。暂未修改。
