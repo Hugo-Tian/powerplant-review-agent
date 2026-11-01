@@ -170,6 +170,22 @@ class TeamAgentTests(unittest.TestCase):
         self.assertTrue(any("复核" in n for n in run["notes"]))
         self.assertEqual(run["summary"], "补充后仍建议推送")  # the revised conclusion is the one kept
 
+    def test_missing_handoff_gets_a_fallback_review(self):
+        investigate = INVESTIGATE[:3] + [{"content": "完成"}]  # never hands off to the reviewer
+        fallback = [
+            {"calls": [("get_investigation", {})]},
+            {"calls": [("submit_review", {"verdict": "challenge", "issues": ["证据不足"], "summary": "有异议"})]},
+            {"content": "复核完成"},
+        ]
+        run, fake = self.run_team({"understander": UNDERSTAND, "investigator": investigate, "reviewer": fallback})
+        self.assertEqual(run["status"], "ok", run.get("error"))
+        self.assertTrue(run["review"]["fallback"])
+        self.assertEqual(run["review"]["status"], "challenged")
+        self.assertEqual(run["recommendation"], "needs_human")
+        reviewer_tools = [{t["function"]["name"] for t in body.get("tools", [])} for role, body in fake.requests
+                          if role == "reviewer"]
+        self.assertTrue(reviewer_tools and not any(n.startswith("transfer_to_") for n in reviewer_tools[0]))
+
     def test_validate_understanding_and_dispatch(self):
         und = validate_understanding({"devices": [{"code": "FWP", "span": "前置泵"}], "level": "紧急",
                                       "level_span": "已跳机", "recipients": [{"user_id": "b", "reason": "r"}],

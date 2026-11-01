@@ -19,9 +19,10 @@ from typing import Callable, Optional
 
 from core.inference_types import UserProfile
 from core.matching import MatchingEngine
+from core.policy import policy_view
 from core.profile_builder import bucket_for
 
-AGENT_VERSION = "review-agent-v1"
+AGENT_VERSION = "review-agent-v2"
 MAX_TOOL_CALLS = 8
 MAX_TURNS = 12
 RESULT_CHARS = 3500
@@ -32,7 +33,9 @@ SYSTEM_PROMPT = f"""你是火电厂运维工单推送系统的“审核助手”
 
 工作方式：
 - 先想清楚需要哪些信息，再调用工具获取；根据结果决定下一步，不要一次性调用所有工具。
-- 常见思路：看工单内容和本条评分构成 → 看用户岗位和关注点 → 看相似工单当时被人怎么判断 → 看这位用户自己对同类设备工单的审核习惯 → 必要时查同机组近期是否连续出问题、或用 what_if 试算。
+- 常见思路：看工单内容和本条评分构成 → 查推送规程，确认这位用户岗位的职责 → 看用户画像 → 看相似工单当时被人怎么判断 → 看这位用户自己对同类设备工单的审核习惯 → 必要时查同机组近期是否连续出问题、或用 what_if 试算。
+- 推送规程是电厂成文规定，优先于个人审核习惯和相似工单的先例；历史审核只在规程没有明确规定时参考，且要注意历史工单的等级、机组是否与本条相同。
+- 系统的设备标签和填报等级可能出错（设备用俗称、设备词只作地点、设备字段填错、等级填低），以工单原文为准。
 - 最多调用 {MAX_TOOL_CALLS} 次工具（submit_conclusion 不计）。证据足够时尽早结束。
 - 只能依据工具返回的事实，不要编造参数、人员或历史。
 
@@ -67,6 +70,8 @@ TOOLS = [
          "weights": {"type": "object", "description": "假设的四维权重，会自动归一化",
                      "properties": {"device_type": {"type": "number"}, "behavior": {"type": "number"},
                                     "role": {"type": "number"}, "manufacturer": {"type": "number"}}}}}},
+    {"name": "get_push_policy", "description": "查看电厂的推送规程：各岗位负责的核心设备和相关设备，以及什么情况下应该推送、不该推送。",
+     "parameters": {"type": "object", "properties": {}}},
     {"name": "submit_conclusion", "description": "调查结束，提交结论。",
      "parameters": {"type": "object", "properties": {
          "recommendation": {"type": "string", "enum": list(RECOMMENDATIONS)},
@@ -80,7 +85,7 @@ TOOLS = [
 TOOL_LABELS = {"get_order": "查看工单", "get_prediction": "查看本条评分", "get_user_profile": "查看用户画像",
                "search_similar": "查相似工单", "recent_unit_orders": "查同机组工单",
                "user_review_history": "查本人审核历史", "what_if": "试算假设分数",
-               "list_recipients": "查看各专工的推送情况"}
+               "list_recipients": "查看各专工的推送情况", "get_push_policy": "查推送规程"}
 
 
 def _top(d: dict, n: int = 6) -> dict:
@@ -175,6 +180,12 @@ class ReviewToolbox:
         corrected = sum(1 for r in rows if r["action"] == "correct")
         return {"tag_code": tag_code, "reviews": rows[-8:], "total": len(rows)}, \
             f"本人审核过含 {tag_code} 的工单 {len(rows)} 条，其中修改 {corrected} 条"
+
+    def t_get_push_policy(self):
+        role = self.current_profile(self.user_id)["profile"]["role"]
+        data = policy_view()
+        data["本次推送对象岗位"] = role
+        return data, f"读取推送规程（{len(data['推送规定'])} 条规定，{len(data['岗位职责'])} 个岗位）"
 
     def t_list_recipients(self):
         """Every registered user, their role and units, and the system's current score for this order."""

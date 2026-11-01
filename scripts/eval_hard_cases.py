@@ -109,7 +109,9 @@ def main():
                                agent_score=run.get("suggested_score") if run.get("recommendation") != "needs_human" else None,
                                agent_tool_calls=run.get("tool_calls"), agent_ms=run.get("duration_ms"),
                                agent_summary=run.get("summary"), agent_error=run.get("error"),
-                               review=(run.get("review") or {}).get("status"))
+                               review=(run.get("review") or {}).get("status"),
+                               review_verdicts=(run.get("review") or {}).get("verdicts"),
+                               review_fallback=(run.get("review") or {}).get("fallback"))
                     if run.get("understanding") is not None:
                         und = run["understanding"]
                         row.update(understood_devices=[d["code"] for d in und["devices"]], understood_level=und["level"],

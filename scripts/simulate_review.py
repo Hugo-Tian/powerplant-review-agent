@@ -21,22 +21,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
+from core.policy import ROLE_RULES, NAMES, judge_devices  # noqa: E402,F401  (rules live in core/policy.py)
 from core.sqlite_store import SQLiteOrderStore  # noqa: E402
 
 REVIEWER = "模拟审核（规则）"
 TOLERANCE = 0.15
-
-# 岗位 → (核心设备, 相关设备)
-ROLE_RULES = {
-    "汽轮机专工": ({"TURBINE", "TURBINE_HP", "TURBINE_MP", "TURBINE_LP", "FWP", "DEH_CTRL", "GOV_CTRL"},
-              {"CONDENSER", "CWP", "ACC"}),
-    "电气专工": ({"TRANSFORMER", "AUX_TRANSFORMER", "GENERATOR", "EXCITER"}, {"DCS"}),
-    "发电机专工": ({"GENERATOR", "EXCITER"}, {"TRANSFORMER"}),
-    "锅炉专工": ({"BOILER", "FWP"}, {"SCR", "FGD", "ESP"}),
-}
-NAMES = {"TURBINE": "汽轮机", "TURBINE_HP": "高压缸", "TURBINE_MP": "中压缸", "TURBINE_LP": "低压缸", "ACC": "空冷", "AUX_TRANSFORMER": "厂变", "FWP": "给水泵", "DEH_CTRL": "DEH", "GOV_CTRL": "调速系统", "CONDENSER": "凝汽器",
-         "CWP": "循环水泵", "TRANSFORMER": "变压器", "GENERATOR": "发电机", "EXCITER": "励磁系统",
-         "BOILER": "锅炉", "DCS": "DCS", "SCR": "脱硝", "FGD": "脱硫", "ESP": "除尘器"}
 
 
 def judge(role: str, units: list[str], order: dict, result: dict) -> tuple[float, str]:
@@ -44,25 +33,6 @@ def judge(role: str, units: list[str], order: dict, result: dict) -> tuple[float
     devices = {t["code"] for t in result["tags"] if t["category"] == "device_type"}
     return judge_devices(role, units, order.get("unit_no"), devices,
                          result.get("effective_level") or order.get("level"))
-
-
-def judge_devices(role: str, units: list[str], unit_no: str | None, devices: set[str],
-                  level: str | None) -> tuple[float, str]:
-    """Same rules on explicitly given devices and level (hard cases pass the true ones)."""
-    core, related = ROLE_RULES.get(role, (set(), set()))
-    own_unit = unit_no in units
-    name = lambda codes: "、".join(NAMES.get(c, c) for c in sorted(codes))  # noqa: E731
-    if not devices:
-        return 0.05, "工单未写明设备，无法判断与本岗位相关，暂不推送"
-    if devices & core:
-        if own_unit:
-            return 0.9, f"本人负责机组的{name(devices & core)}问题，必须第一时间掌握"
-        return 0.65, f"其他机组的{name(devices & core)}问题，可作同类设备参考"
-    if devices & related:
-        return 0.45, f"{name(devices & related)}与本岗位设备运行相关，了解即可"
-    if level == "紧急" and own_unit:
-        return 0.6, f"虽是{name(devices)}问题，但发生在本人负责机组且为紧急，需要知晓"
-    return 0.1, f"{name(devices)}不属于{role}职责范围，应推给对应专工"
 
 
 def run(db: Path, user_id: str, n_random: int, seed: int) -> None:

@@ -23,12 +23,12 @@ from core.agent import (MAX_TOOL_CALLS, RECOMMENDATIONS, RESULT_CHARS, SYSTEM_PR
 from core.agent_openjiuwen import _api_base, _jw_provider, _run_coro, available, import_error
 from core.nlp import DEVICE_TYPE_DICT
 
-AGENT_VERSION = "review-team-v1-openjiuwen"
+AGENT_VERSION = "review-team-v2-openjiuwen"
 LEVELS = ["建议", "一般", "重要", "紧急"]
 DEVICE_NAMES: dict[str, str] = {}
 for _word, _code in DEVICE_TYPE_DICT.items():
     DEVICE_NAMES.setdefault(_code, _word)
-BUDGETS = {"understander": 4, "investigator": MAX_TOOL_CALLS, "reviewer": 4}
+BUDGETS = {"understander": 5, "investigator": MAX_TOOL_CALLS, "reviewer": 5}
 REVISION_BONUS = 3  # 被复核退回后，调查智能体可再用的工具次数
 MAX_ITERATIONS = 12
 
@@ -91,12 +91,13 @@ def understander_prompt(transfer: str) -> str:
 你的任务：读懂这条工单真正说的是哪台设备出了问题、实际有多紧急、应该推给哪些专工。
 
 工作方式：
-- 先调用 get_order 看原文和系统提取的标签，再调用 list_recipients 看有哪些专工、各自负责的机组和系统当前是否推送。
-- 系统的标签可能出错：设备用了俗称或部件名（如“3号瓦”“EH油”“封母”“水冷壁”“一次风机”）时会漏提；
-  设备词只作为地点出现（如“汽机房照明”“锅炉房电梯”）时会误提；结构化的设备字段也可能填错。以原文为准。
+- 先调用 get_order 看原文和系统提取的标签，调用 get_push_policy 看推送规程，再调用 list_recipients 看有哪些专工、
+  各自负责的机组和系统当前是否推送。
+- 系统的标签可能出错：设备用了词典外的俗称或部件名时会漏提；设备词只作为地点出现时会误提；
+  结构化的设备字段也可能填错。以原文为准，用电厂专业知识判断原文说的部件属于哪类设备。
 - 设备代码只能从这个列表选：{device_choices()}。原文没有明确对应的设备就不要填。
 - 每个设备都要给出原文里逐字出现的 span。
-- 判断应该推给谁时，考虑专工的岗位职责、负责机组和工单紧急程度。
+- 应该推给谁，逐条按推送规程判断（岗位职责、负责机组、实际紧急程度），规程要求推送的都要列入 recipients。
 最多调用 {BUDGETS['understander']} 次工具。调用 submit_understanding 提交后，立即调用 {transfer} 交给调查智能体。"""
 
 
@@ -106,20 +107,35 @@ def investigator_prompt(transfer: str) -> str:
 你在一个三人小组（理解 → 调查 → 复核）里担任调查员，负责判断这条工单是否应该推给指定的这位用户。
 - 先调用 get_understanding 读取工单理解智能体的结论（它可能纠正了系统的设备标签或等级），再按需调查。
 - 理解结论和系统标签不一致时，以原文为准自己核对，并在证据里说明。
-- 调用 submit_conclusion 提交后，立即调用 {transfer} 交给复核智能体。
+- 理解结论里的 recipients 是对全体专工的初步判断；对这位用户是否推送，要你按推送规程独立判断。
+- 调用 submit_conclusion 提交后，必须立即调用 {transfer} 交给复核智能体，不要直接结束。
 - 如果复核智能体退回并指出问题，针对问题补充调查，重新调用 submit_conclusion，再调用 {transfer}。"""
 
 
-def reviewer_prompt(transfer: str) -> str:
-    return f"""你是火电厂运维工单推送系统里的“复核”智能体，三人小组（理解 → 调查 → 复核）的最后一棒。
-你的任务：挑调查结论的毛病。
-- 先调用 get_investigation 读取调查结论、证据和调查步骤，必要时调用 get_understanding 和其他只读工具独立核实。
-- 重点检查：证据是否真的来自工具返回；是否把只作为地点出现的设备当成了故障设备；设备是否和这位用户的岗位、负责机组对得上；
-  紧急程度判断是否有原文依据；建议分与建议是否一致。
-- 最多调用 {BUDGETS['reviewer']} 次工具。
-- 结论成立：调用 submit_review（verdict=agree），然后直接回复“复核完成”，不要再调用其他工具。
+REVIEWER_TOOLS = ["get_investigation", "get_push_policy", "get_understanding", "get_order", "get_prediction",
+                  "get_user_profile", "search_similar", "user_review_history"]
+
+
+def reviewer_prompt(transfer: Optional[str]) -> str:
+    """``transfer`` is None for the fallback review run outside the team (no send-back possible)."""
+    if transfer is None:
+        ending = """- 结论成立：调用 submit_review（verdict=agree），然后直接回复“复核完成”。
+- 结论有问题：调用 submit_review（verdict=challenge，逐条写出问题），然后直接回复“复核完成”（本次无法退回修改）。"""
+    else:
+        ending = f"""- 结论成立：调用 submit_review（verdict=agree），然后直接回复“复核完成”，不要再调用其他工具。
 - 结论有问题：调用 submit_review（verdict=challenge，逐条写出问题），然后调用 {transfer} 退回调查智能体。
   同一次任务只能退回一次；第二次复核仍有问题时，提交 challenge 后直接回复“复核完成”。"""
+    return _reviewer_head() + chr(10) + ending
+
+
+def _reviewer_head() -> str:
+    return f"""你是火电厂运维工单推送系统里的“复核”智能体，三人小组（理解 → 调查 → 复核）的最后一棒。
+你的任务：检查调查结论有没有实质错误。
+- 先调用 get_investigation 读取调查结论、证据和调查步骤，再调用 get_push_policy 对照推送规程；必要时调用 get_understanding 和其他只读工具独立核实。
+- 只在发现具体错误时提出异议：证据与工具返回不符；推/不推的结论违反推送规程（设备职责、负责机组、实际紧急程度）；
+  把只作为地点出现的设备当成了故障设备；建议分与建议矛盾。
+- 结论方向正确时，建议分高一点低一点、理由写得不够全，都不算异议，应当同意。
+- 最多调用 {BUDGETS['reviewer']} 次工具。"""
 
 
 class _Role:
@@ -141,6 +157,7 @@ class TeamState:
         self.steps: list[dict] = []
         self.understanding: Optional[dict] = None
         self.challenges = 0
+        self.review_fallback = False
 
     @property
     def investigation(self) -> Optional[dict]:
@@ -249,7 +266,7 @@ def synthesize(state: TeamState) -> tuple[str, dict]:
             res["notes"].append("复核智能体对结论仍有异议，已降级为需人工判断")
             res.update(recommendation="needs_human", recommendation_label=RECOMMENDATIONS["needs_human"],
                        confidence="low")
-    res["review"] = {"status": review_status, "rounds": len(reviews),
+    res["review"] = {"status": review_status, "rounds": len(reviews), "fallback": state.review_fallback,
                      "verdicts": [{"verdict": r.get("verdict"), "issues": [str(i)[:160] for i in (r.get("issues") or [])][:6],
                                    "summary": str(r.get("summary", ""))[:160]} for r in reviews]}
     return "ok", res
@@ -319,7 +336,7 @@ class TeamReviewAgent:
             state.roles["investigator"].budget += REVISION_BONUS if state.challenges == 1 else 0
         state.record(r, "submit_review", {}, "复核同意" if verdict == "agree" else "复核提出异议", True,
                      json.dumps(args, ensure_ascii=False)[:1500])
-        if verdict == "challenge" and state.challenges == 1:
+        if verdict == "challenge" and state.challenges == 1 and not state.review_fallback:
             return "已记录异议。请立即调用交接工具退回调查智能体。"
         return "已记录复核意见。请直接回复“复核完成”。"
 
@@ -332,10 +349,9 @@ class TeamReviewAgent:
         prompts = {"understander": understander_prompt(to["investigator"]),
                    "investigator": investigator_prompt(to["reviewer"]),
                    "reviewer": reviewer_prompt(to["investigator"])}
-        tool_names = {"understander": ["get_order", "list_recipients"],
+        tool_names = {"understander": ["get_order", "get_push_policy", "list_recipients"],
                       "investigator": ["get_understanding"] + [t["name"] for t in TOOLS if t["name"] != "submit_conclusion"],
-                      "reviewer": ["get_investigation", "get_understanding", "get_order", "get_prediction",
-                                   "get_user_profile", "search_similar", "user_review_history"]}
+                      "reviewer": REVIEWER_TOOLS}
         submits = {"understander": SUBMIT_UNDERSTANDING, "investigator": TOOL_SPECS["submit_conclusion"],
                    "reviewer": SUBMIT_REVIEW}
         made = []
@@ -355,12 +371,21 @@ class TeamReviewAgent:
             _run_coro(self._arun(ids, provider, query))
         except Exception as exc:
             error = f"{type(exc).__name__}: {exc}"[:300]
-        finally:
-            for a in made:
-                try:
-                    a.ability_manager.teardown_tools()
-                except Exception:
-                    pass
+        if state.investigation is not None and not state.roles["reviewer"].submissions:
+            # 调查员没有交接给复核员：由代码直接补一次复核（单独的 ReActAgent，不能再退回）
+            state.review_fallback = True
+            try:
+                rid = f"{ids['reviewer']}_fb"
+                agent = self._agent(rid, reviewer_prompt(None), self._tools(state, "reviewer", REVIEWER_TOOLS, SUBMIT_REVIEW))
+                made.append(agent)
+                _run_coro(agent.invoke({"query": query + " 调查结论已提交，请直接复核。", "conversation_id": f"review_{rid}"}))
+            except Exception as exc:
+                error = error or f"{type(exc).__name__}: {exc}"[:300]
+        for a in made:
+            try:
+                a.ability_manager.teardown_tools()
+            except Exception:
+                pass
         status, result = synthesize(state)
         if error and status != "ok":
             status = "error"
