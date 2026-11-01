@@ -24,7 +24,7 @@ from typing import Optional
 from core.agent import (MAX_TOOL_CALLS, RESULT_CHARS, SYSTEM_PROMPT, TOOL_LABELS, TOOLS,
                         ReviewToolbox, validate_conclusion)
 
-AGENT_VERSION = "review-agent-v3-openjiuwen"
+AGENT_VERSION = "review-agent-v4-openjiuwen"
 MAX_ITERATIONS = 12  # ReAct 迭代上限（每次迭代 = 一次模型调用 + 其工具调用）
 
 try:  # optional dependency

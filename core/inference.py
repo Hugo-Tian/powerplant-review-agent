@@ -47,7 +47,10 @@ def text_doubts(tags: list[dict], body: str, device_field: Optional[str]) -> lis
     from core.nlp import DEVICE_TYPE_DICT
     devices = [t for t in tags if t["category"] == "device_type"]
     if not devices:
-        return ["未识别出设备：工单可能用了词典外的叫法，无法按岗位判断，规则分可能偏低"]
+        from core.knowledge import ambiguous_mentions
+        hints = [f"「{m['matched']}」可能属于{m['system']}" for m in ambiguous_mentions(body)][:3]
+        return ["未识别出设备：工单可能用了词典外的叫法，无法按岗位判断，规则分可能偏低"
+                + (f"（知识库提示：{'；'.join(hints)}，需结合上下文判断）" if hints else "")]
     reasons = []
     if device_field:
         code = DEVICE_TYPE_DICT.get(device_field)

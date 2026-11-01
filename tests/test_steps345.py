@@ -65,6 +65,17 @@ class UnitTests(unittest.TestCase):
         self.assertFalse(triage(0.8, [dev("TURBINE", "汽轮机")], None, body="#1机汽机振动大",
                                 device_field="汽轮机")["needs_review"])  # synonym in the text counts
 
+    def test_component_knowledge_base(self):
+        from core.knowledge import ambiguous_mentions, lookup, rule_synonyms
+        names = dict(rule_synonyms())
+        self.assertEqual(names["前置泵"], "FWP")
+        self.assertNotIn("冷却器", names)  # ambiguous names never reach the rule dictionary
+        hit = lookup(term="定冷水")[0]
+        self.assertEqual((hit["code"], hit["roles"]["核心设备"]), ("GENERATOR", ["电气专工", "发电机专工"]))
+        self.assertEqual([m["matched"] for m in ambiguous_mentions("#1主变冷却器全停")], ["冷却器"])
+        r = triage(0.1, [], None, body="冷却器全停告警")
+        self.assertIn("知识库提示", r["reasons"][0])
+
     def test_fit_weights_recovers_hidden_weights(self):
         hidden = {"device_type": 0.1, "behavior": 0.5, "role": 0.3, "manufacturer": 0.1}
         samples = []

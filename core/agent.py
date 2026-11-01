@@ -19,10 +19,11 @@ from typing import Callable, Optional
 
 from core.inference_types import UserProfile
 from core.matching import MatchingEngine
+from core.knowledge import lookup
 from core.policy import policy_view
 from core.profile_builder import bucket_for
 
-AGENT_VERSION = "review-agent-v2"
+AGENT_VERSION = "review-agent-v3"
 MAX_TOOL_CALLS = 8
 MAX_TURNS = 12
 RESULT_CHARS = 3500
@@ -35,7 +36,7 @@ SYSTEM_PROMPT = f"""你是火电厂运维工单推送系统的“审核助手”
 - 先想清楚需要哪些信息，再调用工具获取；根据结果决定下一步，不要一次性调用所有工具。
 - 常见思路：看工单内容和本条评分构成 → 查推送规程，确认这位用户岗位的职责 → 看用户画像 → 看相似工单当时被人怎么判断 → 看这位用户自己对同类设备工单的审核习惯 → 必要时查同机组近期是否连续出问题、或用 what_if 试算。
 - 推送规程是电厂成文规定，优先于个人审核习惯和相似工单的先例；历史审核只在规程没有明确规定时参考，且要注意历史工单的等级、机组是否与本条相同。
-- 系统的设备标签和填报等级可能出错（设备用俗称、设备词只作地点、设备字段填错、等级填低），以工单原文为准。
+- 系统的设备标签和填报等级可能出错（设备用俗称、设备词只作地点、设备字段填错、等级填低），以工单原文为准；拿不准原文里的部件属于哪类设备时，用 lookup_component 查设备—部件知识库。
 - 最多调用 {MAX_TOOL_CALLS} 次工具（submit_conclusion 不计）。证据足够时尽早结束。
 - 只能依据工具返回的事实，不要编造参数、人员或历史。
 
@@ -70,6 +71,9 @@ TOOLS = [
          "weights": {"type": "object", "description": "假设的四维权重，会自动归一化",
                      "properties": {"device_type": {"type": "number"}, "behavior": {"type": "number"},
                                     "role": {"type": "number"}, "manufacturer": {"type": "number"}}}}}},
+    {"name": "lookup_component", "description": "查设备—部件知识库：某个部件或俗称属于哪个系统、对应哪个设备代码、哪些岗位负责。不填 term 时，列出本工单原文中出现的所有已知部件。",
+     "parameters": {"type": "object", "properties": {
+         "term": {"type": "string", "description": "要查的部件名或俗称，如“前置泵”；不填则扫描工单原文"}}}},
     {"name": "get_push_policy", "description": "查看电厂的推送规程：各岗位负责的核心设备和相关设备，以及什么情况下应该推送、不该推送。",
      "parameters": {"type": "object", "properties": {}}},
     {"name": "submit_conclusion", "description": "调查结束，提交结论。",
@@ -85,7 +89,8 @@ TOOLS = [
 TOOL_LABELS = {"get_order": "查看工单", "get_prediction": "查看本条评分", "get_user_profile": "查看用户画像",
                "search_similar": "查相似工单", "recent_unit_orders": "查同机组工单",
                "user_review_history": "查本人审核历史", "what_if": "试算假设分数",
-               "list_recipients": "查看各专工的推送情况", "get_push_policy": "查推送规程"}
+               "list_recipients": "查看各专工的推送情况", "get_push_policy": "查推送规程",
+               "lookup_component": "查设备部件知识库"}
 
 
 def _top(d: dict, n: int = 6) -> dict:
@@ -180,6 +185,13 @@ class ReviewToolbox:
         corrected = sum(1 for r in rows if r["action"] == "correct")
         return {"tag_code": tag_code, "reviews": rows[-8:], "total": len(rows)}, \
             f"本人审核过含 {tag_code} 的工单 {len(rows)} 条，其中修改 {corrected} 条"
+
+    def t_lookup_component(self, term: Optional[str] = None):
+        text = self.order["title"] + "\n" + self.order.get("content", "")
+        found = lookup(term=(term or "").strip() or None, text=text)
+        data = {"query": term or "（扫描工单原文）", "found": found,
+                "note": "ambiguous=true 的叫法有歧义，要结合上下文判断；找不到时请按专业常识判断，并在结论中说明"}
+        return data, f"知识库{'查「' + term + '」' if term else '扫描原文'}：找到 {len(found)} 个部件"
 
     def t_get_push_policy(self):
         role = self.current_profile(self.user_id)["profile"]["role"]

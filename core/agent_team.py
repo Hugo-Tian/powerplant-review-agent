@@ -23,12 +23,12 @@ from core.agent import (MAX_TOOL_CALLS, RECOMMENDATIONS, RESULT_CHARS, SYSTEM_PR
 from core.agent_openjiuwen import _api_base, _jw_provider, _run_coro, available, import_error
 from core.nlp import DEVICE_TYPE_DICT
 
-AGENT_VERSION = "review-team-v2-openjiuwen"
+AGENT_VERSION = "review-team-v3-openjiuwen"
 LEVELS = ["建议", "一般", "重要", "紧急"]
 DEVICE_NAMES: dict[str, str] = {}
 for _word, _code in DEVICE_TYPE_DICT.items():
     DEVICE_NAMES.setdefault(_code, _word)
-BUDGETS = {"understander": 5, "investigator": MAX_TOOL_CALLS, "reviewer": 5}
+BUDGETS = {"understander": 6, "investigator": MAX_TOOL_CALLS, "reviewer": 5}
 REVISION_BONUS = 3  # 被复核退回后，调查智能体可再用的工具次数
 MAX_ITERATIONS = 12
 
@@ -94,7 +94,8 @@ def understander_prompt(transfer: str) -> str:
 - 先调用 get_order 看原文和系统提取的标签，调用 get_push_policy 看推送规程，再调用 list_recipients 看有哪些专工、
   各自负责的机组和系统当前是否推送。
 - 系统的标签可能出错：设备用了词典外的俗称或部件名时会漏提；设备词只作为地点出现时会误提；
-  结构化的设备字段也可能填错。以原文为准，用电厂专业知识判断原文说的部件属于哪类设备。
+  结构化的设备字段也可能填错。以原文为准：先用 lookup_component（不填 term）扫描原文里的已知部件，
+  知识库没有的部件再按电厂专业知识判断属于哪类设备。
 - 设备代码只能从这个列表选：{device_choices()}。原文没有明确对应的设备就不要填。
 - 每个设备都要给出原文里逐字出现的 span。
 - 应该推给谁，逐条按推送规程判断（岗位职责、负责机组、实际紧急程度），规程要求推送的都要列入 recipients。
@@ -112,7 +113,7 @@ def investigator_prompt(transfer: str) -> str:
 - 如果复核智能体退回并指出问题，针对问题补充调查，重新调用 submit_conclusion，再调用 {transfer}。"""
 
 
-REVIEWER_TOOLS = ["get_investigation", "get_push_policy", "get_understanding", "get_order", "get_prediction",
+REVIEWER_TOOLS = ["get_investigation", "get_push_policy", "lookup_component", "get_understanding", "get_order", "get_prediction",
                   "get_user_profile", "search_similar", "user_review_history"]
 
 
@@ -349,7 +350,7 @@ class TeamReviewAgent:
         prompts = {"understander": understander_prompt(to["investigator"]),
                    "investigator": investigator_prompt(to["reviewer"]),
                    "reviewer": reviewer_prompt(to["investigator"])}
-        tool_names = {"understander": ["get_order", "get_push_policy", "list_recipients"],
+        tool_names = {"understander": ["get_order", "lookup_component", "get_push_policy", "list_recipients"],
                       "investigator": ["get_understanding"] + [t["name"] for t in TOOLS if t["name"] != "submit_conclusion"],
                       "reviewer": REVIEWER_TOOLS}
         submits = {"understander": SUBMIT_UNDERSTANDING, "investigator": TOOL_SPECS["submit_conclusion"],

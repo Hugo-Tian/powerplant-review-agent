@@ -14,6 +14,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from core.inference import PushPredictor, UserProfile, WorkOrder
+from core.knowledge import rule_synonyms
 from core.agent import ReviewAgent, ReviewToolbox
 from core.learning import before_after, feedback_metrics, fit_weights, profile_suggestions, rebase
 from core.llm import (VOCAB, LLMConfig, OrderAnalyzer, PushExplainer, add_term,
@@ -315,6 +316,8 @@ def create_app(db_path: str | Path | None = None, *, llm_config: LLMConfig | Non
         app.state.explainer = PushExplainer(app.state.analyzer)
         app.state.similarity = (None, None)
         app.state.agent_engine = resolve_agent_engine(agent_engine, injected_client=llm_client is not None)
+        for name, code in rule_synonyms():  # 设备—部件知识库中无歧义的叫法（作者审定）
+            add_term(name, 'device_type', code)
         for t in app.state.store.custom_terms():
             add_term(t['term'], t['category'], t['code'])
         yield
