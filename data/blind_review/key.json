@@ -1,0 +1,1984 @@
+{
+ "note": "答案键：勿发给专工。系统判断取自 data/eval/ 的 v3 结果（对照模拟审核规则、数据为模拟工单）；label 是作者编写时的标注（岗位规则作用于标注设备与等级）。",
+ "threshold": 0.5,
+ "seed": 20261101,
+ "recipients": {
+  "synthetic-turbine": "汽轮机专工",
+  "synthetic-electric": "电气专工",
+  "synthetic-boiler": "锅炉专工"
+ },
+ "sources": {
+  "main": [
+   "hard_cases.json",
+   "hard_cases_openjiuwen_v3.json",
+   "hard_cases_openjiuwen_team_v3.json"
+  ],
+  "holdout1": [
+   "hard_cases_holdout.json",
+   "holdout_openjiuwen_v3.json",
+   "holdout_openjiuwen_team_v3.json"
+  ],
+  "holdout2": [
+   "hard_cases_holdout2.json",
+   "holdout2_openjiuwen_v3.json",
+   "holdout2_openjiuwen_team_v3.json"
+  ]
+ },
+ "items": [
+  {
+   "set": "main",
+   "event_id": "HARD-A02",
+   "category": "A",
+   "unit_no": "#1",
+   "level": "重要",
+   "device_type_name": null,
+   "title": "【模拟】#1机EH油压力低",
+   "content": "本条为虚构演示工单。EH油泵出口压力降至11.2MPa，抗燃油箱油位较昨日下降约3cm，备用泵已联启。",
+   "label_level": "重要",
+   "label_devices": [
+    "DEH_CTRL"
+   ],
+   "kb_covered": null,
+   "decisions": {
+    "synthetic-turbine": {
+     "label": true,
+     "label_reason": "本人负责机组的DEH问题，必须第一时间掌握",
+     "rule": true,
+     "agent": true,
+     "team": true,
+     "rule_flagged": true
+    },
+    "synthetic-electric": {
+     "label": false,
+     "label_reason": "DEH不属于电气专工职责范围，应推给对应专工",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": false
+    },
+    "synthetic-boiler": {
+     "label": false,
+     "label_reason": "DEH不属于锅炉专工职责范围，应推给对应专工",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": false
+    }
+   },
+   "id": "BR-01"
+  },
+  {
+   "set": "holdout1",
+   "event_id": "HOLD-D03",
+   "category": "D",
+   "unit_no": "#2",
+   "level": "重要",
+   "device_type_name": null,
+   "title": "【模拟】#2炉水冷壁爆管MFT",
+   "content": "本条为虚构演示工单。#2炉水冷壁爆管，锅炉MFT动作，机组跳闸。",
+   "label_level": "紧急",
+   "label_devices": [
+    "BOILER"
+   ],
+   "kb_covered": null,
+   "decisions": {
+    "synthetic-turbine": {
+     "label": false,
+     "label_reason": "锅炉不属于汽轮机专工职责范围，应推给对应专工",
+     "rule": true,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    },
+    "synthetic-electric": {
+     "label": false,
+     "label_reason": "锅炉不属于电气专工职责范围，应推给对应专工",
+     "rule": true,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    },
+    "synthetic-boiler": {
+     "label": true,
+     "label_reason": "其他机组的锅炉问题，可作同类设备参考",
+     "rule": true,
+     "agent": true,
+     "team": true,
+     "rule_flagged": true
+    }
+   },
+   "id": "BR-02"
+  },
+  {
+   "set": "holdout2",
+   "event_id": "HOLD2-06",
+   "category": "A",
+   "unit_no": "#1",
+   "level": "一般",
+   "device_type_name": null,
+   "title": "【模拟】#1炉暖风器疏水不畅",
+   "content": "本条为虚构演示工单。#1炉暖风器疏水不畅，出口风温偏低，需检查疏水器。",
+   "label_level": "一般",
+   "label_devices": [
+    "BOILER"
+   ],
+   "kb_covered": false,
+   "decisions": {
+    "synthetic-turbine": {
+     "label": false,
+     "label_reason": "锅炉不属于汽轮机专工职责范围，应推给对应专工",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    },
+    "synthetic-electric": {
+     "label": false,
+     "label_reason": "锅炉不属于电气专工职责范围，应推给对应专工",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    },
+    "synthetic-boiler": {
+     "label": true,
+     "label_reason": "本人负责机组的锅炉问题，必须第一时间掌握",
+     "rule": true,
+     "agent": true,
+     "team": true,
+     "rule_flagged": true
+    }
+   },
+   "id": "BR-03"
+  },
+  {
+   "set": "main",
+   "event_id": "HARD-B06",
+   "category": "B",
+   "unit_no": "#1",
+   "level": "一般",
+   "device_type_name": null,
+   "title": "【模拟】汽轮机厂房屋面彩钢板漏雨",
+   "content": "本条为虚构演示工单。汽轮机厂房A列屋面彩钢板接缝处漏雨，雨水滴落至通道，未影响设备。",
+   "label_level": "一般",
+   "label_devices": [],
+   "kb_covered": null,
+   "decisions": {
+    "synthetic-turbine": {
+     "label": false,
+     "label_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+     "rule": true,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    },
+    "synthetic-electric": {
+     "label": false,
+     "label_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    },
+    "synthetic-boiler": {
+     "label": false,
+     "label_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    }
+   },
+   "id": "BR-04"
+  },
+  {
+   "set": "main",
+   "event_id": "HARD-C03",
+   "category": "C",
+   "unit_no": "#1",
+   "level": "一般",
+   "device_type_name": "变压器",
+   "title": "【模拟】#1炉C层燃烧器喷口结焦",
+   "content": "本条为虚构演示工单。#1炉C层燃烧器喷口结焦严重，看火孔观察火焰偏斜，需择机清焦。",
+   "label_level": "一般",
+   "label_devices": [
+    "BOILER"
+   ],
+   "kb_covered": null,
+   "decisions": {
+    "synthetic-turbine": {
+     "label": false,
+     "label_reason": "锅炉不属于汽轮机专工职责范围，应推给对应专工",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    },
+    "synthetic-electric": {
+     "label": false,
+     "label_reason": "锅炉不属于电气专工职责范围，应推给对应专工",
+     "rule": true,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    },
+    "synthetic-boiler": {
+     "label": true,
+     "label_reason": "本人负责机组的锅炉问题，必须第一时间掌握",
+     "rule": true,
+     "agent": true,
+     "team": true,
+     "rule_flagged": true
+    }
+   },
+   "id": "BR-05"
+  },
+  {
+   "set": "holdout2",
+   "event_id": "HOLD2-10",
+   "category": "D",
+   "unit_no": "#1",
+   "level": "一般",
+   "device_type_name": null,
+   "title": "【模拟】#1机漏氢量突增",
+   "content": "本条为虚构演示工单。#1机发电机漏氢量突增，氢压快速下降，已紧急停机排氢。",
+   "label_level": "紧急",
+   "label_devices": [
+    "GENERATOR"
+   ],
+   "kb_covered": true,
+   "decisions": {
+    "synthetic-turbine": {
+     "label": true,
+     "label_reason": "虽是发电机问题，但发生在本人负责机组且为紧急，需要知晓",
+     "rule": true,
+     "agent": true,
+     "team": true,
+     "rule_flagged": true
+    },
+    "synthetic-electric": {
+     "label": true,
+     "label_reason": "本人负责机组的发电机问题，必须第一时间掌握",
+     "rule": true,
+     "agent": true,
+     "team": true,
+     "rule_flagged": true
+    },
+    "synthetic-boiler": {
+     "label": true,
+     "label_reason": "虽是发电机问题，但发生在本人负责机组且为紧急，需要知晓",
+     "rule": true,
+     "agent": true,
+     "team": true,
+     "rule_flagged": true
+    }
+   },
+   "id": "BR-06"
+  },
+  {
+   "set": "main",
+   "event_id": "HARD-D01",
+   "category": "D",
+   "unit_no": "#1",
+   "level": "一般",
+   "device_type_name": null,
+   "title": "【模拟】#1机发电机出口封母冒烟",
+   "content": "本条为虚构演示工单。巡检发现#1机发电机出口封母A相附近冒烟并有焦糊味，已紧急降负荷准备停机。",
+   "label_level": "紧急",
+   "label_devices": [
+    "GENERATOR"
+   ],
+   "kb_covered": null,
+   "decisions": {
+    "synthetic-turbine": {
+     "label": true,
+     "label_reason": "虽是发电机问题，但发生在本人负责机组且为紧急，需要知晓",
+     "rule": true,
+     "agent": true,
+     "team": true,
+     "rule_flagged": true
+    },
+    "synthetic-electric": {
+     "label": true,
+     "label_reason": "本人负责机组的发电机问题，必须第一时间掌握",
+     "rule": true,
+     "agent": true,
+     "team": true,
+     "rule_flagged": true
+    },
+    "synthetic-boiler": {
+     "label": true,
+     "label_reason": "虽是发电机问题，但发生在本人负责机组且为紧急，需要知晓",
+     "rule": true,
+     "agent": true,
+     "team": false,
+     "rule_flagged": true
+    }
+   },
+   "id": "BR-07"
+  },
+  {
+   "set": "holdout1",
+   "event_id": "HOLD-D01",
+   "category": "D",
+   "unit_no": "#1",
+   "level": "一般",
+   "device_type_name": null,
+   "title": "【模拟】#1机励磁小间冒烟",
+   "content": "本条为虚构演示工单。#1机励磁小间有烟雾和焦味，运行人员已就地检查并准备紧急停机。",
+   "label_level": "紧急",
+   "label_devices": [
+    "EXCITER"
+   ],
+   "kb_covered": null,
+   "decisions": {
+    "synthetic-turbine": {
+     "label": true,
+     "label_reason": "虽是励磁系统问题，但发生在本人负责机组且为紧急，需要知晓",
+     "rule": true,
+     "agent": true,
+     "team": true,
+     "rule_flagged": true
+    },
+    "synthetic-electric": {
+     "label": true,
+     "label_reason": "本人负责机组的励磁系统问题，必须第一时间掌握",
+     "rule": true,
+     "agent": true,
+     "team": true,
+     "rule_flagged": true
+    },
+    "synthetic-boiler": {
+     "label": true,
+     "label_reason": "虽是励磁系统问题，但发生在本人负责机组且为紧急，需要知晓",
+     "rule": true,
+     "agent": true,
+     "team": true,
+     "rule_flagged": true
+    }
+   },
+   "id": "BR-08"
+  },
+  {
+   "set": "holdout2",
+   "event_id": "HOLD2-05",
+   "category": "A",
+   "unit_no": "#1",
+   "level": "一般",
+   "device_type_name": null,
+   "title": "【模拟】#1机厂用电快切装置闭锁",
+   "content": "本条为虚构演示工单。#1机厂用电快切装置发闭锁信号，工作电源与备用电源之间无法自动切换，需检查装置。",
+   "label_level": "一般",
+   "label_devices": [
+    "AUX_TRANSFORMER"
+   ],
+   "kb_covered": false,
+   "decisions": {
+    "synthetic-turbine": {
+     "label": false,
+     "label_reason": "厂变不属于汽轮机专工职责范围，应推给对应专工",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    },
+    "synthetic-electric": {
+     "label": true,
+     "label_reason": "本人负责机组的厂变问题，必须第一时间掌握",
+     "rule": false,
+     "agent": true,
+     "team": false,
+     "rule_flagged": true
+    },
+    "synthetic-boiler": {
+     "label": false,
+     "label_reason": "厂变不属于锅炉专工职责范围，应推给对应专工",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    }
+   },
+   "id": "BR-09"
+  },
+  {
+   "set": "main",
+   "event_id": "HARD-A05",
+   "category": "A",
+   "unit_no": "#1",
+   "level": "一般",
+   "device_type_name": null,
+   "title": "【模拟】#1炉屏式过热器壁温偏差大",
+   "content": "本条为虚构演示工单。屏式过热器出口壁温左右偏差达38℃，部分管屏接近报警值，需调整燃烧。",
+   "label_level": "一般",
+   "label_devices": [
+    "BOILER"
+   ],
+   "kb_covered": null,
+   "decisions": {
+    "synthetic-turbine": {
+     "label": false,
+     "label_reason": "锅炉不属于汽轮机专工职责范围，应推给对应专工",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": false
+    },
+    "synthetic-electric": {
+     "label": false,
+     "label_reason": "锅炉不属于电气专工职责范围，应推给对应专工",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": false
+    },
+    "synthetic-boiler": {
+     "label": true,
+     "label_reason": "本人负责机组的锅炉问题，必须第一时间掌握",
+     "rule": true,
+     "agent": true,
+     "team": true,
+     "rule_flagged": false
+    }
+   },
+   "id": "BR-10"
+  },
+  {
+   "set": "main",
+   "event_id": "HARD-A07",
+   "category": "A",
+   "unit_no": "#1",
+   "level": "重要",
+   "device_type_name": null,
+   "title": "【模拟】#1机发变组保护差动回路告警",
+   "content": "本条为虚构演示工单。#1机发变组保护A屏差动回路告警，差流约0.12Ie，保护未出口，需核查CT回路。",
+   "label_level": "重要",
+   "label_devices": [
+    "GENERATOR",
+    "TRANSFORMER"
+   ],
+   "kb_covered": null,
+   "decisions": {
+    "synthetic-turbine": {
+     "label": false,
+     "label_reason": "发电机、变压器不属于汽轮机专工职责范围，应推给对应专工",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": false
+    },
+    "synthetic-electric": {
+     "label": true,
+     "label_reason": "本人负责机组的发电机、变压器问题，必须第一时间掌握",
+     "rule": true,
+     "agent": true,
+     "team": true,
+     "rule_flagged": false
+    },
+    "synthetic-boiler": {
+     "label": false,
+     "label_reason": "发电机、变压器不属于锅炉专工职责范围，应推给对应专工",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": false
+    }
+   },
+   "id": "BR-11"
+  },
+  {
+   "set": "main",
+   "event_id": "HARD-E02",
+   "category": "E",
+   "unit_no": "#3",
+   "level": "重要",
+   "device_type_name": null,
+   "title": "【模拟】#3炉低温再热器爆管",
+   "content": "本条为虚构演示工单。#3炉低温再热器爆管，炉膛负压波动，申请停炉处理。",
+   "label_level": "紧急",
+   "label_devices": [
+    "BOILER"
+   ],
+   "kb_covered": null,
+   "decisions": {
+    "synthetic-turbine": {
+     "label": false,
+     "label_reason": "锅炉不属于汽轮机专工职责范围，应推给对应专工",
+     "rule": true,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    },
+    "synthetic-electric": {
+     "label": false,
+     "label_reason": "锅炉不属于电气专工职责范围，应推给对应专工",
+     "rule": true,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    },
+    "synthetic-boiler": {
+     "label": true,
+     "label_reason": "其他机组的锅炉问题，可作同类设备参考",
+     "rule": true,
+     "agent": true,
+     "team": true,
+     "rule_flagged": true
+    }
+   },
+   "id": "BR-12"
+  },
+  {
+   "set": "holdout2",
+   "event_id": "HOLD2-08",
+   "category": "B",
+   "unit_no": "#1",
+   "level": "一般",
+   "device_type_name": null,
+   "title": "【模拟】集控室空调室内机漏水",
+   "content": "本条为虚构演示工单。集控室空调室内机漏水，已放置接水盘并通知空调维保。",
+   "label_level": "一般",
+   "label_devices": [],
+   "kb_covered": false,
+   "decisions": {
+    "synthetic-turbine": {
+     "label": false,
+     "label_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    },
+    "synthetic-electric": {
+     "label": false,
+     "label_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    },
+    "synthetic-boiler": {
+     "label": false,
+     "label_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    }
+   },
+   "id": "BR-13"
+  },
+  {
+   "set": "holdout1",
+   "event_id": "HOLD-A02",
+   "category": "A",
+   "unit_no": "#1",
+   "level": "一般",
+   "device_type_name": null,
+   "title": "【模拟】#1机定冷水流量低",
+   "content": "本条为虚构演示工单。#1机定冷水流量降至26t/h，定冷水泵出口压力偏低，备用泵已启动。",
+   "label_level": "一般",
+   "label_devices": [
+    "GENERATOR"
+   ],
+   "kb_covered": null,
+   "decisions": {
+    "synthetic-turbine": {
+     "label": false,
+     "label_reason": "发电机不属于汽轮机专工职责范围，应推给对应专工",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": false
+    },
+    "synthetic-electric": {
+     "label": true,
+     "label_reason": "本人负责机组的发电机问题，必须第一时间掌握",
+     "rule": true,
+     "agent": true,
+     "team": true,
+     "rule_flagged": false
+    },
+    "synthetic-boiler": {
+     "label": false,
+     "label_reason": "发电机不属于锅炉专工职责范围，应推给对应专工",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": false
+    }
+   },
+   "id": "BR-14"
+  },
+  {
+   "set": "holdout1",
+   "event_id": "HOLD-B02",
+   "category": "B",
+   "unit_no": "#1",
+   "level": "一般",
+   "device_type_name": null,
+   "title": "【模拟】锅炉房0米地面积水",
+   "content": "本条为虚构演示工单。锅炉房0米东侧排水沟堵塞造成地面积水，已安排清理，未影响设备。",
+   "label_level": "一般",
+   "label_devices": [],
+   "kb_covered": null,
+   "decisions": {
+    "synthetic-turbine": {
+     "label": false,
+     "label_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    },
+    "synthetic-electric": {
+     "label": false,
+     "label_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    },
+    "synthetic-boiler": {
+     "label": false,
+     "label_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+     "rule": true,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    }
+   },
+   "id": "BR-15"
+  },
+  {
+   "set": "main",
+   "event_id": "HARD-D02",
+   "category": "D",
+   "unit_no": "#1",
+   "level": "一般",
+   "device_type_name": null,
+   "title": "【模拟】#1炉燃油母管法兰漏油着火",
+   "content": "本条为虚构演示工单。#1炉燃油母管法兰漏油引起小范围着火，已用灭火器扑灭，燃油系统已隔离。",
+   "label_level": "紧急",
+   "label_devices": [
+    "BOILER"
+   ],
+   "kb_covered": null,
+   "decisions": {
+    "synthetic-turbine": {
+     "label": true,
+     "label_reason": "虽是锅炉问题，但发生在本人负责机组且为紧急，需要知晓",
+     "rule": true,
+     "agent": true,
+     "team": false,
+     "rule_flagged": true
+    },
+    "synthetic-electric": {
+     "label": true,
+     "label_reason": "虽是锅炉问题，但发生在本人负责机组且为紧急，需要知晓",
+     "rule": true,
+     "agent": true,
+     "team": true,
+     "rule_flagged": true
+    },
+    "synthetic-boiler": {
+     "label": true,
+     "label_reason": "本人负责机组的锅炉问题，必须第一时间掌握",
+     "rule": true,
+     "agent": true,
+     "team": true,
+     "rule_flagged": true
+    }
+   },
+   "id": "BR-16"
+  },
+  {
+   "set": "holdout2",
+   "event_id": "HOLD2-02",
+   "category": "A",
+   "unit_no": "#1",
+   "level": "一般",
+   "device_type_name": null,
+   "title": "【模拟】#1机空侧密封油压差低",
+   "content": "本条为虚构演示工单。#1机空侧密封油泵出口压力波动，油氢压差降至0.04MPa，已投入备用泵。",
+   "label_level": "一般",
+   "label_devices": [
+    "GENERATOR"
+   ],
+   "kb_covered": true,
+   "decisions": {
+    "synthetic-turbine": {
+     "label": false,
+     "label_reason": "发电机不属于汽轮机专工职责范围，应推给对应专工",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": false
+    },
+    "synthetic-electric": {
+     "label": true,
+     "label_reason": "本人负责机组的发电机问题，必须第一时间掌握",
+     "rule": true,
+     "agent": true,
+     "team": true,
+     "rule_flagged": false
+    },
+    "synthetic-boiler": {
+     "label": false,
+     "label_reason": "发电机不属于锅炉专工职责范围，应推给对应专工",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": false
+    }
+   },
+   "id": "BR-17"
+  },
+  {
+   "set": "holdout1",
+   "event_id": "HOLD-A01",
+   "category": "A",
+   "unit_no": "#1",
+   "level": "重要",
+   "device_type_name": null,
+   "title": "【模拟】#1机1号瓦金属温度突升",
+   "content": "本条为虚构演示工单。#1机1号瓦金属温度由82℃升至96℃，润滑油压正常，已降负荷观察。",
+   "label_level": "重要",
+   "label_devices": [
+    "TURBINE"
+   ],
+   "kb_covered": null,
+   "decisions": {
+    "synthetic-turbine": {
+     "label": true,
+     "label_reason": "本人负责机组的汽轮机问题，必须第一时间掌握",
+     "rule": true,
+     "agent": true,
+     "team": true,
+     "rule_flagged": true
+    },
+    "synthetic-electric": {
+     "label": false,
+     "label_reason": "汽轮机不属于电气专工职责范围，应推给对应专工",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    },
+    "synthetic-boiler": {
+     "label": false,
+     "label_reason": "汽轮机不属于锅炉专工职责范围，应推给对应专工",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    }
+   },
+   "id": "BR-18"
+  },
+  {
+   "set": "holdout2",
+   "event_id": "HOLD2-11",
+   "category": "D",
+   "unit_no": "#1",
+   "level": "一般",
+   "device_type_name": null,
+   "title": "【模拟】#1机启备变本体着火",
+   "content": "本条为虚构演示工单。#1机启备变本体着火，已启动消防并将其隔离，厂用电由工作电源带。",
+   "label_level": "紧急",
+   "label_devices": [
+    "AUX_TRANSFORMER"
+   ],
+   "kb_covered": true,
+   "decisions": {
+    "synthetic-turbine": {
+     "label": true,
+     "label_reason": "虽是厂变问题，但发生在本人负责机组且为紧急，需要知晓",
+     "rule": true,
+     "agent": true,
+     "team": true,
+     "rule_flagged": true
+    },
+    "synthetic-electric": {
+     "label": true,
+     "label_reason": "本人负责机组的厂变问题，必须第一时间掌握",
+     "rule": true,
+     "agent": true,
+     "team": true,
+     "rule_flagged": true
+    },
+    "synthetic-boiler": {
+     "label": true,
+     "label_reason": "虽是厂变问题，但发生在本人负责机组且为紧急，需要知晓",
+     "rule": true,
+     "agent": true,
+     "team": true,
+     "rule_flagged": true
+    }
+   },
+   "id": "BR-19"
+  },
+  {
+   "set": "main",
+   "event_id": "HARD-B03",
+   "category": "B",
+   "unit_no": "#1",
+   "level": "一般",
+   "device_type_name": null,
+   "title": "【模拟】汽机房行车主钩制动器异常",
+   "content": "本条为虚构演示工单。汽机房80t行车主钩制动器动作迟缓，暂停吊装作业，联系起重设备维保。",
+   "label_level": "一般",
+   "label_devices": [],
+   "kb_covered": null,
+   "decisions": {
+    "synthetic-turbine": {
+     "label": false,
+     "label_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+     "rule": true,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    },
+    "synthetic-electric": {
+     "label": false,
+     "label_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    },
+    "synthetic-boiler": {
+     "label": false,
+     "label_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    }
+   },
+   "id": "BR-20"
+  },
+  {
+   "set": "main",
+   "event_id": "HARD-D03",
+   "category": "D",
+   "unit_no": "#1",
+   "level": "一般",
+   "device_type_name": null,
+   "title": "【模拟】#1主变本体重瓦斯动作跳闸",
+   "content": "本条为虚构演示工单。#1主变重瓦斯保护动作，主变各侧开关跳闸，机组解列。",
+   "label_level": "紧急",
+   "label_devices": [
+    "TRANSFORMER"
+   ],
+   "kb_covered": null,
+   "decisions": {
+    "synthetic-turbine": {
+     "label": true,
+     "label_reason": "虽是变压器问题，但发生在本人负责机组且为紧急，需要知晓",
+     "rule": true,
+     "agent": true,
+     "team": true,
+     "rule_flagged": true
+    },
+    "synthetic-electric": {
+     "label": true,
+     "label_reason": "本人负责机组的变压器问题，必须第一时间掌握",
+     "rule": true,
+     "agent": true,
+     "team": true,
+     "rule_flagged": true
+    },
+    "synthetic-boiler": {
+     "label": true,
+     "label_reason": "虽是变压器问题，但发生在本人负责机组且为紧急，需要知晓",
+     "rule": true,
+     "agent": true,
+     "team": true,
+     "rule_flagged": true
+    }
+   },
+   "id": "BR-21"
+  },
+  {
+   "set": "holdout1",
+   "event_id": "HOLD-B01",
+   "category": "B",
+   "unit_no": "#1",
+   "level": "一般",
+   "device_type_name": null,
+   "title": "【模拟】#1主变区域围栏门锁损坏",
+   "content": "本条为虚构演示工单。#1主变区域安全围栏门锁损坏，已临时加锁并挂牌，等待更换。",
+   "label_level": "一般",
+   "label_devices": [],
+   "kb_covered": null,
+   "decisions": {
+    "synthetic-turbine": {
+     "label": false,
+     "label_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    },
+    "synthetic-electric": {
+     "label": false,
+     "label_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+     "rule": true,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    },
+    "synthetic-boiler": {
+     "label": false,
+     "label_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    }
+   },
+   "id": "BR-22"
+  },
+  {
+   "set": "holdout2",
+   "event_id": "HOLD2-04",
+   "category": "A",
+   "unit_no": "#1",
+   "level": "一般",
+   "device_type_name": null,
+   "title": "【模拟】#1机TSI键相信号丢失",
+   "content": "本条为虚构演示工单。#1机TSI键相信号丢失，转速测量已切至备用通道，需检查前置器。",
+   "label_level": "一般",
+   "label_devices": [
+    "TURBINE"
+   ],
+   "kb_covered": false,
+   "decisions": {
+    "synthetic-turbine": {
+     "label": true,
+     "label_reason": "本人负责机组的汽轮机问题，必须第一时间掌握",
+     "rule": false,
+     "agent": true,
+     "team": true,
+     "rule_flagged": true
+    },
+    "synthetic-electric": {
+     "label": false,
+     "label_reason": "汽轮机不属于电气专工职责范围，应推给对应专工",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    },
+    "synthetic-boiler": {
+     "label": false,
+     "label_reason": "汽轮机不属于锅炉专工职责范围，应推给对应专工",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    }
+   },
+   "id": "BR-23"
+  },
+  {
+   "set": "holdout1",
+   "event_id": "HOLD-E01",
+   "category": "E",
+   "unit_no": "#4",
+   "level": "一般",
+   "device_type_name": null,
+   "title": "【模拟】#4机EH油泵出口滤网差压报警",
+   "content": "本条为虚构演示工单。#4机EH油泵出口滤网差压报警，已切换至备用滤网。",
+   "label_level": "一般",
+   "label_devices": [
+    "DEH_CTRL"
+   ],
+   "kb_covered": null,
+   "decisions": {
+    "synthetic-turbine": {
+     "label": true,
+     "label_reason": "其他机组的DEH问题，可作同类设备参考",
+     "rule": false,
+     "agent": true,
+     "team": false,
+     "rule_flagged": false
+    },
+    "synthetic-electric": {
+     "label": false,
+     "label_reason": "DEH不属于电气专工职责范围，应推给对应专工",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": false
+    },
+    "synthetic-boiler": {
+     "label": false,
+     "label_reason": "DEH不属于锅炉专工职责范围，应推给对应专工",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": false
+    }
+   },
+   "id": "BR-24"
+  },
+  {
+   "set": "holdout1",
+   "event_id": "HOLD-C02",
+   "category": "C",
+   "unit_no": "#1",
+   "level": "重要",
+   "device_type_name": "给水泵",
+   "title": "【模拟】#1主变冷却器全停告警",
+   "content": "本条为虚构演示工单。#1主变冷却器电源切换失败，冷却器全停告警，已手动恢复一组。",
+   "label_level": "重要",
+   "label_devices": [
+    "TRANSFORMER"
+   ],
+   "kb_covered": null,
+   "decisions": {
+    "synthetic-turbine": {
+     "label": false,
+     "label_reason": "变压器不属于汽轮机专工职责范围，应推给对应专工",
+     "rule": true,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    },
+    "synthetic-electric": {
+     "label": true,
+     "label_reason": "本人负责机组的变压器问题，必须第一时间掌握",
+     "rule": true,
+     "agent": true,
+     "team": true,
+     "rule_flagged": true
+    },
+    "synthetic-boiler": {
+     "label": false,
+     "label_reason": "变压器不属于锅炉专工职责范围，应推给对应专工",
+     "rule": true,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    }
+   },
+   "id": "BR-25"
+  },
+  {
+   "set": "holdout2",
+   "event_id": "HOLD2-01",
+   "category": "A",
+   "unit_no": "#1",
+   "level": "一般",
+   "device_type_name": null,
+   "title": "【模拟】#1机5号低加水位高",
+   "content": "本条为虚构演示工单。#1机5号低加水位高报警，疏水调节阀开度已至最大，正检查疏水管路。",
+   "label_level": "一般",
+   "label_devices": [
+    "TURBINE"
+   ],
+   "kb_covered": true,
+   "decisions": {
+    "synthetic-turbine": {
+     "label": true,
+     "label_reason": "本人负责机组的汽轮机问题，必须第一时间掌握",
+     "rule": true,
+     "agent": true,
+     "team": true,
+     "rule_flagged": false
+    },
+    "synthetic-electric": {
+     "label": false,
+     "label_reason": "汽轮机不属于电气专工职责范围，应推给对应专工",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": false
+    },
+    "synthetic-boiler": {
+     "label": false,
+     "label_reason": "汽轮机不属于锅炉专工职责范围，应推给对应专工",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": false
+    }
+   },
+   "id": "BR-26"
+  },
+  {
+   "set": "holdout2",
+   "event_id": "HOLD2-07",
+   "category": "B",
+   "unit_no": "#1",
+   "level": "一般",
+   "device_type_name": null,
+   "title": "【模拟】#1机除氧器平台栏杆松动",
+   "content": "本条为虚构演示工单。#1机除氧器平台东侧栏杆底座松动，已拉警戒线，待维修。",
+   "label_level": "一般",
+   "label_devices": [],
+   "kb_covered": true,
+   "decisions": {
+    "synthetic-turbine": {
+     "label": false,
+     "label_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+     "rule": true,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    },
+    "synthetic-electric": {
+     "label": false,
+     "label_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    },
+    "synthetic-boiler": {
+     "label": false,
+     "label_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    }
+   },
+   "id": "BR-27"
+  },
+  {
+   "set": "main",
+   "event_id": "HARD-B05",
+   "category": "B",
+   "unit_no": "#1",
+   "level": "一般",
+   "device_type_name": null,
+   "title": "【模拟】#1炉脱硝平台检修电源箱漏电保护动作",
+   "content": "本条为虚构演示工单。#1炉脱硝平台检修电源箱漏电保护器动作，下游仅接临时照明，脱硝系统运行正常。",
+   "label_level": "一般",
+   "label_devices": [],
+   "kb_covered": null,
+   "decisions": {
+    "synthetic-turbine": {
+     "label": false,
+     "label_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": false
+    },
+    "synthetic-electric": {
+     "label": false,
+     "label_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": false
+    },
+    "synthetic-boiler": {
+     "label": false,
+     "label_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": false
+    }
+   },
+   "id": "BR-28"
+  },
+  {
+   "set": "main",
+   "event_id": "HARD-C02",
+   "category": "C",
+   "unit_no": "#1",
+   "level": "重要",
+   "device_type_name": "汽轮机",
+   "title": "【模拟】#1主变油色谱乙炔超注意值",
+   "content": "本条为虚构演示工单。#1主变油色谱在线监测乙炔含量1.8μL/L，超过注意值，需离线取样复测。",
+   "label_level": "重要",
+   "label_devices": [
+    "TRANSFORMER"
+   ],
+   "kb_covered": null,
+   "decisions": {
+    "synthetic-turbine": {
+     "label": false,
+     "label_reason": "变压器不属于汽轮机专工职责范围，应推给对应专工",
+     "rule": true,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    },
+    "synthetic-electric": {
+     "label": true,
+     "label_reason": "本人负责机组的变压器问题，必须第一时间掌握",
+     "rule": true,
+     "agent": true,
+     "team": true,
+     "rule_flagged": true
+    },
+    "synthetic-boiler": {
+     "label": false,
+     "label_reason": "变压器不属于锅炉专工职责范围，应推给对应专工",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    }
+   },
+   "id": "BR-29"
+  },
+  {
+   "set": "holdout1",
+   "event_id": "HOLD-E02",
+   "category": "E",
+   "unit_no": "#2",
+   "level": "重要",
+   "device_type_name": null,
+   "title": "【模拟】#2主变上层油温高",
+   "content": "本条为虚构演示工单。#2主变上层油温升至82℃，冷却器运行正常，需检查测温回路。",
+   "label_level": "重要",
+   "label_devices": [
+    "TRANSFORMER"
+   ],
+   "kb_covered": null,
+   "decisions": {
+    "synthetic-turbine": {
+     "label": false,
+     "label_reason": "变压器不属于汽轮机专工职责范围，应推给对应专工",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": false
+    },
+    "synthetic-electric": {
+     "label": true,
+     "label_reason": "其他机组的变压器问题，可作同类设备参考",
+     "rule": true,
+     "agent": true,
+     "team": true,
+     "rule_flagged": false
+    },
+    "synthetic-boiler": {
+     "label": false,
+     "label_reason": "变压器不属于锅炉专工职责范围，应推给对应专工",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": false
+    }
+   },
+   "id": "BR-30"
+  },
+  {
+   "set": "main",
+   "event_id": "HARD-B04",
+   "category": "B",
+   "unit_no": "#1",
+   "level": "一般",
+   "device_type_name": null,
+   "title": "【模拟】#1主变区域消防喷淋管道漏水",
+   "content": "本条为虚构演示工单。#1主变区域雨淋阀后消防管道法兰漏水，主变本体及油温正常，联系消防维保处理。",
+   "label_level": "一般",
+   "label_devices": [],
+   "kb_covered": null,
+   "decisions": {
+    "synthetic-turbine": {
+     "label": false,
+     "label_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": false
+    },
+    "synthetic-electric": {
+     "label": false,
+     "label_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+     "rule": true,
+     "agent": false,
+     "team": false,
+     "rule_flagged": false
+    },
+    "synthetic-boiler": {
+     "label": false,
+     "label_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": false
+    }
+   },
+   "id": "BR-31"
+  },
+  {
+   "set": "main",
+   "event_id": "HARD-A01",
+   "category": "A",
+   "unit_no": "#1",
+   "level": "重要",
+   "device_type_name": null,
+   "title": "【模拟】#1机3号瓦轴振突升",
+   "content": "本条为虚构演示工单。运行发现#1机3号瓦轴振由45μm升至118μm，盘车电流同步波动，已加强监视。",
+   "label_level": "重要",
+   "label_devices": [
+    "TURBINE"
+   ],
+   "kb_covered": null,
+   "decisions": {
+    "synthetic-turbine": {
+     "label": true,
+     "label_reason": "本人负责机组的汽轮机问题，必须第一时间掌握",
+     "rule": true,
+     "agent": true,
+     "team": true,
+     "rule_flagged": false
+    },
+    "synthetic-electric": {
+     "label": false,
+     "label_reason": "汽轮机不属于电气专工职责范围，应推给对应专工",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": false
+    },
+    "synthetic-boiler": {
+     "label": false,
+     "label_reason": "汽轮机不属于锅炉专工职责范围，应推给对应专工",
+     "rule": false,
+     "agent": false,
+     "team": null,
+     "rule_flagged": false
+    }
+   },
+   "id": "BR-32"
+  },
+  {
+   "set": "holdout2",
+   "event_id": "HOLD2-03",
+   "category": "A",
+   "unit_no": "#1",
+   "level": "重要",
+   "device_type_name": null,
+   "title": "【模拟】#1炉A空预器主电机跳闸",
+   "content": "本条为虚构演示工单。#1炉A空预器主电机跳闸，辅助电机联启正常，需检查主电机过流原因。",
+   "label_level": "重要",
+   "label_devices": [
+    "BOILER"
+   ],
+   "kb_covered": true,
+   "decisions": {
+    "synthetic-turbine": {
+     "label": false,
+     "label_reason": "锅炉不属于汽轮机专工职责范围，应推给对应专工",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": false
+    },
+    "synthetic-electric": {
+     "label": false,
+     "label_reason": "锅炉不属于电气专工职责范围，应推给对应专工",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": false
+    },
+    "synthetic-boiler": {
+     "label": true,
+     "label_reason": "本人负责机组的锅炉问题，必须第一时间掌握",
+     "rule": true,
+     "agent": true,
+     "team": true,
+     "rule_flagged": false
+    }
+   },
+   "id": "BR-33"
+  },
+  {
+   "set": "holdout2",
+   "event_id": "HOLD2-12",
+   "category": "E",
+   "unit_no": "#3",
+   "level": "一般",
+   "device_type_name": null,
+   "title": "【模拟】#3炉送风机动叶卡涩",
+   "content": "本条为虚构演示工单。#3炉B送风机动叶卡涩，开度指令与反馈偏差大，已切至手动。",
+   "label_level": "一般",
+   "label_devices": [
+    "BOILER"
+   ],
+   "kb_covered": true,
+   "decisions": {
+    "synthetic-turbine": {
+     "label": false,
+     "label_reason": "锅炉不属于汽轮机专工职责范围，应推给对应专工",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": false
+    },
+    "synthetic-electric": {
+     "label": false,
+     "label_reason": "锅炉不属于电气专工职责范围，应推给对应专工",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": false
+    },
+    "synthetic-boiler": {
+     "label": true,
+     "label_reason": "其他机组的锅炉问题，可作同类设备参考",
+     "rule": true,
+     "agent": true,
+     "team": false,
+     "rule_flagged": true
+    }
+   },
+   "id": "BR-34"
+  },
+  {
+   "set": "holdout1",
+   "event_id": "HOLD-D02",
+   "category": "D",
+   "unit_no": "#1",
+   "level": "一般",
+   "device_type_name": null,
+   "title": "【模拟】#1机汽轮机润滑油回油管漏油着火",
+   "content": "本条为虚构演示工单。#1机汽轮机润滑油回油管法兰漏油着火，已扑灭，机组打闸停机。",
+   "label_level": "紧急",
+   "label_devices": [
+    "TURBINE"
+   ],
+   "kb_covered": null,
+   "decisions": {
+    "synthetic-turbine": {
+     "label": true,
+     "label_reason": "本人负责机组的汽轮机问题，必须第一时间掌握",
+     "rule": true,
+     "agent": true,
+     "team": true,
+     "rule_flagged": true
+    },
+    "synthetic-electric": {
+     "label": true,
+     "label_reason": "虽是汽轮机问题，但发生在本人负责机组且为紧急，需要知晓",
+     "rule": true,
+     "agent": true,
+     "team": true,
+     "rule_flagged": true
+    },
+    "synthetic-boiler": {
+     "label": true,
+     "label_reason": "虽是汽轮机问题，但发生在本人负责机组且为紧急，需要知晓",
+     "rule": true,
+     "agent": true,
+     "team": true,
+     "rule_flagged": true
+    }
+   },
+   "id": "BR-35"
+  },
+  {
+   "set": "holdout1",
+   "event_id": "HOLD-C01",
+   "category": "C",
+   "unit_no": "#1",
+   "level": "一般",
+   "device_type_name": "发电机",
+   "title": "【模拟】#1机3号瓦轴振波动",
+   "content": "本条为虚构演示工单。#1机3号瓦轴振在60～95μm间波动，与负荷变化相关，需现场测振。",
+   "label_level": "一般",
+   "label_devices": [
+    "TURBINE"
+   ],
+   "kb_covered": null,
+   "decisions": {
+    "synthetic-turbine": {
+     "label": true,
+     "label_reason": "本人负责机组的汽轮机问题，必须第一时间掌握",
+     "rule": false,
+     "agent": true,
+     "team": true,
+     "rule_flagged": true
+    },
+    "synthetic-electric": {
+     "label": false,
+     "label_reason": "汽轮机不属于电气专工职责范围，应推给对应专工",
+     "rule": true,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    },
+    "synthetic-boiler": {
+     "label": false,
+     "label_reason": "汽轮机不属于锅炉专工职责范围，应推给对应专工",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    }
+   },
+   "id": "BR-36"
+  },
+  {
+   "set": "main",
+   "event_id": "HARD-B02",
+   "category": "B",
+   "unit_no": "#1",
+   "level": "一般",
+   "device_type_name": null,
+   "title": "【模拟】锅炉房客梯困人报警",
+   "content": "本条为虚构演示工单。锅炉房3号客梯运行中停止并发出困人报警，已通知维保单位，梯内无人员受伤。",
+   "label_level": "一般",
+   "label_devices": [],
+   "kb_covered": null,
+   "decisions": {
+    "synthetic-turbine": {
+     "label": false,
+     "label_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    },
+    "synthetic-electric": {
+     "label": false,
+     "label_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    },
+    "synthetic-boiler": {
+     "label": false,
+     "label_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+     "rule": true,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    }
+   },
+   "id": "BR-37"
+  },
+  {
+   "set": "main",
+   "event_id": "HARD-B01",
+   "category": "B",
+   "unit_no": "#1",
+   "level": "一般",
+   "device_type_name": null,
+   "title": "【模拟】汽机房0米照明配电箱空开跳闸",
+   "content": "本条为虚构演示工单。汽机房0米东侧照明配电箱总空开跳闸，局部照明失去，已通知电工检查。",
+   "label_level": "一般",
+   "label_devices": [],
+   "kb_covered": null,
+   "decisions": {
+    "synthetic-turbine": {
+     "label": false,
+     "label_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+     "rule": true,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    },
+    "synthetic-electric": {
+     "label": false,
+     "label_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    },
+    "synthetic-boiler": {
+     "label": false,
+     "label_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    }
+   },
+   "id": "BR-38"
+  },
+  {
+   "set": "main",
+   "event_id": "HARD-E01",
+   "category": "E",
+   "unit_no": "#3",
+   "level": "重要",
+   "device_type_name": null,
+   "title": "【模拟】#3机4号瓦轴振突升",
+   "content": "本条为虚构演示工单。#3机4号瓦轴振由40μm升至105μm，已降负荷观察。",
+   "label_level": "重要",
+   "label_devices": [
+    "TURBINE"
+   ],
+   "kb_covered": null,
+   "decisions": {
+    "synthetic-turbine": {
+     "label": true,
+     "label_reason": "其他机组的汽轮机问题，可作同类设备参考",
+     "rule": false,
+     "agent": true,
+     "team": true,
+     "rule_flagged": true
+    },
+    "synthetic-electric": {
+     "label": false,
+     "label_reason": "汽轮机不属于电气专工职责范围，应推给对应专工",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    },
+    "synthetic-boiler": {
+     "label": false,
+     "label_reason": "汽轮机不属于锅炉专工职责范围，应推给对应专工",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    }
+   },
+   "id": "BR-39"
+  },
+  {
+   "set": "main",
+   "event_id": "HARD-C04",
+   "category": "C",
+   "unit_no": "#1",
+   "level": "一般",
+   "device_type_name": "DCS",
+   "title": "【模拟】#1机2号瓦轴振异常",
+   "content": "本条为虚构演示工单。#1机2号瓦轴振由38μm升至96μm，DCS趋势显示与负荷变化相关，需现场测振确认。",
+   "label_level": "一般",
+   "label_devices": [
+    "TURBINE"
+   ],
+   "kb_covered": null,
+   "decisions": {
+    "synthetic-turbine": {
+     "label": true,
+     "label_reason": "本人负责机组的汽轮机问题，必须第一时间掌握",
+     "rule": false,
+     "agent": true,
+     "team": true,
+     "rule_flagged": false
+    },
+    "synthetic-electric": {
+     "label": false,
+     "label_reason": "汽轮机不属于电气专工职责范围，应推给对应专工",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": false
+    },
+    "synthetic-boiler": {
+     "label": false,
+     "label_reason": "汽轮机不属于锅炉专工职责范围，应推给对应专工",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": false
+    }
+   },
+   "id": "BR-40"
+  },
+  {
+   "set": "main",
+   "event_id": "HARD-C01",
+   "category": "C",
+   "unit_no": "#1",
+   "level": "一般",
+   "device_type_name": "锅炉",
+   "title": "【模拟】#1机定子线棒层间温度偏高",
+   "content": "本条为虚构演示工单。#1机定子线棒层间温度最高达82℃，较同工况上升约6℃，需核对冷却水流量。",
+   "label_level": "一般",
+   "label_devices": [
+    "GENERATOR"
+   ],
+   "kb_covered": null,
+   "decisions": {
+    "synthetic-turbine": {
+     "label": false,
+     "label_reason": "发电机不属于汽轮机专工职责范围，应推给对应专工",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    },
+    "synthetic-electric": {
+     "label": true,
+     "label_reason": "本人负责机组的发电机问题，必须第一时间掌握",
+     "rule": true,
+     "agent": true,
+     "team": true,
+     "rule_flagged": true
+    },
+    "synthetic-boiler": {
+     "label": false,
+     "label_reason": "发电机不属于锅炉专工职责范围，应推给对应专工",
+     "rule": true,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    }
+   },
+   "id": "BR-41"
+  },
+  {
+   "set": "holdout2",
+   "event_id": "HOLD2-09",
+   "category": "C",
+   "unit_no": "#1",
+   "level": "一般",
+   "device_type_name": "锅炉",
+   "title": "【模拟】#1机高调门周期性摆动",
+   "content": "本条为虚构演示工单。#1机高调门在负荷稳定时周期性摆动，幅度约5%，需检查伺服阀。",
+   "label_level": "一般",
+   "label_devices": [
+    "TURBINE"
+   ],
+   "kb_covered": true,
+   "decisions": {
+    "synthetic-turbine": {
+     "label": true,
+     "label_reason": "本人负责机组的汽轮机问题，必须第一时间掌握",
+     "rule": true,
+     "agent": true,
+     "team": true,
+     "rule_flagged": true
+    },
+    "synthetic-electric": {
+     "label": false,
+     "label_reason": "汽轮机不属于电气专工职责范围，应推给对应专工",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    },
+    "synthetic-boiler": {
+     "label": false,
+     "label_reason": "汽轮机不属于锅炉专工职责范围，应推给对应专工",
+     "rule": true,
+     "agent": false,
+     "team": false,
+     "rule_flagged": true
+    }
+   },
+   "id": "BR-42"
+  },
+  {
+   "set": "main",
+   "event_id": "HARD-A03",
+   "category": "A",
+   "unit_no": "#1",
+   "level": "一般",
+   "device_type_name": null,
+   "title": "【模拟】#1机电泵前置泵入口滤网差压高",
+   "content": "本条为虚构演示工单。电泵前置泵入口滤网差压升至62kPa并持续上涨，计划切换至备用前置泵后清理滤网。",
+   "label_level": "一般",
+   "label_devices": [
+    "FWP"
+   ],
+   "kb_covered": null,
+   "decisions": {
+    "synthetic-turbine": {
+     "label": true,
+     "label_reason": "本人负责机组的给水泵问题，必须第一时间掌握",
+     "rule": true,
+     "agent": true,
+     "team": true,
+     "rule_flagged": false
+    },
+    "synthetic-electric": {
+     "label": false,
+     "label_reason": "给水泵不属于电气专工职责范围，应推给对应专工",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": false
+    },
+    "synthetic-boiler": {
+     "label": true,
+     "label_reason": "本人负责机组的给水泵问题，必须第一时间掌握",
+     "rule": true,
+     "agent": true,
+     "team": true,
+     "rule_flagged": false
+    }
+   },
+   "id": "BR-43"
+  },
+  {
+   "set": "main",
+   "event_id": "HARD-A04",
+   "category": "A",
+   "unit_no": "#1",
+   "level": "重要",
+   "device_type_name": null,
+   "title": "【模拟】#1炉B侧水冷壁爆管",
+   "content": "本条为虚构演示工单。#1炉B侧水冷壁爆管，汽包水位波动，给水流量与蒸汽流量偏差增大，申请降负荷处理。",
+   "label_level": "紧急",
+   "label_devices": [
+    "BOILER"
+   ],
+   "kb_covered": null,
+   "decisions": {
+    "synthetic-turbine": {
+     "label": true,
+     "label_reason": "虽是锅炉问题，但发生在本人负责机组且为紧急，需要知晓",
+     "rule": true,
+     "agent": true,
+     "team": true,
+     "rule_flagged": true
+    },
+    "synthetic-electric": {
+     "label": true,
+     "label_reason": "虽是锅炉问题，但发生在本人负责机组且为紧急，需要知晓",
+     "rule": true,
+     "agent": true,
+     "team": true,
+     "rule_flagged": true
+    },
+    "synthetic-boiler": {
+     "label": true,
+     "label_reason": "本人负责机组的锅炉问题，必须第一时间掌握",
+     "rule": true,
+     "agent": true,
+     "team": true,
+     "rule_flagged": true
+    }
+   },
+   "id": "BR-44"
+  },
+  {
+   "set": "holdout1",
+   "event_id": "HOLD-A03",
+   "category": "A",
+   "unit_no": "#1",
+   "level": "一般",
+   "device_type_name": null,
+   "title": "【模拟】#1炉B引风机动叶调节卡涩",
+   "content": "本条为虚构演示工单。#1炉B引风机动叶调节卡涩，负压控制偏差大，已切至手动。",
+   "label_level": "一般",
+   "label_devices": [
+    "BOILER"
+   ],
+   "kb_covered": null,
+   "decisions": {
+    "synthetic-turbine": {
+     "label": false,
+     "label_reason": "锅炉不属于汽轮机专工职责范围，应推给对应专工",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": false
+    },
+    "synthetic-electric": {
+     "label": false,
+     "label_reason": "锅炉不属于电气专工职责范围，应推给对应专工",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": false
+    },
+    "synthetic-boiler": {
+     "label": true,
+     "label_reason": "本人负责机组的锅炉问题，必须第一时间掌握",
+     "rule": true,
+     "agent": true,
+     "team": true,
+     "rule_flagged": false
+    }
+   },
+   "id": "BR-45"
+  },
+  {
+   "set": "main",
+   "event_id": "HARD-A08",
+   "category": "A",
+   "unit_no": "#1",
+   "level": "一般",
+   "device_type_name": null,
+   "title": "【模拟】#1炉A一次风机轴承箱温度高",
+   "content": "本条为虚构演示工单。A一次风机驱动端轴承箱温度升至78℃，润滑油站运行正常，需检查冷却水量。",
+   "label_level": "一般",
+   "label_devices": [
+    "BOILER"
+   ],
+   "kb_covered": null,
+   "decisions": {
+    "synthetic-turbine": {
+     "label": false,
+     "label_reason": "锅炉不属于汽轮机专工职责范围，应推给对应专工",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": false
+    },
+    "synthetic-electric": {
+     "label": false,
+     "label_reason": "锅炉不属于电气专工职责范围，应推给对应专工",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": false
+    },
+    "synthetic-boiler": {
+     "label": true,
+     "label_reason": "本人负责机组的锅炉问题，必须第一时间掌握",
+     "rule": true,
+     "agent": true,
+     "team": true,
+     "rule_flagged": false
+    }
+   },
+   "id": "BR-46"
+  },
+  {
+   "set": "main",
+   "event_id": "HARD-A06",
+   "category": "A",
+   "unit_no": "#1",
+   "level": "一般",
+   "device_type_name": null,
+   "title": "【模拟】#1机封母微正压装置频繁启动",
+   "content": "本条为虚构演示工单。#1机离相封闭母线微正压装置24小时内启动17次，疑似外壳密封不良，需检查。",
+   "label_level": "一般",
+   "label_devices": [
+    "GENERATOR"
+   ],
+   "kb_covered": null,
+   "decisions": {
+    "synthetic-turbine": {
+     "label": false,
+     "label_reason": "发电机不属于汽轮机专工职责范围，应推给对应专工",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": false
+    },
+    "synthetic-electric": {
+     "label": true,
+     "label_reason": "本人负责机组的发电机问题，必须第一时间掌握",
+     "rule": true,
+     "agent": true,
+     "team": true,
+     "rule_flagged": false
+    },
+    "synthetic-boiler": {
+     "label": false,
+     "label_reason": "发电机不属于锅炉专工职责范围，应推给对应专工",
+     "rule": false,
+     "agent": false,
+     "team": false,
+     "rule_flagged": false
+    }
+   },
+   "id": "BR-47"
+  }
+ ]
+}

@@ -91,6 +91,9 @@ def main():
                 r.raise_for_status()
                 preds[uid] = r.json()
                 user = users[uid]
+                if "expert_push" in case:  # 专工出的题：直接以专工的推送意见为标准答案
+                    truth[uid] = (0.9, "专工标注：应推送") if case["expert_push"][uid] else (0.1, "专工标注：不推送")
+                    continue
                 truth[uid] = judge_devices(user["role"], user["responsible_units"], case.get("unit_no"),
                                            set(case["true_devices"]), case.get("true_level") or case["level"])
             for uid in USERS:
