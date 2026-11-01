@@ -1,0 +1,52 @@
+{
+  "metadata": {
+    "description": "困难工单留出集：在根据 hard_cases.json 首轮结果修改提示词（v2）之前编写并提交，用来独立检验 v2 是否只是对着第一批题调好了。",
+    "synthetic": true,
+    "authored": "2026-11-01 由作者与 AI 编程助手手工编写，早于 v2 提示词修改；不来自真实电厂，设备描述不是操作规程。",
+    "truth": "与 hard_cases.json 相同：标准答案 = scripts/simulate_review.py 的岗位规则作用在 true_devices / true_level 上。",
+    "caution": "有意挑选的难例，只说明这类情形下的表现，不代表整体准确率或真实电厂效果。",
+    "categories": "同 hard_cases.json：A 标签漏提，B 误导关键词，C 设备字段填错，D 等级低估，E 其他机组"
+  },
+  "cases": [
+    {"event_id": "HOLD-A01", "category": "A", "unit_no": "#1", "level": "重要", "true_devices": ["TURBINE"],
+     "title": "【模拟】#1机1号瓦金属温度突升",
+     "content": "本条为虚构演示工单。#1机1号瓦金属温度由82℃升至96℃，润滑油压正常，已降负荷观察。"},
+    {"event_id": "HOLD-A02", "category": "A", "unit_no": "#1", "level": "一般", "true_devices": ["GENERATOR"],
+     "title": "【模拟】#1机定冷水流量低",
+     "content": "本条为虚构演示工单。#1机定冷水流量降至26t/h，定冷水泵出口压力偏低，备用泵已启动。"},
+    {"event_id": "HOLD-A03", "category": "A", "unit_no": "#1", "level": "一般", "true_devices": ["BOILER"],
+     "title": "【模拟】#1炉B引风机动叶调节卡涩",
+     "content": "本条为虚构演示工单。#1炉B引风机动叶调节卡涩，负压控制偏差大，已切至手动。"},
+
+    {"event_id": "HOLD-B01", "category": "B", "unit_no": "#1", "level": "一般", "true_devices": [],
+     "title": "【模拟】#1主变区域围栏门锁损坏",
+     "content": "本条为虚构演示工单。#1主变区域安全围栏门锁损坏，已临时加锁并挂牌，等待更换。"},
+    {"event_id": "HOLD-B02", "category": "B", "unit_no": "#1", "level": "一般", "true_devices": [],
+     "title": "【模拟】锅炉房0米地面积水",
+     "content": "本条为虚构演示工单。锅炉房0米东侧排水沟堵塞造成地面积水，已安排清理，未影响设备。"},
+
+    {"event_id": "HOLD-C01", "category": "C", "unit_no": "#1", "level": "一般", "device_type_name": "发电机", "true_devices": ["TURBINE"],
+     "title": "【模拟】#1机3号瓦轴振波动",
+     "content": "本条为虚构演示工单。#1机3号瓦轴振在60～95μm间波动，与负荷变化相关，需现场测振。"},
+    {"event_id": "HOLD-C02", "category": "C", "unit_no": "#1", "level": "重要", "device_type_name": "给水泵", "true_devices": ["TRANSFORMER"],
+     "title": "【模拟】#1主变冷却器全停告警",
+     "content": "本条为虚构演示工单。#1主变冷却器电源切换失败，冷却器全停告警，已手动恢复一组。"},
+
+    {"event_id": "HOLD-D01", "category": "D", "unit_no": "#1", "level": "一般", "true_level": "紧急", "true_devices": ["EXCITER"],
+     "title": "【模拟】#1机励磁小间冒烟",
+     "content": "本条为虚构演示工单。#1机励磁小间有烟雾和焦味，运行人员已就地检查并准备紧急停机。"},
+    {"event_id": "HOLD-D02", "category": "D", "unit_no": "#1", "level": "一般", "true_level": "紧急", "true_devices": ["TURBINE"],
+     "title": "【模拟】#1机汽轮机润滑油回油管漏油着火",
+     "content": "本条为虚构演示工单。#1机汽轮机润滑油回油管法兰漏油着火，已扑灭，机组打闸停机。"},
+    {"event_id": "HOLD-D03", "category": "D", "unit_no": "#2", "level": "重要", "true_level": "紧急", "true_devices": ["BOILER"],
+     "title": "【模拟】#2炉水冷壁爆管MFT",
+     "content": "本条为虚构演示工单。#2炉水冷壁爆管，锅炉MFT动作，机组跳闸。"},
+
+    {"event_id": "HOLD-E01", "category": "E", "unit_no": "#4", "level": "一般", "true_devices": ["DEH_CTRL"],
+     "title": "【模拟】#4机EH油泵出口滤网差压报警",
+     "content": "本条为虚构演示工单。#4机EH油泵出口滤网差压报警，已切换至备用滤网。"},
+    {"event_id": "HOLD-E02", "category": "E", "unit_no": "#2", "level": "重要", "true_devices": ["TRANSFORMER"],
+     "title": "【模拟】#2主变上层油温高",
+     "content": "本条为虚构演示工单。#2主变上层油温升至82℃，冷却器运行正常，需检查测温回路。"}
+  ]
+}
