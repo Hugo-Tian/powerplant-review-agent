@@ -1,0 +1,51 @@
+{
+  "metadata": {
+    "description": "困难工单留出集 2：在设备—部件知识库提交（a74db5d）之后、知识库接入系统之前编写，用来检验知识库的效果。kb_covered 标明工单里的关键部件是否在知识库中。",
+    "synthetic": true,
+    "authored": "2026-11-01 由作者与 AI 编程助手手工编写；不来自真实电厂，设备描述不是操作规程。部件名称避免与前两批困难工单重复。",
+    "truth": "与 hard_cases.json 相同：标准答案 = core/policy.py 的岗位规则作用在 true_devices / true_level 上。",
+    "caution": "编写者知道知识库内容，覆盖与未覆盖两组要分开看；有意挑选的难例，不代表整体准确率或真实电厂效果。"
+  },
+  "cases": [
+    {"event_id": "HOLD2-01", "category": "A", "kb_covered": true, "unit_no": "#1", "level": "一般", "true_devices": ["TURBINE"],
+     "title": "【模拟】#1机5号低加水位高",
+     "content": "本条为虚构演示工单。#1机5号低加水位高报警，疏水调节阀开度已至最大，正检查疏水管路。"},
+    {"event_id": "HOLD2-02", "category": "A", "kb_covered": true, "unit_no": "#1", "level": "一般", "true_devices": ["GENERATOR"],
+     "title": "【模拟】#1机空侧密封油压差低",
+     "content": "本条为虚构演示工单。#1机空侧密封油泵出口压力波动，油氢压差降至0.04MPa，已投入备用泵。"},
+    {"event_id": "HOLD2-03", "category": "A", "kb_covered": true, "unit_no": "#1", "level": "重要", "true_devices": ["BOILER"],
+     "title": "【模拟】#1炉A空预器主电机跳闸",
+     "content": "本条为虚构演示工单。#1炉A空预器主电机跳闸，辅助电机联启正常，需检查主电机过流原因。"},
+    {"event_id": "HOLD2-04", "category": "A", "kb_covered": false, "unit_no": "#1", "level": "一般", "true_devices": ["TURBINE"],
+     "title": "【模拟】#1机TSI键相信号丢失",
+     "content": "本条为虚构演示工单。#1机TSI键相信号丢失，转速测量已切至备用通道，需检查前置器。"},
+    {"event_id": "HOLD2-05", "category": "A", "kb_covered": false, "unit_no": "#1", "level": "一般", "true_devices": ["AUX_TRANSFORMER"],
+     "title": "【模拟】#1机厂用电快切装置闭锁",
+     "content": "本条为虚构演示工单。#1机厂用电快切装置发闭锁信号，工作电源与备用电源之间无法自动切换，需检查装置。"},
+    {"event_id": "HOLD2-06", "category": "A", "kb_covered": false, "unit_no": "#1", "level": "一般", "true_devices": ["BOILER"],
+     "title": "【模拟】#1炉暖风器疏水不畅",
+     "content": "本条为虚构演示工单。#1炉暖风器疏水不畅，出口风温偏低，需检查疏水器。"},
+
+    {"event_id": "HOLD2-07", "category": "B", "kb_covered": true, "unit_no": "#1", "level": "一般", "true_devices": [],
+     "title": "【模拟】#1机除氧器平台栏杆松动",
+     "content": "本条为虚构演示工单。#1机除氧器平台东侧栏杆底座松动，已拉警戒线，待维修。"},
+    {"event_id": "HOLD2-08", "category": "B", "kb_covered": false, "unit_no": "#1", "level": "一般", "true_devices": [],
+     "title": "【模拟】集控室空调室内机漏水",
+     "content": "本条为虚构演示工单。集控室空调室内机漏水，已放置接水盘并通知空调维保。"},
+
+    {"event_id": "HOLD2-09", "category": "C", "kb_covered": true, "unit_no": "#1", "level": "一般", "device_type_name": "锅炉", "true_devices": ["TURBINE"],
+     "title": "【模拟】#1机高调门周期性摆动",
+     "content": "本条为虚构演示工单。#1机高调门在负荷稳定时周期性摆动，幅度约5%，需检查伺服阀。"},
+
+    {"event_id": "HOLD2-10", "category": "D", "kb_covered": true, "unit_no": "#1", "level": "一般", "true_level": "紧急", "true_devices": ["GENERATOR"],
+     "title": "【模拟】#1机漏氢量突增",
+     "content": "本条为虚构演示工单。#1机发电机漏氢量突增，氢压快速下降，已紧急停机排氢。"},
+    {"event_id": "HOLD2-11", "category": "D", "kb_covered": true, "unit_no": "#1", "level": "一般", "true_level": "紧急", "true_devices": ["AUX_TRANSFORMER"],
+     "title": "【模拟】#1机启备变本体着火",
+     "content": "本条为虚构演示工单。#1机启备变本体着火，已启动消防并将其隔离，厂用电由工作电源带。"},
+
+    {"event_id": "HOLD2-12", "category": "E", "kb_covered": true, "unit_no": "#3", "level": "一般", "true_devices": ["BOILER"],
+     "title": "【模拟】#3炉送风机动叶卡涩",
+     "content": "本条为虚构演示工单。#3炉B送风机动叶卡涩，开度指令与反馈偏差大，已切至手动。"}
+  ]
+}
