@@ -79,7 +79,8 @@ TOOLS = [
 ]
 TOOL_LABELS = {"get_order": "查看工单", "get_prediction": "查看本条评分", "get_user_profile": "查看用户画像",
                "search_similar": "查相似工单", "recent_unit_orders": "查同机组工单",
-               "user_review_history": "查本人审核历史", "what_if": "试算假设分数"}
+               "user_review_history": "查本人审核历史", "what_if": "试算假设分数",
+               "list_recipients": "查看各专工的推送情况"}
 
 
 def _top(d: dict, n: int = 6) -> dict:
@@ -174,6 +175,22 @@ class ReviewToolbox:
         corrected = sum(1 for r in rows if r["action"] == "correct")
         return {"tag_code": tag_code, "reviews": rows[-8:], "total": len(rows)}, \
             f"本人审核过含 {tag_code} 的工单 {len(rows)} 条，其中修改 {corrected} 条"
+
+    def t_list_recipients(self):
+        """Every registered user, their role and units, and the system's current score for this order."""
+        latest = self.store.latest_results()
+        items = []
+        for u in self.store.list_users():
+            prof = self.current_profile(u["user_id"])["profile"]
+            r = latest.get((u["user_id"], self.order["event_id"]))
+            items.append({"user_id": u["user_id"], "role": u["role"], "responsible_units": u["responsible_units"],
+                          "device_interests": _top(prof["device_interests"], 4),
+                          "current_score": r["score"] if r else None,
+                          "currently_pushed": bool(r and r["score"] >= 0.5)})
+        pushed = sum(1 for i in items if i["currently_pushed"])
+        return {"unit_no": self.order.get("unit_no"), "users": items,
+                "note": "current_score 为空表示系统还没给该用户算过这条工单"}, \
+            f"共 {len(items)} 位专工，目前推送给 {pushed} 位"
 
     def t_what_if(self, level: Optional[str] = None, interest_overrides: Optional[dict] = None,
                   weights: Optional[dict] = None):

@@ -40,11 +40,17 @@ NAMES = {"TURBINE": "汽轮机", "TURBINE_HP": "高压缸", "TURBINE_MP": "中�
 
 
 def judge(role: str, units: list[str], order: dict, result: dict) -> tuple[float, str]:
-    """Return (target score, reason) under the role rule set."""
-    core, related = ROLE_RULES.get(role, (set(), set()))
+    """Return (target score, reason) under the role rule set, using the system's extracted tags."""
     devices = {t["code"] for t in result["tags"] if t["category"] == "device_type"}
-    own_unit = order.get("unit_no") in units
-    level = result.get("effective_level") or order.get("level")
+    return judge_devices(role, units, order.get("unit_no"), devices,
+                         result.get("effective_level") or order.get("level"))
+
+
+def judge_devices(role: str, units: list[str], unit_no: str | None, devices: set[str],
+                  level: str | None) -> tuple[float, str]:
+    """Same rules on explicitly given devices and level (hard cases pass the true ones)."""
+    core, related = ROLE_RULES.get(role, (set(), set()))
+    own_unit = unit_no in units
     name = lambda codes: "、".join(NAMES.get(c, c) for c in sorted(codes))  # noqa: E731
     if not devices:
         return 0.05, "工单未写明设备，无法判断与本岗位相关，暂不推送"

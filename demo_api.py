@@ -285,16 +285,20 @@ class TermCandidate(BaseModel):
 
 
 def resolve_agent_engine(requested: str | None, *, injected_client: bool = False) -> str:
-    """'openjiuwen' | 'builtin'. Auto (empty) prefers openJiuwen when the package is installed.
+    """'openjiuwen_team' | 'openjiuwen' | 'builtin'. Auto (empty) prefers openJiuwen when the package is installed.
 
-    Tests inject a mock httpx client that only the built-in engine can use, so auto mode
+    'openjiuwen_team' is the three-agent HandoffTeam (理解 → 调查 → 复核); 'openjiuwen' is the single
+    ReActAgent. Tests inject a mock httpx client that only the built-in engine can use, so auto mode
     falls back to builtin in that case."""
     req = (requested if requested is not None else os.getenv('AGENT_ENGINE', '')).strip().lower()
+    req = {'team': 'openjiuwen_team'}.get(req, req)
     has_jw = importlib.util.find_spec('openjiuwen') is not None
     if req == 'builtin' or (not req and injected_client):
         return 'builtin'
-    if req == 'openjiuwen' and not has_jw:
-        raise RuntimeError('AGENT_ENGINE=openjiuwen 但未安装 openjiuwen（需要 Python 3.11-3.13，运行 setup_openjiuwen.bat）')
+    if req in ('openjiuwen', 'openjiuwen_team') and not has_jw:
+        raise RuntimeError(f'AGENT_ENGINE={req} 但未安装 openjiuwen（需要 Python 3.11-3.13，运行 setup_openjiuwen.bat）')
+    if req in ('openjiuwen', 'openjiuwen_team'):
+        return req
     return 'openjiuwen' if has_jw else 'builtin'
 
 
@@ -524,7 +528,10 @@ def create_app(db_path: str | Path | None = None, *, llm_config: LLMConfig | Non
         toolbox = ReviewToolbox(store(), user_id=result['user_id'], prediction=result, request=saved['request'],
                                 find_similar=lambda o, t, k: find_similar(o, t, k, user_id=result['user_id']),
                                 current_profile=current_profile)
-        if app.state.agent_engine == 'openjiuwen':
+        if app.state.agent_engine == 'openjiuwen_team':
+            from core.agent_team import TeamReviewAgent  # heavy import, only when used
+            out = TeamReviewAgent(analyzer.config).run(toolbox)
+        elif app.state.agent_engine == 'openjiuwen':
             from core.agent_openjiuwen import JiuwenReviewAgent  # heavy import, only when used
             out = JiuwenReviewAgent(analyzer.config).run(toolbox)
         else:

@@ -47,6 +47,24 @@ class UnitTests(unittest.TestCase):
         self.assertFalse(triage(0.8, [], None)["needs_review"])
         self.assertFalse(triage(GRAY_ZONE[1], [], None)["needs_review"])
 
+    def test_triage_text_doubts(self):
+        dev = lambda code, name: {"code": code, "name": name, "category": "device_type"}  # noqa: E731
+        # no device recognised (e.g. "EH油" is not in the dictionary)
+        r = triage(0.1, [], None, body="#1机EH油压力低\nEH油泵出口压力降至11.2MPa")
+        self.assertTrue(r["needs_review"])
+        self.assertIn("未识别出设备", r["reasons"][0])
+        # the device word only names a place
+        r = triage(0.8, [dev("TURBINE", "汽机")], None, body="汽机房0米照明配电箱空开跳闸\n汽机房东侧照明失去")
+        self.assertTrue(any("地点" in x for x in r["reasons"]))
+        self.assertFalse(triage(0.8, [dev("TURBINE", "汽机")], None,
+                                body="汽机房内汽机3瓦振动大")["needs_review"])  # also used as the device itself
+        # structured device field not mentioned in the text
+        r = triage(0.8, [dev("TRANSFORMER", "主变"), dev("TURBINE", "汽轮机")], None,
+                   body="#1主变油色谱乙炔超注意值", device_field="汽轮机")
+        self.assertTrue(any("字段" in x for x in r["reasons"]))
+        self.assertFalse(triage(0.8, [dev("TURBINE", "汽轮机")], None, body="#1机汽机振动大",
+                                device_field="汽轮机")["needs_review"])  # synonym in the text counts
+
     def test_fit_weights_recovers_hidden_weights(self):
         hidden = {"device_type": 0.1, "behavior": 0.5, "role": 0.3, "manufacturer": 0.1}
         samples = []

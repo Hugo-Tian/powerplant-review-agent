@@ -25,10 +25,48 @@ class WorkOrder:
 
 
 GRAY_ZONE = (0.4, 0.6)
+# 设备词后面紧跟这些字，说的是地点（汽机房、锅炉房、主变区域），不一定是该设备出了问题
+LOCATION_SUFFIXES = ("厂房", "房", "区域", "平台")
 
 
-def triage(score: float, tags: list[dict], analysis) -> dict:
-    """Decide whether a result deserves focused human review, and say why."""
+def location_only(words: list[str], text: str) -> bool:
+    """True if the words occur in ``text`` and every occurrence is followed by a location word."""
+    seen = False
+    for w in words:
+        pos = text.find(w)
+        while pos >= 0:
+            seen = True
+            if not text.startswith(LOCATION_SUFFIXES, pos + len(w)):
+                return False
+            pos = text.find(w, pos + 1)
+    return seen
+
+
+def text_doubts(tags: list[dict], body: str, device_field: Optional[str]) -> list[str]:
+    """Reasons the extracted device tags may not describe the order (checked on title + content only)."""
+    from core.nlp import DEVICE_TYPE_DICT
+    devices = [t for t in tags if t["category"] == "device_type"]
+    if not devices:
+        return ["未识别出设备：工单可能用了词典外的叫法，无法按岗位判断，规则分可能偏低"]
+    reasons = []
+    if device_field:
+        code = DEVICE_TYPE_DICT.get(device_field)
+        words = [w for w, c in DEVICE_TYPE_DICT.items() if c == code] if code else [device_field]
+        if not any(w in body for w in words):
+            reasons.append(f"设备类型字段填的是「{device_field}」，但标题和正文都没有提到，字段可能填错")
+    for t in devices:
+        words = [w for w, c in DEVICE_TYPE_DICT.items() if c == t["code"]]
+        if location_only(words, body):
+            reasons.append(f"「{t['name']}」只出现在地点描述中（如汽机房、主变区域），可能不是该设备本身的问题")
+    return reasons
+
+
+def triage(score: float, tags: list[dict], analysis, *, body: Optional[str] = None,
+           device_field: Optional[str] = None) -> dict:
+    """Decide whether a result deserves focused human review, and say why.
+
+    ``body`` (title + content) enables the text checks: no device recognised, device field
+    not mentioned in the text, device word used only as a place name."""
     reasons = []
     lo, hi = GRAY_ZONE
     if lo <= score < hi:
@@ -43,6 +81,8 @@ def triage(score: float, tags: list[dict], analysis) -> dict:
         if llm_only:
             reasons.append(f"大模型识别出规则未覆盖的设备：{'、'.join(llm_only)}")
         # 词表外新词不触发重点审核：它是词表维护问题，在“学习与评估”页集中处理
+    if body is not None:
+        reasons += text_doubts(tags, body, device_field)
     return {"needs_review": bool(reasons), "reasons": reasons}
 
 
@@ -98,7 +138,9 @@ class PushPredictor:
                                           f"「{review['to_level']}」，依据原文“{review['evidence']}”")
         return {**asdict(result), "tags": tags, "inference_mode": mode,
                 "effective_level": level,
-                "triage": triage(result.score, tags, analysis),
+                "triage": triage(result.score, tags, analysis,
+                                 body=f"{order.title}\n{order.content}" if mode != "provided_tags" else None,
+                                 device_field=order.device_type_name),
                 "analysis": analysis.to_public() if analysis else None,
                 "model_version": "weighted-matching-v2",
                 "confidence": None,

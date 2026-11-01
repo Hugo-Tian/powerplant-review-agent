@@ -1,0 +1,1774 @@
+{
+ "report": {
+  "note": "对照模拟审核规则（作用于真实设备与等级），数据为刻意构造的模拟困难工单，不代表真实电厂效果",
+  "pairs": 69,
+  "rule": {
+   "n": 69,
+   "decision_agree": 53,
+   "within_tolerance": 34,
+   "missed_push": 6,
+   "false_push": 10,
+   "mae": 0.234
+  },
+  "triage": {
+   "rule_wrong": 16,
+   "rule_wrong_flagged": 14
+  },
+  "by_category": {
+   "A": {
+    "n": 24,
+    "decision_agree": 19,
+    "within_tolerance": 13,
+    "missed_push": 5,
+    "false_push": 0,
+    "mae": 0.222
+   },
+   "B": {
+    "n": 18,
+    "decision_agree": 13,
+    "within_tolerance": 12,
+    "missed_push": 0,
+    "false_push": 5,
+    "mae": 0.24
+   },
+   "C": {
+    "n": 12,
+    "decision_agree": 8,
+    "within_tolerance": 5,
+    "missed_push": 1,
+    "false_push": 3,
+    "mae": 0.291
+   },
+   "D": {
+    "n": 9,
+    "decision_agree": 9,
+    "within_tolerance": 0,
+    "missed_push": 0,
+    "false_push": 0,
+    "mae": 0.15
+   },
+   "E": {
+    "n": 6,
+    "decision_agree": 4,
+    "within_tolerance": 4,
+    "missed_push": 0,
+    "false_push": 2,
+    "mae": 0.279
+   }
+  },
+  "agent": {
+   "engine": "openjiuwen",
+   "ran": 69,
+   "needs_human": 3,
+   "errors": 0,
+   "on_decided": {
+    "n": 66,
+    "decision_agree": 60,
+    "within_tolerance": 43,
+    "missed_push": 5,
+    "false_push": 1,
+    "mae": 0.128
+   },
+   "rule_on_same": {
+    "n": 66,
+    "decision_agree": 50,
+    "within_tolerance": 34,
+    "missed_push": 6,
+    "false_push": 10,
+    "mae": 0.238
+   },
+   "rule_wrong_fixed": 14,
+   "rule_right_broken": 4,
+   "median_tool_calls": 7,
+   "median_seconds": 9.5
+  },
+  "agent_by_category": {
+   "A": {
+    "n": 24,
+    "decision_agree": 21,
+    "within_tolerance": 13,
+    "missed_push": 3,
+    "false_push": 0,
+    "mae": 0.156
+   },
+   "B": {
+    "n": 18,
+    "decision_agree": 17,
+    "within_tolerance": 14,
+    "missed_push": 0,
+    "false_push": 1,
+    "mae": 0.128
+   },
+   "C": {
+    "n": 12,
+    "decision_agree": 12,
+    "within_tolerance": 9,
+    "missed_push": 0,
+    "false_push": 0,
+    "mae": 0.086
+   },
+   "D": {
+    "n": 6,
+    "decision_agree": 4,
+    "within_tolerance": 1,
+    "missed_push": 2,
+    "false_push": 0,
+    "mae": 0.167
+   },
+   "E": {
+    "n": 6,
+    "decision_agree": 6,
+    "within_tolerance": 6,
+    "missed_push": 0,
+    "false_push": 0,
+    "mae": 0.063
+   }
+  }
+ },
+ "rows": [
+  {
+   "event_id": "HARD-A01",
+   "category": "A",
+   "user_id": "synthetic-turbine",
+   "role": "汽轮机专工",
+   "target": 0.9,
+   "target_reason": "本人负责机组的汽轮机问题，必须第一时间掌握",
+   "rule_score": 0.7141,
+   "flagged": true,
+   "triage_reasons": [
+    "大模型识别出规则未覆盖的设备：汽轮机"
+   ],
+   "device_tags": [
+    "TURBINE"
+   ],
+   "effective_level": "重要",
+   "agent_status": "ok",
+   "agent_recommendation": "push",
+   "agent_score": 0.75,
+   "agent_tool_calls": 7,
+   "agent_ms": 8308,
+   "agent_summary": "#1机3号瓦轴振45→118μm并伴盘车电流波动，属该用户负责机组、主设备汽轮机振动故障，与其岗位和关注点高度吻合，历史同类工单均确认。建议推送，分数略上调至0.75。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-A01",
+   "category": "A",
+   "user_id": "synthetic-electric",
+   "role": "电气专工",
+   "target": 0.1,
+   "target_reason": "汽轮机不属于电气专工职责范围，应推给对应专工",
+   "rule_score": 0.096,
+   "flagged": true,
+   "triage_reasons": [
+    "大模型识别出规则未覆盖的设备：汽轮机"
+   ],
+   "device_tags": [
+    "TURBINE"
+   ],
+   "effective_level": "重要",
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.15,
+   "agent_tool_calls": 7,
+   "agent_ms": 9795,
+   "agent_summary": "用户为电气专工，汽轮机振动非其职责，历史同类工单均确认低分或改低；仅#1机紧急汽轮机振动曾改至0.6，本条为重要等级，故建议不推送，可转汽机专工。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-A01",
+   "category": "A",
+   "user_id": "synthetic-boiler",
+   "role": "锅炉专工",
+   "target": 0.1,
+   "target_reason": "汽轮机不属于锅炉专工职责范围，应推给对应专工",
+   "rule_score": 0.084,
+   "flagged": true,
+   "triage_reasons": [
+    "大模型识别出规则未覆盖的设备：汽轮机"
+   ],
+   "device_tags": [
+    "TURBINE"
+   ],
+   "effective_level": "重要",
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.08,
+   "agent_tool_calls": 7,
+   "agent_ms": 9182,
+   "agent_summary": "工单为#1机汽轮机3号瓦轴振突升（重要），但推送对象是锅炉专工，设备兴趣仅锅炉1.0、给水泵0.8，无汽轮机兴趣，近30天无行为；其历史审核均为给水泵振动，从未处理汽轮机振动。试算即使汽轮机兴趣给到0.5，分数仅0.39，仍不足0.5，建议不推送。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-A02",
+   "category": "A",
+   "user_id": "synthetic-turbine",
+   "role": "汽轮机专工",
+   "target": 0.9,
+   "target_reason": "本人负责机组的DEH问题，必须第一时间掌握",
+   "rule_score": 0.141,
+   "flagged": true,
+   "triage_reasons": [
+    "未识别出设备：工单可能用了词典外的叫法，无法按岗位判断，规则分可能偏低"
+   ],
+   "device_tags": [],
+   "effective_level": "重要",
+   "agent_status": "ok",
+   "agent_recommendation": "push",
+   "agent_score": 0.6,
+   "agent_tool_calls": 7,
+   "agent_ms": 18643,
+   "agent_summary": "EH油系统属汽轮机调速核心设备，用户为#1机汽轮机专工、TURBINE兴趣1.0，工单正是#1机重要级实质异常。0.14分系\"未识别出设备\"的规则缺陷所致，应推送。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-A02",
+   "category": "A",
+   "user_id": "synthetic-electric",
+   "role": "电气专工",
+   "target": 0.1,
+   "target_reason": "DEH不属于电气专工职责范围，应推给对应专工",
+   "rule_score": 0.096,
+   "flagged": true,
+   "triage_reasons": [
+    "未识别出设备：工单可能用了词典外的叫法，无法按岗位判断，规则分可能偏低"
+   ],
+   "device_tags": [],
+   "effective_level": "重要",
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.1,
+   "agent_tool_calls": 7,
+   "agent_ms": 10535,
+   "agent_summary": "EH油压力低属汽机侧缺陷，推送对象为电气专工，设备兴趣仅变压器/励磁机/发电机，岗位与设备均不匹配；其历史对非本岗位工单均给0.096，仅DCS类给0.45。重要等级无保底，建议不推送。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-A02",
+   "category": "A",
+   "user_id": "synthetic-boiler",
+   "role": "锅炉专工",
+   "target": 0.1,
+   "target_reason": "DEH不属于锅炉专工职责范围，应推给对应专工",
+   "rule_score": 0.084,
+   "flagged": true,
+   "triage_reasons": [
+    "未识别出设备：工单可能用了词典外的叫法，无法按岗位判断，规则分可能偏低"
+   ],
+   "device_tags": [],
+   "effective_level": "重要",
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.1,
+   "agent_tool_calls": 7,
+   "agent_ms": 9824,
+   "agent_summary": "EH油压力低属汽机侧设备，该用户为锅炉专工（兴趣仅锅炉/给水泵），职责不匹配；其历史对非本岗参数异常工单均确认低分或下调至0.1。建议不推送，转汽机专工。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-A03",
+   "category": "A",
+   "user_id": "synthetic-turbine",
+   "role": "汽轮机专工",
+   "target": 0.9,
+   "target_reason": "本人负责机组的给水泵问题，必须第一时间掌握",
+   "rule_score": 0.141,
+   "flagged": true,
+   "triage_reasons": [
+    "未识别出设备：工单可能用了词典外的叫法，无法按岗位判断，规则分可能偏低"
+   ],
+   "device_tags": [],
+   "effective_level": "一般",
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.25,
+   "agent_tool_calls": 8,
+   "agent_ms": 11768,
+   "agent_summary": "工单为一般等级、设备未识别，用户虽负责#1机组且给水泵兴趣0.9，但\"差压高\"不在其故障兴趣内，试算上限仅0.249，建议不推送。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-A03",
+   "category": "A",
+   "user_id": "synthetic-electric",
+   "role": "电气专工",
+   "target": 0.1,
+   "target_reason": "给水泵不属于电气专工职责范围，应推给对应专工",
+   "rule_score": 0.096,
+   "flagged": true,
+   "triage_reasons": [
+    "未识别出设备：工单可能用了词典外的叫法，无法按岗位判断，规则分可能偏低"
+   ],
+   "device_tags": [],
+   "effective_level": "一般",
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.1,
+   "agent_tool_calls": 7,
+   "agent_ms": 9259,
+   "agent_summary": "本条为机务类前置泵滤网差压高（一般等级），推送对象是电气专工，专业不对口；设备未被词典识别导致规则分偏低，但试算表明即使兴趣拉满也仅0.24，无相似历史与审核记录，建议不推送。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-A03",
+   "category": "A",
+   "user_id": "synthetic-boiler",
+   "role": "锅炉专工",
+   "target": 0.9,
+   "target_reason": "本人负责机组的给水泵问题，必须第一时间掌握",
+   "rule_score": 0.084,
+   "flagged": true,
+   "triage_reasons": [
+    "未识别出设备：工单可能用了词典外的叫法，无法按岗位判断，规则分可能偏低"
+   ],
+   "device_tags": [],
+   "effective_level": "一般",
+   "agent_status": "ok",
+   "agent_recommendation": "push",
+   "agent_score": 0.65,
+   "agent_tool_calls": 8,
+   "agent_ms": 11661,
+   "agent_summary": "工单为#1机组电泵前置泵滤网差压高，用户是#1锅炉专工且对FWP兴趣0.8，同类FWP工单历史分0.6-0.8。本条0.08系设备未识别致设备维度归零的规则漏判，建议推送，分数按同类水平给0.65。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-A04",
+   "category": "A",
+   "user_id": "synthetic-turbine",
+   "role": "汽轮机专工",
+   "target": 0.6,
+   "target_reason": "虽是锅炉问题，但发生在本人负责机组且为紧急，需要知晓",
+   "rule_score": 0.75,
+   "flagged": true,
+   "triage_reasons": [
+    "大模型建议把等级从「重要」上调为「紧急」",
+    "大模型识别出规则未覆盖的设备：锅炉"
+   ],
+   "device_tags": [
+    "BOILER"
+   ],
+   "effective_level": "紧急",
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.3,
+   "agent_tool_calls": 8,
+   "agent_ms": 9928,
+   "agent_summary": "工单为#1炉水冷壁爆管，等级经AI复核上调为紧急，但设备属锅炉，非汽轮机专工职责。该用户6条锅炉类审核均确认\"应推给对应专工\"，且对锅炉/泄漏兴趣为0，0.75分仅来自紧急保底与负责机组。建议改推锅炉专工。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-A04",
+   "category": "A",
+   "user_id": "synthetic-electric",
+   "role": "电气专工",
+   "target": 0.6,
+   "target_reason": "虽是锅炉问题，但发生在本人负责机组且为紧急，需要知晓",
+   "rule_score": 0.75,
+   "flagged": true,
+   "triage_reasons": [
+    "大模型建议把等级从「重要」上调为「紧急」",
+    "大模型识别出规则未覆盖的设备：锅炉"
+   ],
+   "device_tags": [
+    "BOILER"
+   ],
+   "effective_level": "紧急",
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.15,
+   "agent_tool_calls": 8,
+   "agent_ms": 11569,
+   "agent_summary": "工单本身是真实紧急缺陷（水冷壁爆管），但推送对象是电气专工，锅炉/泄漏均非其职责。0.75 仅来自紧急保底与\"负责#1机组\"，设备与故障兴趣均为0。该用户历史上对锅炉、给水泵类工单一致纠正为0.1，建议改推锅炉专工。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-A04",
+   "category": "A",
+   "user_id": "synthetic-boiler",
+   "role": "锅炉专工",
+   "target": 0.9,
+   "target_reason": "本人负责机组的锅炉问题，必须第一时间掌握",
+   "rule_score": 0.75,
+   "flagged": true,
+   "triage_reasons": [
+    "大模型建议把等级从「重要」上调为「紧急」",
+    "大模型识别出规则未覆盖的设备：锅炉"
+   ],
+   "device_tags": [
+    "BOILER"
+   ],
+   "effective_level": "紧急",
+   "agent_status": "ok",
+   "agent_recommendation": "push",
+   "agent_score": 0.75,
+   "agent_tool_calls": 8,
+   "agent_ms": 10897,
+   "agent_summary": "#1炉B侧水冷壁爆管，AI复核由重要上调为紧急，属受热面严重泄漏、有停机风险。用户为#1机组锅炉专工，锅炉兴趣1.0、泄漏0.8，职责完全匹配，历史仅对\"其他机组\"锅炉泄漏下调，本条为本机组无需下调，建议按0.75推送。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-A05",
+   "category": "A",
+   "user_id": "synthetic-turbine",
+   "role": "汽轮机专工",
+   "target": 0.1,
+   "target_reason": "锅炉不属于汽轮机专工职责范围，应推给对应专工",
+   "rule_score": 0.141,
+   "flagged": true,
+   "triage_reasons": [
+    "大模型识别出规则未覆盖的设备：锅炉"
+   ],
+   "device_tags": [
+    "BOILER"
+   ],
+   "effective_level": "一般",
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.14,
+   "agent_tool_calls": 8,
+   "agent_ms": 8721,
+   "agent_summary": "工单为#1炉屏式过热器壁温偏差（锅炉专业），推送对象是汽轮机专工，设备与故障兴趣均不覆盖锅炉。该用户历史6条锅炉工单全部确认\"不属职责范围，应推给对应专工\"。建议不推送，转锅炉专工。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-A05",
+   "category": "A",
+   "user_id": "synthetic-electric",
+   "role": "电气专工",
+   "target": 0.1,
+   "target_reason": "锅炉不属于电气专工职责范围，应推给对应专工",
+   "rule_score": 0.096,
+   "flagged": true,
+   "triage_reasons": [
+    "大模型识别出规则未覆盖的设备：锅炉"
+   ],
+   "device_tags": [
+    "BOILER"
+   ],
+   "effective_level": "一般",
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.1,
+   "agent_tool_calls": 7,
+   "agent_ms": 8910,
+   "agent_summary": "锅炉壁温偏差工单，用户为电气专工，兴趣全在变压器/励磁机/发电机，与锅炉无关；历史4条锅炉工单均被改判0.1或确认低分，理由一致为不属其职责。一般等级无保底，建议不推送，改推锅炉专工。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-A05",
+   "category": "A",
+   "user_id": "synthetic-boiler",
+   "role": "锅炉专工",
+   "target": 0.9,
+   "target_reason": "本人负责机组的锅炉问题，必须第一时间掌握",
+   "rule_score": 0.5068,
+   "flagged": true,
+   "triage_reasons": [
+    "匹配分 0.51 处于灰区（0.4–0.6），推或不推都有理由",
+    "大模型识别出规则未覆盖的设备：锅炉"
+   ],
+   "device_tags": [
+    "BOILER"
+   ],
+   "effective_level": "一般",
+   "agent_status": "ok",
+   "agent_recommendation": "push",
+   "agent_score": 0.62,
+   "agent_tool_calls": 7,
+   "agent_ms": 8419,
+   "agent_summary": "工单为#1炉屏式过热器壁温偏差，用户是#1机组锅炉专工、锅炉兴趣1.0，岗位与设备完全对口，属其本职范围。行为分为0仅因近30天无操作记录，非不感兴趣。同机组近期已有水冷壁爆管，锅炉侧连续出问题，建议推送。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-A06",
+   "category": "A",
+   "user_id": "synthetic-turbine",
+   "role": "汽轮机专工",
+   "target": 0.1,
+   "target_reason": "发电机不属于汽轮机专工职责范围，应推给对应专工",
+   "rule_score": 0.141,
+   "flagged": true,
+   "triage_reasons": [
+    "未识别出设备：工单可能用了词典外的叫法，无法按岗位判断，规则分可能偏低"
+   ],
+   "device_tags": [],
+   "effective_level": "一般",
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.14,
+   "agent_tool_calls": 7,
+   "agent_ms": 9275,
+   "agent_summary": "工单为离相封闭母线微正压装置（电气一次设备），用户是汽轮机专工，设备兴趣集中在汽机/给水泵，历史多次确认电气类不属其职责。标签为空致设备未识别，分数仅靠岗位维度0.3，建议不推送，转电气专工。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-A06",
+   "category": "A",
+   "user_id": "synthetic-electric",
+   "role": "电气专工",
+   "target": 0.9,
+   "target_reason": "本人负责机组的发电机问题，必须第一时间掌握",
+   "rule_score": 0.096,
+   "flagged": true,
+   "triage_reasons": [
+    "未识别出设备：工单可能用了词典外的叫法，无法按岗位判断，规则分可能偏低"
+   ],
+   "device_tags": [],
+   "effective_level": "一般",
+   "agent_status": "ok",
+   "agent_recommendation": "push",
+   "agent_score": 0.6,
+   "agent_tool_calls": 7,
+   "agent_ms": 9894,
+   "agent_summary": "工单未提取出标签导致设备维度0分，属词典未识别\"封母\"的规则缺陷，非相关性不足。用户为#1机电气专工，封母属电气一次设备，岗位对口（role已满分0.3），内容具体有排查价值，建议推送。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-A06",
+   "category": "A",
+   "user_id": "synthetic-boiler",
+   "role": "锅炉专工",
+   "target": 0.1,
+   "target_reason": "发电机不属于锅炉专工职责范围，应推给对应专工",
+   "rule_score": 0.084,
+   "flagged": true,
+   "triage_reasons": [
+    "未识别出设备：工单可能用了词典外的叫法，无法按岗位判断，规则分可能偏低"
+   ],
+   "device_tags": [],
+   "effective_level": "一般",
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.084,
+   "agent_tool_calls": 7,
+   "agent_ms": 9852,
+   "agent_summary": "工单为#1机封闭母线微正压装置频繁启动（电气类），用户是锅炉专工，兴趣仅锅炉/给水泵，无相关关注点；工单未识别出设备标签，设备类型、行为、厂家三维均为0，仅岗位维度贡献0.084分。等级一般无紧急保底，建议不推送。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-A07",
+   "category": "A",
+   "user_id": "synthetic-turbine",
+   "role": "汽轮机专工",
+   "target": 0.1,
+   "target_reason": "发电机、变压器不属于汽轮机专工职责范围，应推给对应专工",
+   "rule_score": 0.141,
+   "flagged": true,
+   "triage_reasons": [
+    "大模型识别出规则未覆盖的设备：发电机"
+   ],
+   "device_tags": [
+    "GENERATOR"
+   ],
+   "effective_level": "重要",
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.14,
+   "agent_tool_calls": 7,
+   "agent_ms": 9038,
+   "agent_summary": "工单为#1机发变组保护差动回路告警（重要级），但属发电机专业，用户是汽轮机专工，无发电机兴趣，且其历史审核明确表示此类工单应转给对应专工。建议不推给该用户，转发电机/继保专工。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-A07",
+   "category": "A",
+   "user_id": "synthetic-electric",
+   "role": "电气专工",
+   "target": 0.9,
+   "target_reason": "本人负责机组的发电机、变压器问题，必须第一时间掌握",
+   "rule_score": 0.475,
+   "flagged": true,
+   "triage_reasons": [
+    "匹配分 0.47 处于灰区（0.4–0.6），推或不推都有理由",
+    "大模型识别出规则未覆盖的设备：发电机"
+   ],
+   "device_tags": [
+    "GENERATOR"
+   ],
+   "effective_level": "重要",
+   "agent_status": "ok",
+   "agent_recommendation": "push",
+   "agent_score": 0.62,
+   "agent_tool_calls": 8,
+   "agent_ms": 9067,
+   "agent_summary": "用户为#1机组电气专工，发电机兴趣0.8、电气故障0.8，本条#1机发变组差动回路告警正属其职责，历史同类工单均确认。分数偏低仅因近30天无行为，建议推送。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-A07",
+   "category": "A",
+   "user_id": "synthetic-boiler",
+   "role": "锅炉专工",
+   "target": 0.1,
+   "target_reason": "发电机、变压器不属于锅炉专工职责范围，应推给对应专工",
+   "rule_score": 0.084,
+   "flagged": true,
+   "triage_reasons": [
+    "大模型识别出规则未覆盖的设备：发电机"
+   ],
+   "device_tags": [
+    "GENERATOR"
+   ],
+   "effective_level": "重要",
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.08,
+   "agent_tool_calls": 7,
+   "agent_ms": 8698,
+   "agent_summary": "发电机差动回路告警属电气专业，用户为锅炉专工，设备兴趣仅锅炉/给水泵，近30天无行为；历史7条发电机工单均判\"不属职责范围\"并改至0.1。重要等级无保底，建议不推送，转电气专工。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-A08",
+   "category": "A",
+   "user_id": "synthetic-turbine",
+   "role": "汽轮机专工",
+   "target": 0.1,
+   "target_reason": "锅炉不属于汽轮机专工职责范围，应推给对应专工",
+   "rule_score": 0.2332,
+   "flagged": true,
+   "triage_reasons": [
+    "大模型识别出规则未覆盖的设备：锅炉"
+   ],
+   "device_tags": [
+    "BOILER"
+   ],
+   "effective_level": "一般",
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.23,
+   "agent_tool_calls": 7,
+   "agent_ms": 8447,
+   "agent_summary": "工单为#1炉A一次风机轴承箱温度高（一般级），用户是汽轮机专工，设备兴趣无锅炉，仅靠\"轴承\"关键词匹配，分数0.23偏低，建议不推送。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-A08",
+   "category": "A",
+   "user_id": "synthetic-electric",
+   "role": "电气专工",
+   "target": 0.1,
+   "target_reason": "锅炉不属于电气专工职责范围，应推给对应专工",
+   "rule_score": 0.096,
+   "flagged": true,
+   "triage_reasons": [
+    "大模型识别出规则未覆盖的设备：锅炉"
+   ],
+   "device_tags": [
+    "BOILER"
+   ],
+   "effective_level": "一般",
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.1,
+   "agent_tool_calls": 6,
+   "agent_ms": 7275,
+   "agent_summary": "本条为#1炉A一次风机轴承箱温度高（一般等级），属锅炉专业。推送对象为电气专工，兴趣集中在变压器/励磁机/发电机，对锅炉无兴趣，历史同类工单均被改判为0.1并注明应推给对应专工。建议不推送，改推锅炉专工。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-A08",
+   "category": "A",
+   "user_id": "synthetic-boiler",
+   "role": "锅炉专工",
+   "target": 0.9,
+   "target_reason": "本人负责机组的锅炉问题，必须第一时间掌握",
+   "rule_score": 0.5068,
+   "flagged": true,
+   "triage_reasons": [
+    "匹配分 0.51 处于灰区（0.4–0.6），推或不推都有理由",
+    "大模型识别出规则未覆盖的设备：锅炉"
+   ],
+   "device_tags": [
+    "BOILER"
+   ],
+   "effective_level": "一般",
+   "agent_status": "ok",
+   "agent_recommendation": "push",
+   "agent_score": 0.62,
+   "agent_tool_calls": 8,
+   "agent_ms": 10751,
+   "agent_summary": "#1机组锅炉侧一次风机轴承箱温度高，属锅炉专工本人负责机组与专业范围，BOILER兴趣1.0、role满分；灰区0.51偏低主要因近30天无行为记录。建议推送，分数上调至0.62。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-B01",
+   "category": "B",
+   "user_id": "synthetic-turbine",
+   "role": "汽轮机专工",
+   "target": 0.05,
+   "target_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+   "rule_score": 0.6616,
+   "flagged": true,
+   "triage_reasons": [
+    "「汽机」只出现在地点描述中（如汽机房、主变区域），可能不是该设备本身的问题"
+   ],
+   "device_tags": [
+    "TURBINE"
+   ],
+   "effective_level": "一般",
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.2,
+   "agent_tool_calls": 8,
+   "agent_ms": 9031,
+   "agent_summary": "工单实为汽机房照明配电箱空开跳闸，属电气异常，\"汽机\"仅为地点描述。用户是汽轮机专工，曾明确判定电气异常不属其职责。剔除误标后分数仅0.18，建议不推送，转电气专工。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-B01",
+   "category": "B",
+   "user_id": "synthetic-electric",
+   "role": "电气专工",
+   "target": 0.05,
+   "target_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+   "rule_score": 0.1738,
+   "flagged": true,
+   "triage_reasons": [
+    "「汽机」只出现在地点描述中（如汽机房、主变区域），可能不是该设备本身的问题"
+   ],
+   "device_tags": [
+    "TURBINE"
+   ],
+   "effective_level": "一般",
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.17,
+   "agent_tool_calls": 7,
+   "agent_ms": 9779,
+   "agent_summary": "工单为汽机房0米照明配电箱空开跳闸，属一般等级、局部照明失电的电气小缺陷；\"汽机\"仅为地点描述，非设备本体。用户是电气专工但设备兴趣集中在变压器/励磁机/发电机，无配电箱类兴趣，且近30天无行为、无同类审核记录，机组近期也无同类问题。分数0.17偏低，建议不推送。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-B01",
+   "category": "B",
+   "user_id": "synthetic-boiler",
+   "role": "锅炉专工",
+   "target": 0.05,
+   "target_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+   "rule_score": 0.084,
+   "flagged": true,
+   "triage_reasons": [
+    "「汽机」只出现在地点描述中（如汽机房、主变区域），可能不是该设备本身的问题"
+   ],
+   "device_tags": [
+    "TURBINE"
+   ],
+   "effective_level": "一般",
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.08,
+   "agent_tool_calls": 7,
+   "agent_ms": 8347,
+   "agent_summary": "工单为汽机房0米照明配电箱空开跳闸，属电气照明缺陷，\"汽机\"仅为地点描述。推送对象是锅炉专工，兴趣为锅炉/给水泵，历史对汽机、电气类工单一律改判至0.1并注明不属其职责，建议不推送，转电气专工。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-B02",
+   "category": "B",
+   "user_id": "synthetic-turbine",
+   "role": "汽轮机专工",
+   "target": 0.05,
+   "target_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+   "rule_score": 0.141,
+   "flagged": true,
+   "triage_reasons": [
+    "「锅炉」只出现在地点描述中（如汽机房、主变区域），可能不是该设备本身的问题"
+   ],
+   "device_tags": [
+    "BOILER"
+   ],
+   "effective_level": "一般",
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.14,
+   "agent_tool_calls": 7,
+   "agent_ms": 8958,
+   "agent_summary": "工单实为锅炉房客梯困人，锅炉仅是地点描述，标签误打；用户为汽轮机专工，历史对锅炉类工单一致判定不属其职责。分数仅来自角色维度，设备匹配为0，建议不推送，转电梯/锅炉对应专工。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-B02",
+   "category": "B",
+   "user_id": "synthetic-electric",
+   "role": "电气专工",
+   "target": 0.05,
+   "target_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+   "rule_score": 0.096,
+   "flagged": true,
+   "triage_reasons": [
+    "「锅炉」只出现在地点描述中（如汽机房、主变区域），可能不是该设备本身的问题"
+   ],
+   "device_tags": [
+    "BOILER"
+   ],
+   "effective_level": "一般",
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.1,
+   "agent_tool_calls": 6,
+   "agent_ms": 7648,
+   "agent_summary": "工单实为锅炉房客梯困人，非锅炉设备本体，标签「锅炉」仅来自地点描述。用户为电气专工，兴趣在变压器/励磁机/发电机，历史4次锅炉类工单均判「不属电气专工职责，应推给对应专工」，建议不推送。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-B02",
+   "category": "B",
+   "user_id": "synthetic-boiler",
+   "role": "锅炉专工",
+   "target": 0.05,
+   "target_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+   "rule_score": 0.6664,
+   "flagged": true,
+   "triage_reasons": [
+    "「锅炉」只出现在地点描述中（如汽机房、主变区域），可能不是该设备本身的问题"
+   ],
+   "device_tags": [
+    "BOILER"
+   ],
+   "effective_level": "一般",
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.2,
+   "agent_tool_calls": 7,
+   "agent_ms": 9219,
+   "agent_summary": "工单实为锅炉房客梯困人，属电梯设备问题，\"锅炉\"仅是地点描述，非锅炉本体缺陷。用户为锅炉专工，推送分主要靠设备标签和机组归属撑起，属误标导致的虚高，建议不推送。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-B03",
+   "category": "B",
+   "user_id": "synthetic-turbine",
+   "role": "汽轮机专工",
+   "target": 0.05,
+   "target_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+   "rule_score": 0.6631,
+   "flagged": true,
+   "triage_reasons": [
+    "「汽机」只出现在地点描述中（如汽机房、主变区域），可能不是该设备本身的问题"
+   ],
+   "device_tags": [
+    "TURBINE"
+   ],
+   "effective_level": "一般",
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.16,
+   "agent_tool_calls": 7,
+   "agent_ms": 10208,
+   "agent_summary": "工单实为汽机房80t行车主钩制动器故障，属起重设备，非汽轮机本体；TURBINE标签仅来自\"汽机房\"地点误标。用户为汽轮机专工，历史仅对本人机组汽轮机本体问题提分。剔除误标后分数约0.16，建议不推送。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-B03",
+   "category": "B",
+   "user_id": "synthetic-electric",
+   "role": "电气专工",
+   "target": 0.05,
+   "target_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+   "rule_score": 0.096,
+   "flagged": true,
+   "triage_reasons": [
+    "「汽机」只出现在地点描述中（如汽机房、主变区域），可能不是该设备本身的问题"
+   ],
+   "device_tags": [
+    "TURBINE"
+   ],
+   "effective_level": "一般",
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.1,
+   "agent_tool_calls": 7,
+   "agent_ms": 8552,
+   "agent_summary": "工单实为汽机房行车（起重设备）主钩制动器异常，\"汽机\"仅是地点描述，非汽机设备本体。用户为电气专工，兴趣在变压器/励磁机/发电机及电气故障，且历史对汽机类工单一律判为不属职责范围。建议不推送，转起重/机械专工。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-B03",
+   "category": "B",
+   "user_id": "synthetic-boiler",
+   "role": "锅炉专工",
+   "target": 0.05,
+   "target_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+   "rule_score": 0.084,
+   "flagged": true,
+   "triage_reasons": [
+    "「汽机」只出现在地点描述中（如汽机房、主变区域），可能不是该设备本身的问题"
+   ],
+   "device_tags": [
+    "TURBINE"
+   ],
+   "effective_level": "一般",
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.08,
+   "agent_tool_calls": 6,
+   "agent_ms": 8177,
+   "agent_summary": "工单实为汽机房行车（起重设备）主钩制动器异常，仅因地点含\"汽机房\"被打上汽机标签。推送对象为锅炉专工，兴趣仅锅炉/给水泵，历史对汽机类工单一律改判0.1，不属其职责，建议不推送。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-B04",
+   "category": "B",
+   "user_id": "synthetic-turbine",
+   "role": "汽轮机专工",
+   "target": 0.05,
+   "target_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+   "rule_score": 0.141,
+   "flagged": false,
+   "triage_reasons": [],
+   "device_tags": [
+    "TRANSFORMER"
+   ],
+   "effective_level": "一般",
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.14,
+   "agent_tool_calls": 7,
+   "agent_ms": 10006,
+   "agent_summary": "主变区域消防喷淋管道漏水，属主变/消防专业，非汽轮机专工职责。用户对主变类工单一律确认低分，仅对本人给水泵漏水提高分。同机组近期无同类连续问题，建议不推送，转对应专工。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-B04",
+   "category": "B",
+   "user_id": "synthetic-electric",
+   "role": "电气专工",
+   "target": 0.05,
+   "target_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+   "rule_score": 0.7,
+   "flagged": false,
+   "triage_reasons": [],
+   "device_tags": [
+    "TRANSFORMER"
+   ],
+   "effective_level": "一般",
+   "agent_status": "ok",
+   "agent_recommendation": "push",
+   "agent_score": 0.85,
+   "agent_tool_calls": 7,
+   "agent_ms": 10156,
+   "agent_summary": "#1主变消防管道漏水，用户为电气专工且负责#1机组，主变兴趣1.0；其历史对本人机组变压器问题均上调至0.9并称\"必须第一时间掌握\"；#1主变近期连续出现温度高/泄漏。建议推送，分数上调至0.85。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-B04",
+   "category": "B",
+   "user_id": "synthetic-boiler",
+   "role": "锅炉专工",
+   "target": 0.05,
+   "target_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+   "rule_score": 0.268,
+   "flagged": false,
+   "triage_reasons": [],
+   "device_tags": [
+    "TRANSFORMER"
+   ],
+   "effective_level": "一般",
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.1,
+   "agent_tool_calls": 7,
+   "agent_ms": 9009,
+   "agent_summary": "主变消防管道漏水工单，用户为锅炉专工，主变不在其职责范围，设备兴趣为0，仅靠\"漏水\"行为分撑起0.27。该用户对主变类工单历来判为不属其职责，曾将同类工单降至0.1，建议不推送、转给电气专工。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-B05",
+   "category": "B",
+   "user_id": "synthetic-turbine",
+   "role": "汽轮机专工",
+   "target": 0.05,
+   "target_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+   "rule_score": 0.141,
+   "flagged": false,
+   "triage_reasons": [],
+   "device_tags": [
+    "SCR"
+   ],
+   "effective_level": "一般",
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.14,
+   "agent_tool_calls": 6,
+   "agent_ms": 7916,
+   "agent_summary": "脱硝平台检修电源箱漏保动作，等级一般、脱硝系统运行正常，仅接临时照明。用户为汽轮机专工，无SCR/电气兴趣，历史明确表示此类不属其职责，建议不推送、转对应电气专工。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-B05",
+   "category": "B",
+   "user_id": "synthetic-electric",
+   "role": "电气专工",
+   "target": 0.05,
+   "target_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+   "rule_score": 0.1738,
+   "flagged": false,
+   "triage_reasons": [],
+   "device_tags": [
+    "SCR"
+   ],
+   "effective_level": "一般",
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.17,
+   "agent_tool_calls": 7,
+   "agent_ms": 9459,
+   "agent_summary": "一般等级脱硝平台检修电源箱漏电保护动作，仅带临时照明、脱硝运行正常，影响小；用户为#1电气专工但SCR设备兴趣为0、近30天无行为，同机组无同类连续故障，推送价值低，建议不推送。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-B05",
+   "category": "B",
+   "user_id": "synthetic-boiler",
+   "role": "锅炉专工",
+   "target": 0.05,
+   "target_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+   "rule_score": 0.084,
+   "flagged": false,
+   "triage_reasons": [],
+   "device_tags": [
+    "SCR"
+   ],
+   "effective_level": "一般",
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.08,
+   "agent_tool_calls": 7,
+   "agent_ms": 8598,
+   "agent_summary": "一般等级脱硝平台检修电源箱漏保动作，仅带临时照明、脱硝系统正常，影响轻微。用户为锅炉专工，SCR与电气异常均非其兴趣，历史对电气异常多次纠正为0.1，建议不推送。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-B06",
+   "category": "B",
+   "user_id": "synthetic-turbine",
+   "role": "汽轮机专工",
+   "target": 0.05,
+   "target_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+   "rule_score": 0.77,
+   "flagged": true,
+   "triage_reasons": [
+    "「汽轮机」只出现在地点描述中（如汽机房、主变区域），可能不是该设备本身的问题"
+   ],
+   "device_tags": [
+    "TURBINE"
+   ],
+   "effective_level": "一般",
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.25,
+   "agent_tool_calls": 8,
+   "agent_ms": 10188,
+   "agent_summary": "工单实为厂房彩钢板屋面漏雨，未影响设备，汽轮机仅为地点描述，非汽轮机专工职责。0.77分主要来自地点误标与机组归属，属虚高，建议不推送，转土建/综合专业。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-B06",
+   "category": "B",
+   "user_id": "synthetic-electric",
+   "role": "电气专工",
+   "target": 0.05,
+   "target_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+   "rule_score": 0.096,
+   "flagged": true,
+   "triage_reasons": [
+    "「汽轮机」只出现在地点描述中（如汽机房、主变区域），可能不是该设备本身的问题"
+   ],
+   "device_tags": [
+    "TURBINE"
+   ],
+   "effective_level": "一般",
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.1,
+   "agent_tool_calls": 8,
+   "agent_ms": 9794,
+   "agent_summary": "工单实为汽轮机厂房屋面彩钢板漏雨（土建），汽轮机仅出现在地点描述，未影响设备。用户为电气专工，兴趣在变压器/励磁机/发电机，历史多次将汽轮机类工单改判0.1。建议不推送，改推土建或汽机专工。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-B06",
+   "category": "B",
+   "user_id": "synthetic-boiler",
+   "role": "锅炉专工",
+   "target": 0.05,
+   "target_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+   "rule_score": 0.1834,
+   "flagged": true,
+   "triage_reasons": [
+    "「汽轮机」只出现在地点描述中（如汽机房、主变区域），可能不是该设备本身的问题"
+   ],
+   "device_tags": [
+    "TURBINE"
+   ],
+   "effective_level": "一般",
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.15,
+   "agent_tool_calls": 7,
+   "agent_ms": 8501,
+   "agent_summary": "工单实为厂房彩钢板屋面漏雨，汽轮机仅出现在地点描述，非设备本体缺陷，且未影响设备。用户为锅炉专工，设备兴趣仅锅炉/给水泵，对非职责范围设备一贯判为不推送，建议不推给该用户，转土建或汽机专工。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-C01",
+   "category": "C",
+   "user_id": "synthetic-turbine",
+   "role": "汽轮机专工",
+   "target": 0.1,
+   "target_reason": "发电机不属于汽轮机专工职责范围，应推给对应专工",
+   "rule_score": 0.141,
+   "flagged": true,
+   "triage_reasons": [
+    "设备类型字段填的是「锅炉」，但标题和正文都没有提到，字段可能填错"
+   ],
+   "device_tags": [
+    "GENERATOR",
+    "BOILER"
+   ],
+   "effective_level": "一般",
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.14,
+   "agent_tool_calls": 8,
+   "agent_ms": 9512,
+   "agent_summary": "工单为#1机发电机定子线棒温度偏高，属电气/发电机专业；推送对象是汽轮机专工，设备与关键词兴趣均无发电机、定子温度项，历史审核明确表示发电机不属其职责。等级为一般，无紧急保底，建议不推送并转发电机专工。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-C01",
+   "category": "C",
+   "user_id": "synthetic-electric",
+   "role": "电气专工",
+   "target": 0.9,
+   "target_reason": "本人负责机组的发电机问题，必须第一时间掌握",
+   "rule_score": 0.624,
+   "flagged": true,
+   "triage_reasons": [
+    "设备类型字段填的是「锅炉」，但标题和正文都没有提到，字段可能填错"
+   ],
+   "device_tags": [
+    "GENERATOR",
+    "BOILER"
+   ],
+   "effective_level": "一般",
+   "agent_status": "ok",
+   "agent_recommendation": "push",
+   "agent_score": 0.62,
+   "agent_tool_calls": 7,
+   "agent_ms": 10077,
+   "agent_summary": "工单为#1机定子线棒层间温度偏高，用户是#1机电气专工、定子兴趣0.8，职责与设备完全对口；其历史17条发电机温度类工单全部确认推送。BOILER标签疑似字段填错，试算对分数无影响，建议按0.62推送。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-C01",
+   "category": "C",
+   "user_id": "synthetic-boiler",
+   "role": "锅炉专工",
+   "target": 0.1,
+   "target_reason": "发电机不属于锅炉专工职责范围，应推给对应专工",
+   "rule_score": 0.588,
+   "flagged": true,
+   "triage_reasons": [
+    "匹配分 0.59 处于灰区（0.4–0.6），推或不推都有理由",
+    "设备类型字段填的是「锅炉」，但标题和正文都没有提到，字段可能填错"
+   ],
+   "device_tags": [
+    "GENERATOR",
+    "BOILER"
+   ],
+   "effective_level": "一般",
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.084,
+   "agent_tool_calls": 7,
+   "agent_ms": 8735,
+   "agent_summary": "工单实为#1机定子线棒温度偏高（发电机），但设备类型被误标为「锅炉」，0.59分几乎全靠该错误标签。用户是锅炉专工，无定子/发电机兴趣，去掉锅炉兴趣后仅0.084，建议不推送。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-C02",
+   "category": "C",
+   "user_id": "synthetic-turbine",
+   "role": "汽轮机专工",
+   "target": 0.1,
+   "target_reason": "变压器不属于汽轮机专工职责范围，应推给对应专工",
+   "rule_score": 0.77,
+   "flagged": true,
+   "triage_reasons": [
+    "设备类型字段填的是「汽轮机」，但标题和正文都没有提到，字段可能填错"
+   ],
+   "device_tags": [
+    "TURBINE",
+    "TRANSFORMER"
+   ],
+   "effective_level": "重要",
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.14,
+   "agent_tool_calls": 8,
+   "agent_ms": 9465,
+   "agent_summary": "工单实为主变油色谱乙炔超标，设备类型被误标为「汽轮机」，0.77 分几乎全靠该误标支撑。用户是汽轮机专工，历史对变压器工单均确认不属其职责、应转对应专工。建议不推送，改派电气/变压器专工。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-C02",
+   "category": "C",
+   "user_id": "synthetic-electric",
+   "role": "电气专工",
+   "target": 0.9,
+   "target_reason": "本人负责机组的变压器问题，必须第一时间掌握",
+   "rule_score": 0.681,
+   "flagged": true,
+   "triage_reasons": [
+    "设备类型字段填的是「汽轮机」，但标题和正文都没有提到，字段可能填错"
+   ],
+   "device_tags": [
+    "TURBINE",
+    "TRANSFORMER"
+   ],
+   "effective_level": "重要",
+   "agent_status": "ok",
+   "agent_recommendation": "push",
+   "agent_score": 0.85,
+   "agent_tool_calls": 8,
+   "agent_ms": 10222,
+   "agent_summary": "工单实为主变油色谱乙炔超注意值，属电气专业；用户为电气专工、负责#1机组、主变兴趣1.0，历史对本人机组变压器问题均上调至0.9。TURBINE标签系误标且不影响分数，建议推送并上调至0.85。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-C02",
+   "category": "C",
+   "user_id": "synthetic-boiler",
+   "role": "锅炉专工",
+   "target": 0.1,
+   "target_reason": "变压器不属于锅炉专工职责范围，应推给对应专工",
+   "rule_score": 0.084,
+   "flagged": true,
+   "triage_reasons": [
+    "设备类型字段填的是「汽轮机」，但标题和正文都没有提到，字段可能填错"
+   ],
+   "device_tags": [
+    "TURBINE",
+    "TRANSFORMER"
+   ],
+   "effective_level": "重要",
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.08,
+   "agent_tool_calls": 8,
+   "agent_ms": 9719,
+   "agent_summary": "主变油色谱乙炔超标工单，与锅炉专工职责无关；用户历史对变压器/汽轮机类工单一律判为不属其范围并改至0.1，建议不推送，转给电气专工。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-C03",
+   "category": "C",
+   "user_id": "synthetic-turbine",
+   "role": "汽轮机专工",
+   "target": 0.1,
+   "target_reason": "锅炉不属于汽轮机专工职责范围，应推给对应专工",
+   "rule_score": 0.141,
+   "flagged": true,
+   "triage_reasons": [
+    "大模型识别出规则未覆盖的设备：锅炉",
+    "设备类型字段填的是「变压器」，但标题和正文都没有提到，字段可能填错"
+   ],
+   "device_tags": [
+    "TRANSFORMER",
+    "BOILER"
+   ],
+   "effective_level": "一般",
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.14,
+   "agent_tool_calls": 7,
+   "agent_ms": 9243,
+   "agent_summary": "本条为锅炉燃烧器结焦工单，推送对象是汽轮机专工，设备兴趣无锅炉；其历史对锅炉类工单一致判定\"不属职责范围，应推给对应专工\"。且设备字段填\"变压器\"与正文不符，建议不推送并转锅炉专工。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-C03",
+   "category": "C",
+   "user_id": "synthetic-electric",
+   "role": "电气专工",
+   "target": 0.1,
+   "target_reason": "锅炉不属于电气专工职责范围，应推给对应专工",
+   "rule_score": 0.7,
+   "flagged": true,
+   "triage_reasons": [
+    "大模型识别出规则未覆盖的设备：锅炉",
+    "设备类型字段填的是「变压器」，但标题和正文都没有提到，字段可能填错"
+   ],
+   "device_tags": [
+    "TRANSFORMER",
+    "BOILER"
+   ],
+   "effective_level": "一般",
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.1,
+   "agent_tool_calls": 7,
+   "agent_ms": 8912,
+   "agent_summary": "工单实为#1炉C层燃烧器结焦（锅炉），但设备类型字段误填「变压器」，导致0.70高分几乎全来自错误的设备匹配。用户是电气专工，锅炉不在其职责范围，历史同类工单均判为不推送。建议改推锅炉专工，本条不推给该用户。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-C03",
+   "category": "C",
+   "user_id": "synthetic-boiler",
+   "role": "锅炉专工",
+   "target": 0.9,
+   "target_reason": "本人负责机组的锅炉问题，必须第一时间掌握",
+   "rule_score": 0.5194,
+   "flagged": true,
+   "triage_reasons": [
+    "匹配分 0.52 处于灰区（0.4–0.6），推或不推都有理由",
+    "大模型识别出规则未覆盖的设备：锅炉",
+    "设备类型字段填的是「变压器」，但标题和正文都没有提到，字段可能填错"
+   ],
+   "device_tags": [
+    "TRANSFORMER",
+    "BOILER"
+   ],
+   "effective_level": "一般",
+   "agent_status": "ok",
+   "agent_recommendation": "push",
+   "agent_score": 0.6,
+   "agent_tool_calls": 7,
+   "agent_ms": 8569,
+   "agent_summary": "用户为锅炉专工、负责#1机组，BOILER兴趣1.0，本条#1炉燃烧器结焦与其岗位设备高度对口，角色维度满分。虽处灰区且标签含误填的变压器，但试算修正后分数不变，建议推送。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-C04",
+   "category": "C",
+   "user_id": "synthetic-turbine",
+   "role": "汽轮机专工",
+   "target": 0.9,
+   "target_reason": "本人负责机组的汽轮机问题，必须第一时间掌握",
+   "rule_score": 0.2231,
+   "flagged": false,
+   "triage_reasons": [],
+   "device_tags": [
+    "DCS"
+   ],
+   "effective_level": "一般",
+   "agent_status": "ok",
+   "agent_recommendation": "push",
+   "agent_score": 0.75,
+   "agent_tool_calls": 7,
+   "agent_ms": 8540,
+   "agent_summary": "#1机2号瓦轴振38→96μm，属用户负责机组的汽轮机轴承振动，与其岗位和振动兴趣高度契合；模型分低仅因设备标签误识别为DCS致设备维度为0，建议推送，分数上调至0.75左右。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-C04",
+   "category": "C",
+   "user_id": "synthetic-electric",
+   "role": "电气专工",
+   "target": 0.1,
+   "target_reason": "汽轮机不属于电气专工职责范围，应推给对应专工",
+   "rule_score": 0.172,
+   "flagged": false,
+   "triage_reasons": [],
+   "device_tags": [
+    "DCS"
+   ],
+   "effective_level": "一般",
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.17,
+   "agent_tool_calls": 7,
+   "agent_ms": 11049,
+   "agent_summary": "本条为#1机2号瓦轴振异常（一般等级），属汽轮机机械类。推送对象为电气专工，兴趣集中在变压器/励磁机/发电机，对汽轮机振动无关注；其历史审核中一般等级汽轮机振动均确认低分，仅\"本机组+紧急\"才改判0.6。建议不推送，转给汽机专工。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-C04",
+   "category": "C",
+   "user_id": "synthetic-boiler",
+   "role": "锅炉专工",
+   "target": 0.1,
+   "target_reason": "汽轮机不属于锅炉专工职责范围，应推给对应专工",
+   "rule_score": 0.084,
+   "flagged": false,
+   "triage_reasons": [],
+   "device_tags": [
+    "DCS"
+   ],
+   "effective_level": "一般",
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.08,
+   "agent_tool_calls": 7,
+   "agent_ms": 9368,
+   "agent_summary": "工单为#1机2号瓦轴振异常（汽轮机轴瓦振动），推送对象为锅炉专工，设备兴趣仅锅炉/给水泵、故障兴趣仅泄漏，专业不对口；历史确认的振动工单均为给水泵。系统分0.08合理，建议不推送，转汽机专工。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-D01",
+   "category": "D",
+   "user_id": "synthetic-turbine",
+   "role": "汽轮机专工",
+   "target": 0.6,
+   "target_reason": "虽是发电机问题，但发生在本人负责机组且为紧急，需要知晓",
+   "rule_score": 0.75,
+   "flagged": true,
+   "triage_reasons": [
+    "大模型建议把等级从「一般」上调为「紧急」"
+   ],
+   "device_tags": [
+    "GENERATOR"
+   ],
+   "effective_level": "紧急",
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.35,
+   "agent_tool_calls": 8,
+   "agent_ms": 9947,
+   "agent_summary": "工单本身确属紧急（封母冒烟、焦糊味、降负荷停机），但推送对象是汽轮机专工，发电机封母属电气专业。该用户对发电机类工单曾明确审核\"不属汽轮机专工职责，应推给对应专工\"。0.75分仅为紧急保底+负责机组，设备/故障兴趣均为0，建议改推电气专工。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-D01",
+   "category": "D",
+   "user_id": "synthetic-electric",
+   "role": "电气专工",
+   "target": 0.9,
+   "target_reason": "本人负责机组的发电机问题，必须第一时间掌握",
+   "rule_score": 0.75,
+   "flagged": true,
+   "triage_reasons": [
+    "大模型建议把等级从「一般」上调为「紧急」"
+   ],
+   "device_tags": [
+    "GENERATOR"
+   ],
+   "effective_level": "紧急",
+   "agent_status": "ok",
+   "agent_recommendation": "push",
+   "agent_score": 0.75,
+   "agent_tool_calls": 8,
+   "agent_ms": 8867,
+   "agent_summary": "#1机发电机出口封母冒烟着火、已降负荷停机，LLM复核由一般上调紧急（置信0.95）。用户为#1机电气专工，发电机兴趣0.8、role满分，历史对发电机类工单全部确认。建议按紧急推送，分数0.75。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-D01",
+   "category": "D",
+   "user_id": "synthetic-boiler",
+   "role": "锅炉专工",
+   "target": 0.6,
+   "target_reason": "虽是发电机问题，但发生在本人负责机组且为紧急，需要知晓",
+   "rule_score": 0.75,
+   "flagged": true,
+   "triage_reasons": [
+    "大模型建议把等级从「一般」上调为「紧急」"
+   ],
+   "device_tags": [
+    "GENERATOR"
+   ],
+   "effective_level": "紧急",
+   "agent_status": "ok",
+   "agent_recommendation": "needs_human",
+   "agent_score": null,
+   "agent_tool_calls": 8,
+   "agent_ms": 9956,
+   "agent_summary": "工单确为紧急风险（封母冒烟、焦糊味、降负荷停机），但用户是锅炉专工，历史7条发电机工单均判\"不属其职责、应转对应专工\"。分数全靠\"负责#1机\"支撑，建议保留紧急推送同时转派电气专工。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-D02",
+   "category": "D",
+   "user_id": "synthetic-turbine",
+   "role": "汽轮机专工",
+   "target": 0.6,
+   "target_reason": "虽是锅炉问题，但发生在本人负责机组且为紧急，需要知晓",
+   "rule_score": 0.75,
+   "flagged": true,
+   "triage_reasons": [
+    "大模型建议把等级从「一般」上调为「紧急」",
+    "大模型识别出规则未覆盖的设备：锅炉"
+   ],
+   "device_tags": [
+    "BOILER"
+   ],
+   "effective_level": "紧急",
+   "agent_status": "ok",
+   "agent_recommendation": "needs_human",
+   "agent_score": null,
+   "agent_tool_calls": 8,
+   "agent_ms": 10689,
+   "agent_summary": "工单为#1炉燃油母管漏油着火，AI复核上调紧急合理，但推送对象是汽轮机专工，锅炉非其职责，历史6次审核均称应转锅炉专工；0.75分全靠紧急保底与机组归属，专业匹配为0。建议保留紧急处置但转派锅炉专业，不直接推给该用户。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-D02",
+   "category": "D",
+   "user_id": "synthetic-electric",
+   "role": "电气专工",
+   "target": 0.6,
+   "target_reason": "虽是锅炉问题，但发生在本人负责机组且为紧急，需要知晓",
+   "rule_score": 0.75,
+   "flagged": true,
+   "triage_reasons": [
+    "大模型建议把等级从「一般」上调为「紧急」",
+    "大模型识别出规则未覆盖的设备：锅炉"
+   ],
+   "device_tags": [
+    "BOILER"
+   ],
+   "effective_level": "紧急",
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.3,
+   "agent_tool_calls": 7,
+   "agent_ms": 10695,
+   "agent_summary": "工单本身为燃油母管漏油着火，AI上调紧急合理，但属锅炉专业。推送对象为电气专工，锅炉不在其职责，其历史4次锅炉工单均判\"应推给对应专工\"（2次下调至0.1）。0.75仅来自紧急保底+机组归属，建议改推锅炉专工。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-D02",
+   "category": "D",
+   "user_id": "synthetic-boiler",
+   "role": "锅炉专工",
+   "target": 0.9,
+   "target_reason": "本人负责机组的锅炉问题，必须第一时间掌握",
+   "rule_score": 0.75,
+   "flagged": true,
+   "triage_reasons": [
+    "大模型建议把等级从「一般」上调为「紧急」",
+    "大模型识别出规则未覆盖的设备：锅炉"
+   ],
+   "device_tags": [
+    "BOILER"
+   ],
+   "effective_level": "紧急",
+   "agent_status": "ok",
+   "agent_recommendation": "push",
+   "agent_score": 0.75,
+   "agent_tool_calls": 7,
+   "agent_ms": 9616,
+   "agent_summary": "#1炉燃油母管法兰漏油着火，属锅炉专工本人机组职责范围，设备/故障兴趣高度匹配；即使按原\"一般\"等级试算仍达0.70，非仅靠紧急保底，建议按0.75推送。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-D03",
+   "category": "D",
+   "user_id": "synthetic-turbine",
+   "role": "汽轮机专工",
+   "target": 0.6,
+   "target_reason": "虽是变压器问题，但发生在本人负责机组且为紧急，需要知晓",
+   "rule_score": 0.75,
+   "flagged": true,
+   "triage_reasons": [
+    "大模型建议把等级从「一般」上调为「紧急」"
+   ],
+   "device_tags": [
+    "TRANSFORMER"
+   ],
+   "effective_level": "紧急",
+   "agent_status": "ok",
+   "agent_recommendation": "push",
+   "agent_score": 0.75,
+   "agent_tool_calls": 7,
+   "agent_ms": 9777,
+   "agent_summary": "主变重瓦斯跳闸、机组解列属紧急事件，用户负责#1机组，紧急保底0.75应推送；但主变非其专业，建议同时抄送电气专工。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-D03",
+   "category": "D",
+   "user_id": "synthetic-electric",
+   "role": "电气专工",
+   "target": 0.9,
+   "target_reason": "本人负责机组的变压器问题，必须第一时间掌握",
+   "rule_score": 0.75,
+   "flagged": true,
+   "triage_reasons": [
+    "大模型建议把等级从「一般」上调为「紧急」"
+   ],
+   "device_tags": [
+    "TRANSFORMER"
+   ],
+   "effective_level": "紧急",
+   "agent_status": "ok",
+   "agent_recommendation": "push",
+   "agent_score": 0.9,
+   "agent_tool_calls": 7,
+   "agent_ms": 8517,
+   "agent_summary": "#1主变重瓦斯动作跳闸、机组解列，AI复核由一般上调紧急合理。用户为电气专工、负责#1机组，主变兴趣1.0，且对本人机组变压器问题一贯上调至0.9，建议推送并提分至0.9。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-D03",
+   "category": "D",
+   "user_id": "synthetic-boiler",
+   "role": "锅炉专工",
+   "target": 0.6,
+   "target_reason": "虽是变压器问题，但发生在本人负责机组且为紧急，需要知晓",
+   "rule_score": 0.75,
+   "flagged": true,
+   "triage_reasons": [
+    "大模型建议把等级从「一般」上调为「紧急」"
+   ],
+   "device_tags": [
+    "TRANSFORMER"
+   ],
+   "effective_level": "紧急",
+   "agent_status": "ok",
+   "agent_recommendation": "needs_human",
+   "agent_score": null,
+   "agent_tool_calls": 7,
+   "agent_ms": 9908,
+   "agent_summary": "工单确为紧急（主变重瓦斯跳闸、机组解列），应推送，但对象选错：synthetic-boiler 是锅炉专工，主变非其职责，历史5次变压器工单均判\"应推给对应专工\"。0.75 全靠紧急保底与负责机组分，建议转派电气/变压器专工。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-E01",
+   "category": "E",
+   "user_id": "synthetic-turbine",
+   "role": "汽轮机专工",
+   "target": 0.65,
+   "target_reason": "其他机组的汽轮机问题，可作同类设备参考",
+   "rule_score": 0.5731,
+   "flagged": true,
+   "triage_reasons": [
+    "匹配分 0.57 处于灰区（0.4–0.6），推或不推都有理由",
+    "大模型识别出规则未覆盖的设备：汽轮机"
+   ],
+   "device_tags": [
+    "TURBINE"
+   ],
+   "effective_level": "重要",
+   "agent_status": "ok",
+   "agent_recommendation": "push",
+   "agent_score": 0.62,
+   "agent_tool_calls": 7,
+   "agent_ms": 10894,
+   "agent_summary": "#3机4号瓦轴振40→105μm已降负荷，属重要级汽轮机振动缺陷。用户为汽轮机专工，TURBINE兴趣1.0、振动0.8，历史对振动类工单几乎全部确认（含其他机组同类设备参考），#3机汽轮机振动近期反复出现。灰区0.57偏低，建议推送。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-E01",
+   "category": "E",
+   "user_id": "synthetic-electric",
+   "role": "电气专工",
+   "target": 0.1,
+   "target_reason": "汽轮机不属于电气专工职责范围，应推给对应专工",
+   "rule_score": 0.0,
+   "flagged": true,
+   "triage_reasons": [
+    "大模型识别出规则未覆盖的设备：汽轮机"
+   ],
+   "device_tags": [
+    "TURBINE"
+   ],
+   "effective_level": "重要",
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.05,
+   "agent_tool_calls": 7,
+   "agent_ms": 10275,
+   "agent_summary": "#3机汽轮机轴振突升属汽轮机专业，用户为电气专工、仅负责#1机，兴趣集中在变压器/励磁机/发电机，岗位与设备均不匹配。其历史对非本岗汽轮机振动工单均确认0分，仅本机组才改判0.6。建议不推送，转汽轮机专工。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-E01",
+   "category": "E",
+   "user_id": "synthetic-boiler",
+   "role": "锅炉专工",
+   "target": 0.1,
+   "target_reason": "汽轮机不属于锅炉专工职责范围，应推给对应专工",
+   "rule_score": 0.0,
+   "flagged": true,
+   "triage_reasons": [
+    "大模型识别出规则未覆盖的设备：汽轮机"
+   ],
+   "device_tags": [
+    "TURBINE"
+   ],
+   "effective_level": "重要",
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.05,
+   "agent_tool_calls": 7,
+   "agent_ms": 9469,
+   "agent_summary": "工单为#3机汽轮机4号瓦轴振突升，推送对象是锅炉专工、仅负责#1机组，设备与机组均不匹配。该用户历史对汽轮机类工单一律改判至0.1，理由为不属锅炉专工职责。建议不推送，转给汽轮机专工。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-E02",
+   "category": "E",
+   "user_id": "synthetic-turbine",
+   "role": "汽轮机专工",
+   "target": 0.1,
+   "target_reason": "锅炉不属于汽轮机专工职责范围，应推给对应专工",
+   "rule_score": 0.75,
+   "flagged": true,
+   "triage_reasons": [
+    "大模型建议把等级从「重要」上调为「紧急」"
+   ],
+   "device_tags": [
+    "BOILER"
+   ],
+   "effective_level": "紧急",
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.2,
+   "agent_tool_calls": 7,
+   "agent_ms": 11134,
+   "agent_summary": "工单本身确为紧急（#3炉低温再热器爆管、申请停炉），但推送对象错配：该用户是汽轮机专工、负责#1机组，四维评分全为0，0.75分纯属紧急等级保底。其6次锅炉类工单均确认\"不属汽轮机专工职责\"。建议改推锅炉专工。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-E02",
+   "category": "E",
+   "user_id": "synthetic-electric",
+   "role": "电气专工",
+   "target": 0.1,
+   "target_reason": "锅炉不属于电气专工职责范围，应推给对应专工",
+   "rule_score": 0.75,
+   "flagged": true,
+   "triage_reasons": [
+    "大模型建议把等级从「重要」上调为「紧急」"
+   ],
+   "device_tags": [
+    "BOILER"
+   ],
+   "effective_level": "紧急",
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.15,
+   "agent_tool_calls": 7,
+   "agent_ms": 9240,
+   "agent_summary": "工单为#3炉低温再热器爆管（紧急），但推送对象是电气专工、仅负责#1机组，兴趣全在电气设备。四维匹配均为0，0.75分纯属紧急保底；其历史对锅炉工单一致判定\"不属电气专工职责\"，建议改推锅炉专工。",
+   "agent_error": null
+  },
+  {
+   "event_id": "HARD-E02",
+   "category": "E",
+   "user_id": "synthetic-boiler",
+   "role": "锅炉专工",
+   "target": 0.65,
+   "target_reason": "其他机组的锅炉问题，可作同类设备参考",
+   "rule_score": 0.75,
+   "flagged": true,
+   "triage_reasons": [
+    "大模型建议把等级从「重要」上调为「紧急」"
+   ],
+   "device_tags": [
+    "BOILER"
+   ],
+   "effective_level": "紧急",
+   "agent_status": "ok",
+   "agent_recommendation": "push",
+   "agent_score": 0.75,
+   "agent_tool_calls": 7,
+   "agent_ms": 9291,
+   "agent_summary": "#3炉低温再热器爆管、申请停炉，AI复核由重要上调为紧急，属停机风险，应推送。用户为锅炉专工、关注炉膛与泄漏，虽负责#1机组，但紧急保底0.75，建议按0.75推送。",
+   "agent_error": null
+  }
+ ]
+}

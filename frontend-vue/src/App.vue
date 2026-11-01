@@ -45,6 +45,10 @@ const agentBatch = ref(null)
 const agentLimit = ref(10)
 const recClass = { push: 'go', no_push: 'stop', needs_human: 'ask' }
 const confLabel = { low: '把握低', medium: '把握中等', high: '把握高' }
+const reviewLabel = { agreed: '复核智能体同意调查结论', agreed_after_revision: '退回修改一次后，复核智能体同意',
+  challenged: '复核智能体仍有异议，结论已降级为需人工判断', skipped: '未经复核' }
+const engineLabel = { openjiuwen: '（openJiuwen ReActAgent 驱动）',
+  openjiuwen_team: '（openJiuwen 多智能体：理解 → 调查 → 复核）' }
 const agentPending = computed(() => rows.value.filter(r => needsReview(r) && !r.agent_review).length)
 
 const needsReview = r => r.effective_result.review_status === 'pending' && !!r.latest_prediction.triage?.needs_review
@@ -420,12 +424,32 @@ onMounted(() => {
                   </div>
                   <p class="agent-summary">{{ agentRuns[selected.latest_prediction.prediction_id].summary }}</p>
                   <ul v-if="agentRuns[selected.latest_prediction.prediction_id].evidence?.length" class="evidence">
-                    <li v-for="e in agentRuns[selected.latest_prediction.prediction_id].evidence" :key="e.fact"><b>{{ ({ get_order: '工单', get_prediction: '本条评分', get_user_profile: '用户画像', search_similar: '相似工单', recent_unit_orders: '同机组工单', user_review_history: '本人审核历史', what_if: '试算' })[e.tool] || e.tool }}</b>{{ e.fact }}<em v-if="e.unverified" class="unverified" :title="`数字 ${e.unverified.join('、')} 在该工具的返回结果中找不到`">未核实</em></li>
+                    <li v-for="e in agentRuns[selected.latest_prediction.prediction_id].evidence" :key="e.fact"><b>{{ ({ get_order: '工单', get_prediction: '本条评分', get_user_profile: '用户画像', search_similar: '相似工单', recent_unit_orders: '同机组工单', user_review_history: '本人审核历史', what_if: '试算', get_understanding: '工单理解', list_recipients: '各专工推送' })[e.tool] || e.tool }}</b>{{ e.fact }}<em v-if="e.unverified" class="unverified" :title="`数字 ${e.unverified.join('、')} 在该工具的返回结果中找不到`">未核实</em></li>
                   </ul>
+                  <div v-if="agentRuns[selected.latest_prediction.prediction_id].review" class="team-block" :class="agentRuns[selected.latest_prediction.prediction_id].review.status">
+                    <b>复核</b>
+                    <span>{{ reviewLabel[agentRuns[selected.latest_prediction.prediction_id].review.status] }}</span>
+                    <ul v-for="(v, i) in agentRuns[selected.latest_prediction.prediction_id].review.verdicts" :key="i">
+                      <li v-for="issue in v.issues" :key="issue">第 {{ i + 1 }} 轮异议：{{ issue }}</li>
+                    </ul>
+                  </div>
+                  <div v-if="agentRuns[selected.latest_prediction.prediction_id].understanding" class="team-block">
+                    <b>工单理解</b>
+                    <span v-if="agentRuns[selected.latest_prediction.prediction_id].understanding.devices.length">
+                      设备：<template v-for="(d, i) in agentRuns[selected.latest_prediction.prediction_id].understanding.devices" :key="d.code">{{ i ? '、' : '' }}{{ d.name }}（原文“{{ d.span }}”）</template>
+                    </span>
+                    <span v-else>原文没有能明确对应的设备</span>
+                    <span v-if="agentRuns[selected.latest_prediction.prediction_id].understanding.level">；实际等级：{{ agentRuns[selected.latest_prediction.prediction_id].understanding.level }}</span>
+                    <ul class="dispatch">
+                      <li v-for="m in agentRuns[selected.latest_prediction.prediction_id].dispatch?.missed || []" :key="'m' + m.user_id" class="missed">可能漏推：{{ m.role }}（当前分 {{ m.current_score == null ? '未计算' : m.current_score.toFixed(2) }}）— {{ m.reason }}</li>
+                      <li v-for="m in agentRuns[selected.latest_prediction.prediction_id].dispatch?.extra || []" :key="'e' + m.user_id" class="extra">可能误推：{{ m.role }}（当前分 {{ m.current_score.toFixed(2) }}）</li>
+                    </ul>
+                  </div>
                   <details class="trace">
                     <summary>调查过程：{{ agentRuns[selected.latest_prediction.prediction_id].tool_calls }} 步，{{ (agentRuns[selected.latest_prediction.prediction_id].duration_ms / 1000).toFixed(1) }} 秒</summary>
                     <ol>
                       <li v-for="(st, i) in agentRuns[selected.latest_prediction.prediction_id].steps" :key="i" :class="{ failed: !st.ok }">
+                        <span v-if="st.agent_label" class="step-agent">{{ st.agent_label }}</span>
                         <span class="step-tool">{{ st.label }}</span>
                         <span>{{ st.summary }}</span>
                         <small v-if="Object.keys(st.args || {}).length">参数 {{ JSON.stringify(st.args) }}</small>
@@ -439,7 +463,7 @@ onMounted(() => {
                     <button v-if="selected.effective_result.review_status === 'pending' && agentRuns[selected.latest_prediction.prediction_id].recommendation !== 'needs_human'" class="primary" @click="adoptAgent(selected)" :disabled="busy">按建议审核</button>
                     <button class="text-button" @click="investigate(selected)" :disabled="busy">重新调查</button>
                   </div>
-                  <p class="fine">由 {{ agentRuns[selected.latest_prediction.prediction_id].model }}{{ agentRuns[selected.latest_prediction.prediction_id].engine === 'openjiuwen' ? '（openJiuwen ReActAgent 驱动）' : '' }} 自主调查得出，只是建议，不会修改任何分数。</p>
+                  <p class="fine">由 {{ agentRuns[selected.latest_prediction.prediction_id].model }}{{ engineLabel[agentRuns[selected.latest_prediction.prediction_id].engine] || '' }} 自主调查得出，只是建议，不会修改任何分数。</p>
                 </template>
                 <p v-else-if="agentRuns[selected.latest_prediction.prediction_id]?.status === 'loading'" class="agent-loading">审核助手正在调查：查评分、看画像、翻相似工单…</p>
                 <p v-else-if="agentRuns[selected.latest_prediction.prediction_id]?.status === 'error'" class="message error">调查失败：{{ agentRuns[selected.latest_prediction.prediction_id].error }}</p>
