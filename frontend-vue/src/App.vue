@@ -424,7 +424,7 @@ onMounted(() => {
                   </div>
                   <p class="agent-summary">{{ agentRuns[selected.latest_prediction.prediction_id].summary }}</p>
                   <ul v-if="agentRuns[selected.latest_prediction.prediction_id].evidence?.length" class="evidence">
-                    <li v-for="e in agentRuns[selected.latest_prediction.prediction_id].evidence" :key="e.fact"><b>{{ ({ get_order: '工单', get_prediction: '本条评分', get_user_profile: '用户画像', search_similar: '相似工单', recent_unit_orders: '同机组工单', user_review_history: '本人审核历史', what_if: '试算', get_understanding: '工单理解', list_recipients: '各专工推送' })[e.tool] || e.tool }}</b>{{ e.fact }}<em v-if="e.unverified" class="unverified" :title="`数字 ${e.unverified.join('、')} 在该工具的返回结果中找不到`">未核实</em></li>
+                    <li v-for="e in agentRuns[selected.latest_prediction.prediction_id].evidence" :key="e.fact"><b>{{ ({ get_order: '工单', get_prediction: '本条评分', get_user_profile: '用户画像', search_similar: '相似工单', recent_unit_orders: '同机组工单', user_review_history: '本人审核历史', what_if: '试算', get_understanding: '工单理解', list_recipients: '各专工推送', get_push_policy: '推送规程', lookup_component: '部件知识库' })[e.tool] || e.tool }}</b>{{ e.fact }}<em v-if="e.unverified" class="unverified" :title="`数字 ${e.unverified.join('、')} 在该工具的返回结果中找不到`">未核实</em></li>
                   </ul>
                   <div v-if="agentRuns[selected.latest_prediction.prediction_id].review" class="team-block" :class="agentRuns[selected.latest_prediction.prediction_id].review.status">
                     <b>复核</b>

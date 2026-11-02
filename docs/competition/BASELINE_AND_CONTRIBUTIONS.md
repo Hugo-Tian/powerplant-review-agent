@@ -33,9 +33,16 @@
 | 画像饱和函数 | `core/profile_builder.py` | 1 − e^(−w/8) 代替最大值归一化（原做法两次点击即把兴趣拉满） |
 | 模拟审核员 | `scripts/simulate_review.py` | 按岗位职责规则自动审核，用于在没有真实审核数据时检验流程，可撤销 |
 | 工作台重设计 | `frontend-vue/` | 控制室风格界面、评分仪表盘、审核助手面板、批量预审、学习与评估页 |
-| 测试 | `tests/test_llm.py`、`tests/test_steps345.py`、`tests/test_agent.py`、`tests/test_agent_openjiuwen.py` 等 | 含用本地假模型服务驱动 openJiuwen ReActAgent 的端到端测试 |
+| **多智能体复核团队（openJiuwen HandoffTeam）** | `core/agent_team.py` | 工单理解 → 调查 → 复核三个 ReActAgent，用 `transfer_to` 交接；复核可退回一次；结论由代码汇总校验；漏推 / 多推发现 |
+| 推送规程 | `core/policy.py` | 岗位职责表的结构化版本；模拟审核员按它出标准答案，智能体通过工具读取文字版 |
+| 设备—部件知识库 | `data/knowledge/components.json`、`core/knowledge.py` | 70 个部件、180 个叫法；无歧义叫法进入规则词典，有歧义的供智能体查询和分流提示 |
+| 分流文本检查 | `core/inference.py` | 未识别设备、设备字段与原文不符、设备词只作地点 |
+| 困难工单评测 | `data/synthetic/hard_cases*.json`、`scripts/eval_hard_cases.py`、`data/eval/` | 47 条刻意构造的难例（主集 + 两批留出集），规则、单智能体、团队分批对比 |
+| 专工盲评工具 | `scripts/make_blind_review.py`、`scripts/score_blind_review.py`、`data/blind_review/` | 只给专工看工单原文的盲评表、答案键与计分（含专工间 kappa、标注争议、专工出题导出） |
+| 补充文档 | `docs/competition/`、`docs/diagrams/`、`frontend-vue/render-docs.mjs` | 需求与场景、架构、落地方案、亮点、界面示意、参考文档；架构图与 PDF 生成脚本 |
+| 测试 | `tests/test_llm.py`、`tests/test_steps345.py`、`tests/test_agent.py`、`tests/test_agent_openjiuwen.py`、`tests/test_agent_team.py`、`tests/test_blind_review.py` 等 | 含用本地假模型服务驱动 openJiuwen ReActAgent 的端到端测试 |
 
-代码量参考（2026-10-28，`wc -l`，不含第三方依赖与 `_legacy/`）：全部自有代码约 6,300 行，其中新增的 Agent / 大模型 / 学习相关核心模块约 1,600 行。仓库内没有拷贝任何第三方源码，第三方库仅以依赖方式引入（见 `THIRD_PARTY_NOTICES.md`）。
+代码量参考（2026-11-02，`wc -l`，统计 `core/`、`demo_api.py`、`scripts/`、`tests/` 与前端源码及测试，不含第三方依赖与 `_legacy/`）：约 7,800 行，其中含既有基础部分；新增的智能体 / 大模型 / 知识库 / 学习相关核心模块（`agent*.py`、`llm.py`、`learning.py`、`similar.py`、`knowledge.py`、`policy.py`）约 1,900 行。仓库内没有拷贝任何第三方源码，第三方库仅以依赖方式引入（见 `THIRD_PARTY_NOTICES.md`）。
 
 ## 三、开发过程证明
 

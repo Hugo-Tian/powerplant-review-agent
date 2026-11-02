@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>系统架构图</title>
+<!-- 由 scripts/render_docs.js 截图成 docs/images/architecture.png、agent_team.png -->
+<style>
+  :root {
+    --ink: #1f2a33; --muted: #5b6874; --line: #9aa6b0; --cabinet: #e6eaed; --panel: #ffffff;
+    --amber: #d9902f; --amber-soft: #fbefdc; --green: #3f8f5a; --green-soft: #e3f1e7;
+    --red: #b8473b; --blue-soft: #e4ecf3; --blue: #3c6e95;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #f4f6f7; color: var(--ink);
+         font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", sans-serif; }
+  .fig { width: 1600px; padding: 36px 40px 30px; background: #f4f6f7; }
+  h1 { font-size: 28px; margin: 0 0 4px; letter-spacing: 1px; }
+  .sub { color: var(--muted); font-size: 15px; margin-bottom: 22px; }
+  .layer { display: grid; grid-template-columns: 120px 1fr; gap: 14px; margin-bottom: 14px; }
+  .tag { background: var(--ink); color: #fff; border-radius: 6px; display: flex; align-items: center;
+         justify-content: center; text-align: center; font-weight: 700; font-size: 16px; padding: 8px; }
+  .row { display: flex; align-items: stretch; gap: 0; }
+  .box { background: var(--panel); border: 1.5px solid var(--line); border-radius: 8px; padding: 10px 12px; font-size: 14px; }
+  .box b { display: block; font-size: 16px; margin-bottom: 4px; }
+  .box small { color: var(--muted); font-size: 13px; line-height: 1.5; display: block; }
+  .arrow { display: flex; align-items: center; justify-content: center; width: 30px; color: var(--muted); font-size: 22px; flex: none; }
+  .flex1 { flex: 1; }
+  .amber { border-color: var(--amber); background: var(--amber-soft); }
+  .green { border-color: var(--green); background: var(--green-soft); }
+  .blue { border-color: var(--blue); background: var(--blue-soft); }
+  .dark { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .dark small { color: #c9d2d9; }
+  .num { display: inline-block; width: 22px; height: 22px; border-radius: 50%; background: var(--ink); color: #fff;
+         font-size: 13px; text-align: center; line-height: 22px; margin-right: 6px; }
+  .amber .num { background: var(--amber); }
+  .green .num { background: var(--green); }
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
+  .chip { display: inline-block; border: 1px solid var(--line); border-radius: 999px; padding: 1px 9px; margin: 3px 4px 0 0;
+          font-size: 12.5px; background: #fff; color: var(--ink); }
+  .guard { margin-top: 8px; border: 1.5px dashed var(--red); border-radius: 6px; padding: 6px 10px; font-size: 13px; color: var(--red); background: #fff; }
+  .loop { margin-top: 10px; border: 1.5px dashed var(--green); border-radius: 8px; padding: 8px 12px; font-size: 14px;
+          color: var(--green); background: #fff; text-align: center; }
+  .note { margin-top: 16px; color: var(--muted); font-size: 13px; }
+  .legend { display: flex; gap: 18px; font-size: 13px; color: var(--muted); margin-top: 6px; }
+  .legend span::before { content: ""; display: inline-block; width: 14px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: middle; border: 1.5px solid var(--line); }
+  .legend .la::before { background: var(--amber-soft); border-color: var(--amber); }
+  .legend .lg::before { background: var(--green-soft); border-color: var(--green); }
+  .legend .lb::before { background: var(--blue-soft); border-color: var(--blue); }
+
+  /* 团队图 */
+  .team { display: grid; grid-template-columns: 1fr 86px 1fr 86px 1fr; align-items: stretch; }
+  .agent { background: #fff; border: 2px solid var(--ink); border-radius: 10px; padding: 14px; }
+  .agent h3 { margin: 0 0 6px; font-size: 19px; }
+  .agent .role { color: var(--muted); font-size: 13.5px; margin-bottom: 8px; line-height: 1.5; }
+  .agent ul { margin: 6px 0 0; padding-left: 18px; font-size: 13.5px; line-height: 1.6; }
+  .handoff { display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--muted); font-size: 12px; text-align: center; }
+  .handoff .a { font-size: 26px; color: var(--ink); }
+  .back { margin: 10px 0 0 calc(40% - 20px); width: 40%; border-top: 2px dashed var(--red); position: relative; text-align: center;
+          color: var(--red); font-size: 13.5px; padding-top: 6px; }
+  .out { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 18px; }
+</style>
+</head>
+<body>
+
+<section class="fig" id="architecture">
+  <h1>电厂工单推送审核智能体 · 系统总体架构</h1>
+  <div class="sub">规则评分处理大多数工单；只有被分流为“需重点审核”的推送交给 openJiuwen 智能体调查；一切调整由人工批准后生效。</div>
+
+  <div class="layer">
+    <div class="tag">用户层</div>
+    <div class="row">
+      <div class="box flex1"><b>运维专工（汽轮机 / 电气 / 锅炉）</b><small>只看与自己相关的工单；查看智能体的结论与证据</small></div>
+      <div class="arrow">⇄</div>
+      <div class="box flex1 dark"><b>Vue 3 工作台</b><small>推送工作台 · 评分仪表盘 · 审核助手面板（含多智能体复核、漏推提示）· 批量预审 · 学习与评估页</small></div>
+      <div class="arrow">⇄</div>
+      <div class="box flex1"><b>值班审核员</b><small>确认 / 修改推送，填写理由；批准权重、画像与词典调整</small></div>
+    </div>
+  </div>
+
+  <div class="layer">
+    <div class="tag">服务层<br>FastAPI</div>
+    <div>
+      <div class="row">
+        <div class="box" style="width:150px"><b>新工单</b><small>口语化缺陷描述、设备字段可能填错、等级可能低估</small></div>
+        <div class="arrow">▶</div>
+        <div class="box flex1"><b><span class="num">1</span>工单理解</b><small>规则词典（含知识库同义词）+ TF-IDF + 大模型</small>
+          <div class="guard">护栏：代码白名单 · 必须引用原文片段 · 等级只升不降 · 新词只进候选 · 失败自动降级</div></div>
+        <div class="arrow">▶</div>
+        <div class="box" style="width:190px"><b><span class="num">2</span>用户画像</b><small>基础兴趣 + 行为学习（动作权重 × 停留 × 时间衰减，饱和映射）</small></div>
+        <div class="arrow">▶</div>
+        <div class="box" style="width:200px"><b><span class="num">3</span>四维评分 v2</b><small>设备 / 行为 / 岗位 / 厂家；岗位专属权重；紧急保底</small></div>
+        <div class="arrow">▶</div>
+        <div class="box amber" style="width:250px"><b><span class="num">4</span>分流（重点审核）</b><small>灰区 0.4–0.6 · 大模型上调等级 · 新设备 · 未识别设备 · 设备字段与原文不符 · 设备词只作地点 · 相似工单被本人改过</small></div>
+      </div>
+
+      <div class="row" style="margin-top:12px; align-items:center">
+        <div class="box amber flex1" style="flex:2.2"><b><span class="num">5</span>审核智能体（openJiuwen agent-core）— 只处理“需重点审核”的推送，只读</b>
+          <div class="split">
+            <div class="box"><b>单智能体 · ReActAgent</b><small>Thought → Action → Observation；9 个只读工具以 LocalFunction 注册，最多 8 次调用；回调记录每一步推理</small>
+              <div><span class="chip">查看工单</span><span class="chip">评分构成</span><span class="chip">用户画像</span><span class="chip">相似工单+人工结论</span><span class="chip">同机组工单</span><span class="chip">本人审核历史</span><span class="chip">假设试算</span><span class="chip">推送规程</span><span class="chip">部件知识库</span></div></div>
+            <div class="box"><b>多智能体团队 · HandoffTeam</b><small>工单理解 → 调查 → 复核，三个 ReActAgent 用 transfer_to 交接；复核可退回一次；另给出“还应推给谁”（漏推 / 多推发现）</small></div>
+          </div>
+          <div class="guard">结论护栏（代码校验）：证据必须来自本次调用过的工具 · 数字必须能在工具返回中找到 · 建议与分数矛盾或无有效证据 → 降级为“需人工判断” · 复核仍有异议 → 需人工判断</div>
+        </div>
+        <div class="arrow">▶</div>
+        <div class="box green flex1"><b><span class="num">6</span>人工审核</b><small>“按建议审核”预填表单；确认或修改后保存。原始评分永不覆盖，修改全部留历史。未被分流的推送直接进入此队列快速通过。</small></div>
+        <div class="arrow">▶</div>
+        <div class="box green flex1"><b><span class="num">7</span>反馈学习</b><small>按岗位拟合四维权重（SLSQP）· 画像调整建议 · 词典候选词。全部只是建议，人工批准后才生效。</small></div>
+      </div>
+      <div class="loop">↺ 反馈闭环：批准后的权重、画像与词典用于下一轮评分（③②①）；智能体从不直接修改分数或审核结论</div>
+    </div>
+  </div>
+
+  <div class="layer">
+    <div class="tag">数据与<br>知识层</div>
+    <div class="row">
+      <div class="box blue flex1"><b>SQLite</b><small>工单 · 推送历史 · 人工反馈 · 行为日志 · 画像缓存 · 智能体调查记录 · 设置与权重历史 · 大模型缓存</small></div>
+      <div class="arrow"></div>
+      <div class="box blue flex1"><b>设备—部件知识库</b><small>70 个部件、180 个叫法 → 所属系统、设备代码、负责岗位；无歧义叫法进入规则词典</small></div>
+      <div class="arrow"></div>
+      <div class="box blue flex1"><b>推送规程（岗位职责表）</b><small>各岗位核心 / 相关设备与推送规定；智能体通过工具读取文字版</small></div>
+      <div class="arrow"></div>
+      <div class="box flex1"><b>大模型服务（可替换）</b><small>DeepSeek（默认）/ 通义千问 / 本地 Ollama，OpenAI 兼容协议；也支持 Anthropic 协议</small></div>
+    </div>
+  </div>
+
+  <div class="layer">
+    <div class="tag">评测与<br>验证</div>
+    <div class="row">
+      <div class="box flex1"><b>困难工单集 + 两批留出集</b><small>47 条刻意构造的难例（俗称、地点词、字段填错、等级低估、其他机组）；留出集在相应改动前提交</small></div>
+      <div class="arrow"></div>
+      <div class="box flex1"><b>模拟审核员</b><small>按推送规程给出标准答案，用于在没有真实审核数据时检验流程</small></div>
+      <div class="arrow"></div>
+      <div class="box flex1"><b>专工盲评表</b><small>专工只看工单原文独立判断；比较规则、单智能体、团队和我们的标注</small></div>
+    </div>
+  </div>
+  <div class="legend"><span class="la">智能体相关 / 需重点审核</span><span class="lg">人工环节</span><span class="lb">数据与知识</span></div>
+  <div class="note">所有数据为虚构的模拟工单；效果数字均对照模拟审核规则，不代表真实电厂效果。</div>
+</section>
+
+<section class="fig" id="agent_team">
+  <h1>多智能体复核团队（openJiuwen HandoffTeam）</h1>
+  <div class="sub">三个 ReActAgent 依次交接；最终结论由代码汇总并校验，不直接采信任何一个智能体的输出。</div>
+  <div class="team">
+    <div class="agent">
+      <h3>① 工单理解员</h3>
+      <div class="role">不看评分，只读原文：这条工单真正出问题的是什么设备、实际紧急程度、应该推给谁。</div>
+      <div><span class="chip">查看工单</span><span class="chip">部件知识库</span><span class="chip">推送规程</span><span class="chip">接收人名单</span></div>
+      <ul><li>设备必须来自代码白名单，并引用原文片段</li><li>输出：设备、实际等级、应接收人</li><li>最多 6 次工具调用</li></ul>
+    </div>
+    <div class="handoff"><div class="a">▶</div>transfer_to<br>调查员</div>
+    <div class="agent">
+      <h3>② 调查员</h3>
+      <div class="role">结合理解结果和系统评分，像单智能体一样调查，给出推送 / 不推送 / 需人工判断和建议分。</div>
+      <div><span class="chip">理解结果</span><span class="chip">全部 9 个只读工具</span></div>
+      <ul><li>每条证据标明来自哪个工具</li><li>最多 8 次工具调用（被退回时 +3）</li></ul>
+    </div>
+    <div class="handoff"><div class="a">▶</div>transfer_to<br>复核员</div>
+    <div class="agent">
+      <h3>③ 复核员</h3>
+      <div class="role">专门找调查结论的漏洞：证据是否支持结论、是否违反推送规程、设备与等级是否看错。</div>
+      <div><span class="chip">调查结论</span><span class="chip">推送规程</span><span class="chip">部件知识库</span><span class="chip">只读工具</span></div>
+      <ul><li>同意 / 质疑，质疑须说明理由</li><li>最多 5 次工具调用</li></ul>
+    </div>
+  </div>
+  <div class="back">◀ 质疑时退回调查员重新调查（最多一次）</div>
+  <div class="out">
+    <div class="box amber"><b>代码汇总（synthesize）</b><small>对最新调查结论做证据校验；复核最终仍质疑 → 降级为“需人工判断”；调查员未交接时由兜底复核补上</small></div>
+    <div class="box amber"><b>漏推 / 多推发现（dispatch）</b><small>理解员给出的应接收人与系统当前推送对比：谁可能漏推、谁可能是多推</small></div>
+    <div class="box green"><b>交给人工审核</b><small>界面展示三个智能体各自的输出、复核意见和漏推提示；人工拍板</small></div>
+  </div>
+  <div class="note">实现：core/agent_team.py；智能体 id 每次运行加后缀（openJiuwen 按 id 全局注册工具）。数据为模拟工单。</div>
+</section>
+
+</body>
+</html>
