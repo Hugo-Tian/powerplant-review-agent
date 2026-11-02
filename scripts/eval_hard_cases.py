@@ -59,7 +59,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--db", default=str(ROOT / "data/demo.sqlite3"), help="source DB, copied before use")
     ap.add_argument("--cases", default=str(ROOT / "data/synthetic/hard_cases.json"))
-    ap.add_argument("--agent", choices=["none", "openjiuwen", "openjiuwen_team", "builtin"], default="none")
+    ap.add_argument("--agent", choices=["none", "openjiuwen", "openjiuwen_team", "builtin", "roles"], default="none")
     ap.add_argument("--flagged-only", action="store_true", help="run the agent only where triage flags review")
     ap.add_argument("--env-file", help="e.g. llm.env.bat; only `set K=V` lines are read")
     ap.add_argument("--out", help="write per-pair results as JSON")
@@ -75,8 +75,9 @@ def main():
     db = tmp / "eval.sqlite3"
     shutil.copy(args.db, db)
     engine = None if args.agent == "none" else args.agent
+    roles = args.agent == "roles"  # 按岗位调查：一条工单一次，不是每个 (工单, 用户) 一次
     rows = []
-    with TestClient(create_app(db, agent_engine=engine)) as c:
+    with TestClient(create_app(db, agent_engine=None if roles else engine)) as c:
         status = c.get("/llm/status").json()
         print(f"LLM enabled={status['enabled']} model={status.get('model')} engine={status['agent_engine']}", flush=True)
         if engine and not status["enabled"]:
@@ -96,6 +97,7 @@ def main():
                     continue
                 truth[uid] = judge_devices(user["role"], user["responsible_units"], case.get("unit_no"),
                                            set(case["true_devices"]), case.get("true_level") or case["level"])
+            drun = c.post(f"/orders/{case['event_id']}/dispatch-review").json() if roles else None
             for uid in USERS:
                 pred, (target, reason) = preds[uid], truth[uid]
                 row = {"event_id": case["event_id"], "category": case["category"], "user_id": uid,
@@ -106,7 +108,23 @@ def main():
                        "effective_level": pred.get("effective_level"),
                        "truth_recipients": sorted(u for u in USERS if truth[u][0] >= THRESHOLD),
                        "rule_recipients": sorted(u for u in USERS if preds[u]["score"] >= THRESHOLD)}
-                if engine and (row["flagged"] or not args.flagged_only):
+                if roles:
+                    person = next(p for p in drun["people"] if p["user_id"] == uid)
+                    role_run = drun["roles"].get(person["role"]) or {}
+                    res = role_run.get("result") or {}
+                    d = person["decision"]
+                    row.update(agent_status=role_run.get("status"),
+                               agent_recommendation={None: "needs_human", "none": "no_push"}.get(d, "push"),
+                               agent_score={"must": 0.9, "reference": 0.65, "none": 0.1}.get(d),
+                               agent_decision=d, agent_tool_calls=role_run.get("tool_calls"),
+                               agent_ms=drun.get("duration_ms"), agent_error=role_run.get("error") or drun.get("error"),
+                               agent_summary=(res.get("decisions", {}).get(person["relation"]) or {}).get("reason") or res.get("summary"),
+                               understood_devices=[x["code"] for x in res.get("devices", [])], understood_level=res.get("level"))
+                    if uid == USERS[0]:  # 一条工单一次调查：漏推统计每条工单只算一次
+                        row.update(agent_recipients=sorted(p["user_id"] for p in drun["people"]
+                                                           if p["user_id"] in USERS and p["decision"] in ("must", "reference")),
+                                   dispatch={"missed": drun.get("missed"), "extra": drun.get("extra")})
+                elif engine and (row["flagged"] or not args.flagged_only):
                     run = c.post(f"/predictions/{pred['prediction_id']}/agent-review").json()
                     row.update(agent_status=run.get("status"), agent_recommendation=run.get("recommendation"),
                                agent_score=run.get("suggested_score") if run.get("recommendation") != "needs_human" else None,

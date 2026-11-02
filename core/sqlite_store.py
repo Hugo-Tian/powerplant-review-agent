@@ -117,6 +117,15 @@ CREATE TABLE IF NOT EXISTS agent_runs (
     created_at TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_agent_runs_prediction ON agent_runs(prediction_id, sequence);
+CREATE TABLE IF NOT EXISTS dispatch_runs (
+    sequence INTEGER PRIMARY KEY AUTOINCREMENT,
+    run_id TEXT NOT NULL UNIQUE,
+    event_id TEXT NOT NULL,
+    status TEXT NOT NULL,
+    result_json TEXT NOT NULL,
+    created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_dispatch_runs_event ON dispatch_runs(event_id, sequence);
 CREATE TABLE IF NOT EXISTS profiles (
     user_id TEXT PRIMARY KEY REFERENCES users(user_id),
     profile_json TEXT NOT NULL,
@@ -151,20 +160,30 @@ class SQLiteOrderStore:
             conn.close()
 
     def save(self, request, result):
+        self.save_many([(request, result)])
+
+    def save_many(self, items):
+        """Save (request, result) pairs in one transaction."""
+        with self.connection() as conn:
+            for request, result in items:
+                self._save(conn, request, result)
+
+    @staticmethod
+    def _save(conn, request, result):
         order = request['order']
         now = datetime.now(timezone.utc).isoformat()
-        with self.connection() as conn:
-            conn.execute("""INSERT INTO orders VALUES (?, ?, ?, ?, ?, ?, ?)
-                ON CONFLICT(event_id) DO UPDATE SET title=excluded.title,
-                content=excluded.content, level=excluded.level,
-                order_json=excluded.order_json, updated_at=excluded.updated_at""",
-                (order['event_id'], order['title'], order['content'], order['level'], encode(order), now, now))
-            conn.execute("""INSERT INTO predictions
-                (prediction_id,event_id,user_id,score,confidence,push_type,model_version,
-                 predicted_at,request_json,result_json) VALUES (?,?,?,?,?,?,?,?,?,?)""",
-                (result['prediction_id'], order['event_id'], result['user_id'], result['score'],
-                 result['confidence'], result['push_type'], result['model_version'],
-                 result['predicted_at'], encode(request), encode(result)))
+        conn.execute("""INSERT INTO orders VALUES (?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(event_id) DO UPDATE SET title=excluded.title,
+            content=excluded.content, level=excluded.level,
+            order_json=excluded.order_json, updated_at=excluded.updated_at
+            WHERE orders.order_json IS NOT excluded.order_json""",
+            (order['event_id'], order['title'], order['content'], order['level'], encode(order), now, now))
+        conn.execute("""INSERT INTO predictions
+            (prediction_id,event_id,user_id,score,confidence,push_type,model_version,
+             predicted_at,request_json,result_json) VALUES (?,?,?,?,?,?,?,?,?,?)""",
+            (result['prediction_id'], order['event_id'], result['user_id'], result['score'],
+             result['confidence'], result['push_type'], result['model_version'],
+             result['predicted_at'], encode(request), encode(result)))
 
     def feedback(self, prediction_id, body):
         record = dict(body, feedback_id=str(uuid4()), prediction_id=prediction_id,
@@ -339,6 +358,22 @@ class SQLiteOrderStore:
                 ORDER BY sequence DESC LIMIT 1""", (user_id, event_id)).fetchone()
         return json.loads(row['result_json']) if row else None
 
+    def latest_results_for(self, user_id):
+        """event_id -> latest result for one user, in one query (batch rescoring)."""
+        with self.connection() as conn:
+            rows = conn.execute("""SELECT p.event_id, p.result_json FROM predictions p
+                JOIN (SELECT event_id, MAX(sequence) AS s FROM predictions WHERE user_id=? GROUP BY event_id) m
+                ON m.event_id = p.event_id AND m.s = p.sequence""", (user_id,)).fetchall()
+        return {r['event_id']: json.loads(r['result_json']) for r in rows}
+
+    def latest_for_event(self, event_id):
+        """user_id -> latest result for one order."""
+        with self.connection() as conn:
+            rows = conn.execute("""SELECT p.user_id, p.result_json FROM predictions p
+                JOIN (SELECT user_id, MAX(sequence) AS s FROM predictions WHERE event_id=? GROUP BY user_id) m
+                ON m.user_id = p.user_id AND m.s = p.sequence""", (event_id,)).fetchall()
+        return {r['user_id']: json.loads(r['result_json']) for r in rows}
+
     # ── 大模型结果缓存与新词候选 ─────────────────────────────────────────────
 
     def llm_cache_get(self, key):
@@ -379,10 +414,10 @@ class SQLiteOrderStore:
     # ── 相似检索、人工结论、设置 ──────────────────────────────────────────
 
     def orders_version(self):
+        """Changes only when an order is added or its content changes (not on every new prediction)."""
         with self.connection() as conn:
             row = conn.execute('SELECT COUNT(*) AS n, MAX(updated_at) AS t FROM orders').fetchone()
-            seq = conn.execute('SELECT MAX(sequence) FROM predictions').fetchone()[0]
-        return (row['n'], row['t'], seq)
+        return (row['n'], row['t'])
 
     def latest_tags_by_event(self):
         """event_id -> set of tag codes from the latest prediction of each order."""
@@ -394,20 +429,22 @@ class SQLiteOrderStore:
 
     def feedback_summary(self, event_ids, user_id=None, exclude_user=None):
         """Human review outcome per order. ``user_id``: only reviews of that user's pushes;
-        ``exclude_user``: only reviews of other users' pushes."""
-        if not event_ids:
+        ``exclude_user``: only reviews of other users' pushes. ``event_ids=None``: all orders."""
+        if event_ids is not None and not event_ids:
             return {}
-        marks = ','.join('?' * len(event_ids))
-        where, params = '', list(event_ids)
+        where, params = ['1=1'], []
+        if event_ids is not None:
+            where.append(f"p.event_id IN ({','.join('?' * len(event_ids))})")
+            params += list(event_ids)
         if user_id is not None:
-            where, params = ' AND p.user_id=?', params + [user_id]
+            where, params = where + ['p.user_id=?'], params + [user_id]
         elif exclude_user is not None:
-            where, params = ' AND p.user_id<>?', params + [exclude_user]
+            where, params = where + ['p.user_id<>?'], params + [exclude_user]
         with self.connection() as conn:
             rows = conn.execute(f"""SELECT p.event_id, p.user_id, p.score AS model_score, f.action,
                     f.corrected_score, f.corrected_push_type, f.comment, f.reviewer, f.created_at
                 FROM feedback f JOIN predictions p ON p.prediction_id = f.prediction_id
-                WHERE p.event_id IN ({marks}){where} ORDER BY f.sequence""", tuple(params)).fetchall()
+                WHERE {' AND '.join(where)} ORDER BY f.sequence""", tuple(params)).fetchall()
         out = {}
         for r in rows:
             s = out.setdefault(r['event_id'], {'confirm': 0, 'correct': 0, 'latest': None})
@@ -509,6 +546,39 @@ class SQLiteOrderStore:
             row = conn.execute("""SELECT result_json FROM agent_runs WHERE prediction_id=?
                 ORDER BY sequence DESC LIMIT 1""", (prediction_id,)).fetchone()
         return json.loads(row['result_json']) if row else None
+
+    def save_dispatch_run(self, event_id, result):
+        """按岗位调查（一条工单一次）的记录。"""
+        record = dict(result, run_id=str(uuid4()), event_id=event_id,
+                      created_at=datetime.now(timezone.utc).isoformat())
+        with self.connection() as conn:
+            conn.execute('INSERT INTO dispatch_runs (run_id,event_id,status,result_json,created_at) VALUES (?,?,?,?,?)',
+                         (record['run_id'], event_id, record['status'], encode(record), record['created_at']))
+        return record
+
+    def latest_dispatch_run(self, event_id):
+        with self.connection() as conn:
+            row = conn.execute('SELECT result_json FROM dispatch_runs WHERE event_id=? ORDER BY sequence DESC LIMIT 1',
+                               (event_id,)).fetchone()
+        return json.loads(row['result_json']) if row else None
+
+    def dispatched_events(self):
+        with self.connection() as conn:
+            return {r[0] for r in conn.execute('SELECT DISTINCT event_id FROM dispatch_runs').fetchall()}
+
+    def feedback_rows(self, event_ids):
+        """Latest review of every (order, user) push among event_ids: who reviewed what, how."""
+        if not event_ids:
+            return []
+        marks = ','.join('?' * len(event_ids))
+        with self.connection() as conn:
+            rows = conn.execute(f"""SELECT p.event_id, p.user_id, p.score AS model_score, f.action, f.corrected_score,
+                    f.comment FROM feedback f JOIN predictions p ON p.prediction_id = f.prediction_id
+                WHERE p.event_id IN ({marks}) ORDER BY f.sequence""", tuple(event_ids)).fetchall()
+        latest = {}
+        for r in rows:
+            latest[(r['event_id'], r['user_id'])] = dict(r)
+        return list(latest.values())
 
     def agent_run_stats(self, user_id=None):
         sql = 'SELECT status, recommendation, COUNT(*) AS n FROM agent_runs'

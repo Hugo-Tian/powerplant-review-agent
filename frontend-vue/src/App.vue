@@ -2,7 +2,7 @@
 import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
 import {
   explainPrediction, fetchLlmStatus, fetchOrders, fetchProfile, getAgentReview, predict, recordBehavior,
-  runAgentFocus, runAgentReview,
+  runAgentFocus, runAgentReview, runDispatch, getDispatch,
   registerUser, runPush, submitFeedback,
 } from './api.js'
 import ScoreGauge from './components/ScoreGauge.vue'
@@ -219,6 +219,27 @@ watch(selected, row => {
     agentRuns[id] = { status: 'loading' }
     getAgentReview(id).then(r => { agentRuns[id] = r }).catch(() => { delete agentRuns[id] })
   }
+  const eid = row?.order.event_id
+  if (eid && !(eid in dispatchRuns)) {
+    dispatchRuns[eid] = null
+    getDispatch(eid).then(r => { dispatchRuns[eid] = r }).catch(() => {})
+  }
+})
+// 按岗位调查：一条工单一次，各岗位代理并行判断推给谁
+const dispatchRuns = reactive({})
+const decisionClass = { must: 'push', reference: 'push', none: 'no_push' }
+async function dispatchOrder(row) {
+  const eid = row.order.event_id
+  dispatchRuns[eid] = { status: 'loading' }
+  try {
+    dispatchRuns[eid] = await runDispatch(eid)
+  } catch (e) {
+    dispatchRuns[eid] = { status: 'error', error: e.message }
+  }
+}
+const myDispatch = computed(() => {
+  const run = selected.value && dispatchRuns[selected.value.order.event_id]
+  return run?.people?.find(p => p.user_id === userId.value)
 })
 async function adoptAgent(row) {
   const run = agentRuns[row.latest_prediction.prediction_id]
@@ -471,6 +492,39 @@ onMounted(() => {
                   <p class="fine">让审核助手像值班工程师一样自主调查这条推送：查评分构成、用户画像、相似工单的人工结论、你过去的审核习惯，再给出建议和证据。</p>
                   <button @click="investigate(selected)" :disabled="!llm?.enabled || busy">让审核助手调查</button>
                   <p v-if="!llm?.enabled" class="fine">配置大模型后可用。</p>
+                </template>
+              </section>
+              <section class="fp-section agent" aria-label="这条工单推给谁">
+                <h3>这条工单推给谁（按岗位调查）</h3>
+                <template v-if="['ok', 'partial'].includes(dispatchRuns[selected.order.event_id]?.status)">
+                  <div v-if="myDispatch" class="verdict-row" :class="recClass[decisionClass[myDispatch.decision]] || ''">
+                    <strong>对你：{{ myDispatch.decision_label }}</strong>
+                    <span>{{ myDispatch.role }} · {{ myDispatch.relation_label }}</span>
+                  </div>
+                  <div v-for="(r, role) in dispatchRuns[selected.order.event_id].roles" :key="role" class="team-block">
+                    <b>{{ role }}</b>
+                    <template v-if="r.result">
+                      <span>本机组：{{ ({ must: '必须推送', reference: '可作参考', none: '不推送' })[r.result.decisions.own_unit.decision] || '需人工判断' }}；其他机组：{{ ({ must: '必须推送', reference: '可作参考', none: '不推送' })[r.result.decisions.other_units.decision] || '需人工判断' }}</span>
+                      <ul>
+                        <li v-for="(d, rel) in r.result.decisions" :key="rel" v-show="d.reason">{{ rel === 'own_unit' ? '本机组' : '其他机组' }}：{{ d.reason }}</li>
+                        <li v-for="e in r.result.evidence" :key="e.fact" class="fine">{{ e.fact }}<em v-if="e.unverified" class="unverified">未核实</em></li>
+                      </ul>
+                    </template>
+                    <span v-else>未给出判断（{{ r.error || '步数用完' }}），这个岗位的人需人工判断</span>
+                  </div>
+                  <ul class="dispatch">
+                    <li v-for="m in dispatchRuns[selected.order.event_id].missed" :key="'m' + m.user_id" class="missed">可能漏推：{{ m.name }}（{{ m.role }}，{{ m.relation_label }}，当前分 {{ m.current_score == null ? '未计算' : m.current_score.toFixed(2) }}）</li>
+                    <li v-for="m in dispatchRuns[selected.order.event_id].extra" :key="'e' + m.user_id" class="extra">可能多推：{{ m.name }}（{{ m.role }}，{{ m.relation_label }}，当前分 {{ m.current_score.toFixed(2) }}）</li>
+                  </ul>
+                  <p class="fine">共 {{ dispatchRuns[selected.order.event_id].people.length }} 人，建议推送 {{ dispatchRuns[selected.order.event_id].push_count }} 人；{{ Object.keys(dispatchRuns[selected.order.event_id].roles).length }} 个岗位代理并行调查，{{ dispatchRuns[selected.order.event_id].tool_calls }} 次工具调用，{{ (dispatchRuns[selected.order.event_id].duration_ms / 1000).toFixed(1) }} 秒。只是建议，不会修改任何分数。</p>
+                  <button class="text-button" @click="dispatchOrder(selected)" :disabled="busy">重新调查</button>
+                </template>
+                <p v-else-if="dispatchRuns[selected.order.event_id]?.status === 'loading'" class="agent-loading">各岗位代理正在并行调查这条工单…</p>
+                <p v-else-if="dispatchRuns[selected.order.event_id]?.status === 'error'" class="message error">调查失败：{{ dispatchRuns[selected.order.event_id].error }}</p>
+                <p v-else-if="dispatchRuns[selected.order.event_id]?.note" class="fine">{{ dispatchRuns[selected.order.event_id].note }}</p>
+                <template v-else>
+                  <p class="fine">每个岗位一个智能体，并行判断这条工单该推给本岗位哪些人（本机组 / 其他机组：必须推送、可作参考、不推送），再和当前推送对比，找出可能漏推和多推。一条工单只调查一次，人数增加不会增加调查次数。</p>
+                  <button @click="dispatchOrder(selected)" :disabled="!llm?.enabled || busy">按岗位调查</button>
                 </template>
               </section>
               <section v-if="selected.latest_prediction.analysis?.level_review" class="fp-block ai-review">

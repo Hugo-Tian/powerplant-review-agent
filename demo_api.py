@@ -235,6 +235,22 @@ class PushRunResponse(BaseModel):
     finished_at: datetime
 
 
+class _MemoIndex:
+    """Similar orders depend on the order (text, tags), not on who is scored: query once per order."""
+
+    def __init__(self, index: SimilarityIndex):
+        self.index, self.cache = index, {}
+
+    def query(self, text, tags, *, exclude=None, k=5):
+        key = (exclude, frozenset(tags), k)
+        if key not in self.cache:
+            self.cache[key] = self.index.query(text, tags, exclude=exclude, k=k)
+        return self.cache[key]
+
+    def set_tags(self, event_id, tags):
+        self.index.set_tags(event_id, tags)
+
+
 def utc_iso(value: datetime | None) -> str | None:
     if value is None:
         return None
@@ -272,6 +288,10 @@ class TermReview(InputModel):
 class AgentBatchInput(InputModel):
     user_id: Identifier
     limit: int = Field(default=5, ge=1, le=30, description="最多调查多少条待确认的重点审核工单")
+
+
+class DispatchBatchInput(InputModel):
+    limit: int = Field(default=5, ge=1, le=30, description="最多按岗位调查多少条工单")
 
 
 class TermCandidate(BaseModel):
@@ -355,19 +375,30 @@ def create_app(db_path: str | Path | None = None, *, llm_config: LLMConfig | Non
             app.state.similarity = (version, index)
         return index
 
-    def find_similar(order: dict, tag_codes, k: int = 3, user_id: str | None = None) -> list[dict]:
+    def remember_tags(event_id: str, tags: list[dict]) -> None:
+        """A new prediction is the order's latest: keep the cached index's tags in step."""
+        index = app.state.similarity[1]
+        if index is not None:
+            index.set_tags(event_id, [t['code'] for t in tags])
+
+    def find_similar(order: dict, tag_codes, k: int = 3, user_id: str | None = None, *,
+                     preloaded: tuple | None = None) -> list[dict]:
         """human_outcome: 同一用户对相似工单的审核（不同岗位判断标准不同，不能混用）；
-        others_outcome: 其他用户的审核，仅供参考。未指定用户时 human_outcome 为所有人的审核。"""
-        found = similarity_index().query(order_text(order), tag_codes, exclude=order['event_id'], k=k)
-        ids = [s['event_id'] for s in found]
-        mine = store().feedback_summary(ids, user_id=user_id)
-        others = store().feedback_summary(ids, exclude_user=user_id) if user_id else {}
+        others_outcome: 其他用户的审核，仅供参考。未指定用户时 human_outcome 为所有人的审核。
+        ``preloaded``: (index, mine, others) prepared once per user by batch rescoring."""
+        index, mine, others = preloaded or (similarity_index(), None, None)
+        found = index.query(order_text(order), tag_codes, exclude=order['event_id'], k=k)
+        if preloaded is None:
+            ids = [s['event_id'] for s in found]
+            mine = store().feedback_summary(ids, user_id=user_id)
+            others = store().feedback_summary(ids, exclude_user=user_id) if user_id else {}
         return [dict(s, human_outcome=mine.get(s['event_id']), others_outcome=others.get(s['event_id']))
                 for s in found]
 
-    def enrich(order: dict, result: dict) -> dict:
+    def enrich(order: dict, result: dict, preloaded: tuple | None = None) -> dict:
         """Attach similar orders and add the 'similar order was corrected' review reason."""
-        similar = find_similar(order, [t['code'] for t in result['tags']], user_id=result['user_id'])
+        similar = find_similar(order, [t['code'] for t in result['tags']], user_id=result['user_id'],
+                               preloaded=preloaded)
         result = dict(result, similar=similar)
         # 只有当本条分数与相似工单的人工修正分仍相差较大时才提示：说明模型可能重复同样的错误
         corrected = [s for s in similar if s['similarity'] >= 0.5 and s['human_outcome']
@@ -402,6 +433,7 @@ def create_app(db_path: str | Path | None = None, *, llm_config: LLMConfig | Non
                                 predicted_at=datetime.now(timezone.utc))
         store().save(dict(order=order, profile=profile, weights=weights),
                      prediction.model_dump(mode='json'))
+        remember_tags(order['event_id'], result['tags'])
         if prediction.analysis and prediction.analysis.get('new_terms'):
             store().add_term_candidates(order['event_id'], prediction.analysis['new_terms'])
         return prediction
@@ -571,6 +603,61 @@ def create_app(db_path: str | Path | None = None, *, llm_config: LLMConfig | Non
                           'model_score': r['latest_prediction']['score']})
         return {"status": "ok", "reviewed": out, "remaining": max(0, len(todo) - len(out))}
 
+    # ── 按岗位调查：一条工单一次，各岗位代理并行 ─────────────────────────────
+    def run_dispatch(event_id: str) -> dict:
+        order = next((o for o in store().all_orders() if o['event_id'] == event_id), None)
+        if order is None:
+            raise HTTPException(status_code=404, detail="工单不存在")
+        analyzer = app.state.analyzer
+        if not analyzer.enabled:
+            return {"status": "disabled", "note": "未配置大模型，按岗位调查不可用。"}
+        from core.agent_openjiuwen import available
+        if not available():
+            return {"status": "unavailable", "note": "按岗位调查需要 openjiuwen（.jiuwen-venv）。"}
+        from core.agent_dispatch import RoleDispatchAgent  # heavy import, only when used
+        latest = store().latest_for_event(event_id)
+        users = [{"user_id": u['user_id'], "name": u.get('name'), "role": u['role'],
+                  "responsible_units": u['responsible_units'],
+                  "current_score": (latest.get(u['user_id']) or {}).get('score'),
+                  "currently_pushed": bool(latest.get(u['user_id']) and latest[u['user_id']]['score'] >= 0.5)}
+                 for u in store().list_users() if u.get('role')]
+        prediction = next(iter(latest.values()), None)
+        tags = [t['code'] for t in (prediction or {}).get('tags', [])]
+        out = RoleDispatchAgent(analyzer.config).run(
+            order, prediction, users,
+            similar=lambda k: similarity_index().query(order_text(order), tags, exclude=event_id, k=k),
+            feedback_rows=store().feedback_rows)
+        return store().save_dispatch_run(event_id, out)
+
+    @router.post("/orders/{event_id}/dispatch-review", tags=["审核助手"],
+                 summary="按岗位调查这条工单该推给谁：每个岗位一个智能体并行判断（不修改分数，过程留痕）")
+    def dispatch_review(event_id: str):
+        return run_dispatch(event_id)
+
+    @router.get("/orders/{event_id}/dispatch-review", tags=["审核助手"], summary="读取最近一次按岗位调查")
+    def get_dispatch_review(event_id: str):
+        run = store().latest_dispatch_run(event_id)
+        if run is None:
+            raise HTTPException(status_code=404, detail="这条工单还没有按岗位调查")
+        return run
+
+    @router.post("/dispatch/review-focus", tags=["审核助手"],
+                 summary="对有人被标为重点审核、还没按岗位调查过的工单，依次做按岗位调查")
+    def dispatch_review_focus(body: DispatchBatchInput = DispatchBatchInput()):
+        done = store().dispatched_events()
+        todo = []
+        for user in store().list_users():
+            for r in store().list(user['user_id'], 0, 100000)['items']:
+                e = r['order']['event_id']
+                if e not in done and e not in todo and (r['latest_prediction'].get('triage') or {}).get('needs_review'):
+                    todo.append(e)
+        out = []
+        for e in todo[:body.limit]:
+            run = run_dispatch(e)
+            out.append({k: run.get(k) for k in ('status', 'push_count', 'duration_ms', 'tool_calls')}
+                       | {"event_id": e, "missed": len(run.get('missed') or []), "extra": len(run.get('extra') or [])})
+        return {"status": "ok", "reviewed": out, "remaining": max(0, len(todo) - len(out))}
+
     @router.get("/agent/stats", tags=["审核助手"], summary="审核助手调查次数与建议分布")
     def agent_stats(user_id: str | None = None):
         return store().agent_run_stats(user_id)
@@ -652,23 +739,33 @@ def create_app(db_path: str | Path | None = None, *, llm_config: LLMConfig | Non
         started = datetime.now(timezone.utc)
         targets = [require_user(body.user_id)] if body.user_id else store().list_users()
         orders = store().all_orders()
+        index = _MemoIndex(similarity_index())  # 本轮只改推送结果、不改工单：索引建一次，每条工单的相似工单只查一次
+        extracted = {}  # 文本提取与人无关：每条工单只提取一次
         summaries = []
         for user in targets:
-            profile = current_profile(user['user_id'], force=True)['profile']
+            uid = user['user_id']
+            profile = current_profile(uid, force=True)['profile']
             weights = current_weights(profile.get('role'))
+            # 每人一次性读出上次结果和相似工单的人工审核记录，结果在一个事务里保存
+            latest = store().latest_results_for(uid)
+            preloaded = (index, store().feedback_summary(None, user_id=uid),
+                         store().feedback_summary(None, exclude_user=uid))
             saved = unchanged = above = 0
+            batch = []
             for order in orders:
-                result = app.state.predictor.predict(WorkOrder(**order), UserProfile(**profile), weights=weights)
+                result = app.state.predictor.predict(WorkOrder(**order), UserProfile(**profile), weights=weights,
+                                                     extract_cache=extracted)
                 above += result['score'] >= body.threshold
-                last = store().latest_result(user['user_id'], order['event_id'])
+                last = latest.get(order['event_id'])
                 if last and all(last.get(k) == result.get(k) for k in ('score', 'push_type', 'breakdown', 'push_reasons', 'triage')):
                     unchanged += 1
                     continue
-                prediction = Prediction(**enrich(order, result), prediction_id=str(uuid4()),
+                prediction = Prediction(**enrich(order, result, preloaded), prediction_id=str(uuid4()),
                                         predicted_at=datetime.now(timezone.utc))
-                store().save(dict(order=order, profile=profile, weights=weights),
-                             prediction.model_dump(mode='json'))
+                batch.append((dict(order=order, profile=profile, weights=weights), prediction.model_dump(mode='json')))
+                remember_tags(order['event_id'], result['tags'])
                 saved += 1
+            store().save_many(batch)
             summaries.append(PushRunUserSummary(user_id=user['user_id'], scored=len(orders),
                                                 saved=saved, unchanged=unchanged, above_threshold=above))
         return PushRunResponse(users=summaries, orders=len(orders), started_at=started,

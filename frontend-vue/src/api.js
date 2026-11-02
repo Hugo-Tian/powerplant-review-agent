@@ -65,4 +65,6 @@ export const reviewTerm = (term, body) => request(`/terms/candidates/${encodeURI
 export const fetchVocabulary = () => request('/vocabulary')
 export const runAgentReview = id => post(`/predictions/${encodeURIComponent(id)}/agent-review`, {}, { timeout: 300000 })
 export const getAgentReview = id => request(`/predictions/${encodeURIComponent(id)}/agent-review`)
+export const runDispatch = eventId => post(`/orders/${encodeURIComponent(eventId)}/dispatch-review`, {}, { timeout: 300000 })
+export const getDispatch = eventId => request(`/orders/${encodeURIComponent(eventId)}/dispatch-review`)
 export const runAgentFocus = (userId, limit) => post('/agent/review-focus', { user_id: userId, limit }, { timeout: 1800000 })

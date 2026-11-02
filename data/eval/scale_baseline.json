@@ -1,0 +1,112 @@
+{
+ "note": "模拟名单与模拟工单；评分耗时为本机实测（大模型关闭）；调查耗时为按 v3 困难工单实测中位数的估算，不是实测。新数据库没有人工审核记录，所以“相似工单被本人改过”这一分流条件不会触发。",
+ "agent_seconds_median": {
+  "single": 8.7,
+  "team": 25.6
+ },
+ "threshold": 0.5,
+ "results": [
+  {
+   "employees": 12,
+   "orders": 320,
+   "pairs": 3840,
+   "scoring_seconds": 246.7,
+   "ms_per_pair": 64.23,
+   "push_run_orders": 320,
+   "recipients_per_order": {
+    "mean": 2.31,
+    "median": 1.0,
+    "max": 12,
+    "zero": 133,
+    "distribution": {
+     "0": 133,
+     "1": 91,
+     "4": 50,
+     "5": 13,
+     "6": 2,
+     "12": 31
+    }
+   },
+   "recipients_per_emergency_order": 12,
+   "flagged_pairs": 688,
+   "flagged_share": 0.179,
+   "flagged_orders": 185,
+   "roles": 3,
+   "per_post": 1,
+   "investigations_per_pair": 688,
+   "investigations_per_order": 185,
+   "est_hours_per_pair_single": 1.7,
+   "est_hours_per_order_parallel_roles": 0.4
+  },
+  {
+   "employees": 24,
+   "orders": 320,
+   "pairs": 7680,
+   "scoring_seconds": 738.1,
+   "ms_per_pair": 96.1,
+   "push_run_orders": 320,
+   "recipients_per_order": {
+    "mean": 4.54,
+    "median": 2.0,
+    "max": 24,
+    "zero": 128,
+    "distribution": {
+     "0": 128,
+     "1": 30,
+     "2": 49,
+     "3": 17,
+     "8": 59,
+     "9": 2,
+     "10": 4,
+     "24": 31
+    }
+   },
+   "recipients_per_emergency_order": 24,
+   "flagged_pairs": 1352,
+   "flagged_share": 0.176,
+   "flagged_orders": 185,
+   "roles": 3,
+   "per_post": 2,
+   "investigations_per_pair": 1352,
+   "investigations_per_order": 185,
+   "est_hours_per_pair_single": 3.3,
+   "est_hours_per_order_parallel_roles": 0.4
+  },
+  {
+   "employees": 48,
+   "orders": 320,
+   "pairs": 15360,
+   "scoring_seconds": 624.4,
+   "ms_per_pair": 40.65,
+   "push_run_orders": 320,
+   "recipients_per_order": {
+    "mean": 9.09,
+    "median": 3.0,
+    "max": 48,
+    "zero": 114,
+    "distribution": {
+     "0": 114,
+     "1": 16,
+     "2": 3,
+     "3": 39,
+     "4": 31,
+     "5": 13,
+     "6": 8,
+     "16": 61,
+     "17": 4,
+     "48": 31
+    }
+   },
+   "recipients_per_emergency_order": 48,
+   "flagged_pairs": 2623,
+   "flagged_share": 0.171,
+   "flagged_orders": 185,
+   "roles": 3,
+   "per_post": 4,
+   "investigations_per_pair": 2623,
+   "investigations_per_order": 185,
+   "est_hours_per_pair_single": 6.3,
+   "est_hours_per_order_parallel_roles": 0.4
+  }
+ ]
+}

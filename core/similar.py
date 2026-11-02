@@ -4,8 +4,8 @@ similarity = 0.7 x cosine(char 2-3gram TF-IDF of title + content)
            + 0.3 x Jaccard(tag codes)
 
 Character n-grams work for Chinese without a tokenizer and are robust to
-synonyms sharing characters (汽机 / 汽轮机). The index is rebuilt in a few
-milliseconds whenever the set of stored orders changes.
+synonyms sharing characters (汽机 / 汽轮机). The text matrix is rebuilt only when
+the stored orders change; tags are updated per order after each prediction.
 """
 from __future__ import annotations
 
@@ -31,6 +31,10 @@ class SimilarityIndex:
             self._vectorizer = TfidfVectorizer(analyzer="char_wb", ngram_range=(2, 3),
                                                sublinear_tf=True, min_df=1)
             self._matrix = self._vectorizer.fit_transform([order_text(o) for o in orders])
+
+    def set_tags(self, event_id: str, tags: Iterable[str]) -> None:
+        """Update one order's tags after a new prediction, without refitting the text matrix."""
+        self.tags[event_id] = set(tags)
 
     def query(self, text: str, tags: Iterable[str], *, exclude: Optional[str] = None,
               k: int = 5, min_score: float = 0.15) -> list[dict]:

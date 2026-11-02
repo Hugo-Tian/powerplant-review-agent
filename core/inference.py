@@ -110,7 +110,10 @@ class PushPredictor:
             if not self.tfidf._enabled:
                 raise RuntimeError("Text inference requires jieba and scikit-learn; install requirements.txt")
 
-    def predict(self, order: WorkOrder, profile: UserProfile, *, tags=None, weights=None) -> dict:
+    def predict(self, order: WorkOrder, profile: UserProfile, *, tags=None, weights=None,
+                extract_cache: Optional[dict] = None) -> dict:
+        """``extract_cache``: dict shared by one batch (e.g. /push/run) so each order's text is
+        extracted once, not once per user; extraction does not depend on the user."""
         if not order.event_id or not (order.title.strip() or order.content.strip()):
             raise ValueError("event_id and non-empty title or content are required")
         analysis = None
@@ -119,14 +122,21 @@ class PushPredictor:
             if not self.text_enabled:
                 raise ValueError("Pass extracted tags or enable text inference")
             text = self.order_text(order)
-            analysis = self.analyze(order, text)
-            llm_tags = analysis.tags if analysis and analysis.status == "ok" else []
-            tags = [asdict(t) for t in self.fusion.fuse(
-                self.rules.extract(text, order.event_id), llm_tags,
-                tfidf_tags=self.tfidf.extract(text, order.event_id))]
-            llm_keys = {(t.code, t.category) for t in llm_tags}
-            for t in tags:  # fusion marks any multi-source tag "merged"; record LLM involvement explicitly
-                t["llm"] = (t["code"], t["category"]) in llm_keys
+            key = (order.event_id, text, order.level)
+            if extract_cache is not None and key in extract_cache:
+                analysis, cached = extract_cache[key]
+                tags = [dict(t) for t in cached]
+            else:
+                analysis = self.analyze(order, text)
+                llm_tags = analysis.tags if analysis and analysis.status == "ok" else []
+                tags = [asdict(t) for t in self.fusion.fuse(
+                    self.rules.extract(text, order.event_id), llm_tags,
+                    tfidf_tags=self.tfidf.extract(text, order.event_id))]
+                llm_keys = {(t.code, t.category) for t in llm_tags}
+                for t in tags:  # fusion marks any multi-source tag "merged"; record LLM involvement explicitly
+                    t["llm"] = (t["code"], t["category"]) in llm_keys
+                if extract_cache is not None:
+                    extract_cache[key] = (analysis, [dict(t) for t in tags])
             mode = "rule_tfidf_llm" if analysis and analysis.status == "ok" else "rule_tfidf_builtin"
             if analysis and analysis.level_review:
                 level = analysis.level_review["to_level"]
