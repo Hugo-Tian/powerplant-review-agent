@@ -1,0 +1,2137 @@
+{
+ "report": {
+  "note": "对照模拟审核规则（作用于真实设备与等级），数据为刻意构造的模拟困难工单，不代表真实电厂效果",
+  "pairs": 48,
+  "rule": {
+   "n": 48,
+   "decision_agree": 44,
+   "within_tolerance": 28,
+   "missed_push": 4,
+   "false_push": 0,
+   "mae": 0.142
+  },
+  "triage": {
+   "rule_wrong": 4,
+   "rule_wrong_flagged": 3
+  },
+  "by_category": {
+   "A": {
+    "n": 6,
+    "decision_agree": 5,
+    "within_tolerance": 4,
+    "missed_push": 1,
+    "false_push": 0,
+    "mae": 0.175
+   },
+   "B": {
+    "n": 3,
+    "decision_agree": 3,
+    "within_tolerance": 2,
+    "missed_push": 0,
+    "false_push": 0,
+    "mae": 0.158
+   },
+   "D": {
+    "n": 15,
+    "decision_agree": 13,
+    "within_tolerance": 4,
+    "missed_push": 2,
+    "false_push": 0,
+    "mae": 0.184
+   },
+   "E": {
+    "n": 15,
+    "decision_agree": 14,
+    "within_tolerance": 13,
+    "missed_push": 1,
+    "false_push": 0,
+    "mae": 0.111
+   },
+   "F": {
+    "n": 6,
+    "decision_agree": 6,
+    "within_tolerance": 5,
+    "missed_push": 0,
+    "false_push": 0,
+    "mae": 0.069
+   },
+   "G": {
+    "n": 3,
+    "decision_agree": 3,
+    "within_tolerance": 0,
+    "missed_push": 0,
+    "false_push": 0,
+    "mae": 0.15
+   }
+  },
+  "agent": {
+   "engine": "roles",
+   "ran": 48,
+   "needs_human": 0,
+   "errors": 0,
+   "on_decided": {
+    "n": 48,
+    "decision_agree": 47,
+    "within_tolerance": 37,
+    "missed_push": 0,
+    "false_push": 1,
+    "mae": 0.073
+   },
+   "rule_on_same": {
+    "n": 48,
+    "decision_agree": 44,
+    "within_tolerance": 28,
+    "missed_push": 4,
+    "false_push": 0,
+    "mae": 0.142
+   },
+   "rule_wrong_fixed": 4,
+   "rule_right_broken": 1,
+   "median_tool_calls": 5.0,
+   "median_seconds": 6.8
+  },
+  "agent_by_category": {
+   "A": {
+    "n": 6,
+    "decision_agree": 5,
+    "within_tolerance": 5,
+    "missed_push": 0,
+    "false_push": 1,
+    "mae": 0.033
+   },
+   "B": {
+    "n": 3,
+    "decision_agree": 3,
+    "within_tolerance": 3,
+    "missed_push": 0,
+    "false_push": 0,
+    "mae": 0.05
+   },
+   "D": {
+    "n": 15,
+    "decision_agree": 15,
+    "within_tolerance": 7,
+    "missed_push": 0,
+    "false_push": 0,
+    "mae": 0.16
+   },
+   "E": {
+    "n": 15,
+    "decision_agree": 15,
+    "within_tolerance": 15,
+    "missed_push": 0,
+    "false_push": 0,
+    "mae": 0.0
+   },
+   "F": {
+    "n": 6,
+    "decision_agree": 6,
+    "within_tolerance": 6,
+    "missed_push": 0,
+    "false_push": 0,
+    "mae": 0.025
+   },
+   "G": {
+    "n": 3,
+    "decision_agree": 3,
+    "within_tolerance": 1,
+    "missed_push": 0,
+    "false_push": 0,
+    "mae": 0.2
+   }
+  },
+  "dispatch": {
+   "runs": 16,
+   "decisions": 48,
+   "rule_agree": 44,
+   "agent_agree": 47,
+   "missed_truth": 4,
+   "missed_found": 4,
+   "false_missed": 1,
+   "reviews": {
+    "null": 48
+   }
+  },
+  "level": {
+   "cases": 16,
+   "filed": 11,
+   "llm_review": 14,
+   "urgency_agent": 15,
+   "final": 15,
+   "fast_path": 9,
+   "mismatches": [
+    {
+     "event_id": "HOLD3-12",
+     "filed_level": "一般",
+     "effective_level": "一般",
+     "urgency_level": "重要",
+     "final_level": "重要",
+     "true_level": "一般"
+    }
+   ]
+  }
+ },
+ "rows": [
+  {
+   "event_id": "HOLD3-01",
+   "category": "D",
+   "user_id": "synthetic-turbine",
+   "role": "汽轮机专工",
+   "target": 0.9,
+   "target_reason": "本人负责机组的汽轮机问题，必须第一时间掌握",
+   "rule_score": 0.77,
+   "flagged": true,
+   "triage_reasons": [
+    "大模型建议把等级从「一般」上调为「紧急」"
+   ],
+   "device_tags": [
+    "TURBINE"
+   ],
+   "effective_level": "紧急",
+   "truth_recipients": [
+    "synthetic-boiler",
+    "synthetic-electric",
+    "synthetic-turbine"
+   ],
+   "rule_recipients": [
+    "synthetic-boiler",
+    "synthetic-electric",
+    "synthetic-turbine"
+   ],
+   "agent_status": "ok",
+   "agent_recommendation": "push",
+   "agent_score": 0.9,
+   "agent_decision": "must",
+   "agent_tool_calls": 5,
+   "agent_ms": 6914,
+   "agent_error": null,
+   "agent_summary": "#1机主油箱油位快速下降、备用油泵已启仍降，属本岗位核心设备紧急事件，须立即掌握",
+   "understood_devices": [
+    "TURBINE"
+   ],
+   "understood_level": "紧急",
+   "by_policy": false,
+   "true_level": "紧急",
+   "filed_level": "一般",
+   "urgency_level": "紧急",
+   "final_level": "紧急",
+   "fast_path": true,
+   "urgency_ms": 6248,
+   "agent_recipients": [
+    "synthetic-boiler",
+    "synthetic-electric",
+    "synthetic-turbine"
+   ],
+   "dispatch": {
+    "missed": [],
+    "extra": []
+   }
+  },
+  {
+   "event_id": "HOLD3-01",
+   "category": "D",
+   "user_id": "synthetic-electric",
+   "role": "电气专工",
+   "target": 0.6,
+   "target_reason": "虽是汽轮机问题，但发生在本人负责机组且为紧急，需要知晓",
+   "rule_score": 0.75,
+   "flagged": true,
+   "triage_reasons": [
+    "大模型建议把等级从「一般」上调为「紧急」"
+   ],
+   "device_tags": [
+    "TURBINE"
+   ],
+   "effective_level": "紧急",
+   "truth_recipients": [
+    "synthetic-boiler",
+    "synthetic-electric",
+    "synthetic-turbine"
+   ],
+   "rule_recipients": [
+    "synthetic-boiler",
+    "synthetic-electric",
+    "synthetic-turbine"
+   ],
+   "agent_status": "ok",
+   "agent_recommendation": "push",
+   "agent_score": 0.9,
+   "agent_decision": "must",
+   "agent_tool_calls": 5,
+   "agent_ms": 6914,
+   "agent_error": null,
+   "agent_summary": "#1机润滑油箱油位快速下降、随时可能停机，本机组紧急事件须知晓",
+   "understood_devices": [
+    "TURBINE"
+   ],
+   "understood_level": "紧急",
+   "by_policy": false
+  },
+  {
+   "event_id": "HOLD3-01",
+   "category": "D",
+   "user_id": "synthetic-boiler",
+   "role": "锅炉专工",
+   "target": 0.6,
+   "target_reason": "虽是汽轮机问题，但发生在本人负责机组且为紧急，需要知晓",
+   "rule_score": 0.75,
+   "flagged": true,
+   "triage_reasons": [
+    "大模型建议把等级从「一般」上调为「紧急」"
+   ],
+   "device_tags": [
+    "TURBINE"
+   ],
+   "effective_level": "紧急",
+   "truth_recipients": [
+    "synthetic-boiler",
+    "synthetic-electric",
+    "synthetic-turbine"
+   ],
+   "rule_recipients": [
+    "synthetic-boiler",
+    "synthetic-electric",
+    "synthetic-turbine"
+   ],
+   "agent_status": "ok",
+   "agent_recommendation": "push",
+   "agent_score": 0.9,
+   "agent_decision": "must",
+   "agent_tool_calls": 5,
+   "agent_ms": 6914,
+   "agent_error": null,
+   "agent_summary": "#1机（本人负责机组）发生紧急事件，按规程本机组各专业须知晓",
+   "understood_devices": [
+    "TURBINE"
+   ],
+   "understood_level": "紧急",
+   "by_policy": false
+  },
+  {
+   "event_id": "HOLD3-02",
+   "category": "D",
+   "user_id": "synthetic-turbine",
+   "role": "汽轮机专工",
+   "target": 0.6,
+   "target_reason": "虽是锅炉问题，但发生在本人负责机组且为紧急，需要知晓",
+   "rule_score": 0.75,
+   "flagged": true,
+   "triage_reasons": [
+    "大模型建议把等级从「重要」上调为「紧急」"
+   ],
+   "device_tags": [
+    "BOILER"
+   ],
+   "effective_level": "紧急",
+   "truth_recipients": [
+    "synthetic-boiler",
+    "synthetic-electric",
+    "synthetic-turbine"
+   ],
+   "rule_recipients": [
+    "synthetic-boiler",
+    "synthetic-electric",
+    "synthetic-turbine"
+   ],
+   "agent_status": "ok",
+   "agent_recommendation": "push",
+   "agent_score": 0.9,
+   "agent_decision": "must",
+   "agent_tool_calls": 5,
+   "agent_ms": 6770,
+   "agent_error": null,
+   "agent_summary": "#1机组紧急事件（水位接近低保护动作值），按规程本机组各专业须知晓",
+   "understood_devices": [
+    "BOILER"
+   ],
+   "understood_level": "紧急",
+   "by_policy": false,
+   "true_level": "紧急",
+   "filed_level": "重要",
+   "urgency_level": "紧急",
+   "final_level": "紧急",
+   "fast_path": true,
+   "urgency_ms": 3274,
+   "agent_recipients": [
+    "synthetic-boiler",
+    "synthetic-electric",
+    "synthetic-turbine"
+   ],
+   "dispatch": {
+    "missed": [],
+    "extra": []
+   }
+  },
+  {
+   "event_id": "HOLD3-02",
+   "category": "D",
+   "user_id": "synthetic-electric",
+   "role": "电气专工",
+   "target": 0.6,
+   "target_reason": "虽是锅炉问题，但发生在本人负责机组且为紧急，需要知晓",
+   "rule_score": 0.75,
+   "flagged": true,
+   "triage_reasons": [
+    "大模型建议把等级从「重要」上调为「紧急」"
+   ],
+   "device_tags": [
+    "BOILER"
+   ],
+   "effective_level": "紧急",
+   "truth_recipients": [
+    "synthetic-boiler",
+    "synthetic-electric",
+    "synthetic-turbine"
+   ],
+   "rule_recipients": [
+    "synthetic-boiler",
+    "synthetic-electric",
+    "synthetic-turbine"
+   ],
+   "agent_status": "ok",
+   "agent_recommendation": "push",
+   "agent_score": 0.9,
+   "agent_decision": "must",
+   "agent_tool_calls": 5,
+   "agent_ms": 6770,
+   "agent_error": null,
+   "agent_summary": "#1机组紧急事件，按规程本机组各专业须知晓，需第一时间掌握",
+   "understood_devices": [
+    "BOILER"
+   ],
+   "understood_level": "紧急",
+   "by_policy": false
+  },
+  {
+   "event_id": "HOLD3-02",
+   "category": "D",
+   "user_id": "synthetic-boiler",
+   "role": "锅炉专工",
+   "target": 0.9,
+   "target_reason": "本人负责机组的锅炉问题，必须第一时间掌握",
+   "rule_score": 0.75,
+   "flagged": true,
+   "triage_reasons": [
+    "大模型建议把等级从「重要」上调为「紧急」"
+   ],
+   "device_tags": [
+    "BOILER"
+   ],
+   "effective_level": "紧急",
+   "truth_recipients": [
+    "synthetic-boiler",
+    "synthetic-electric",
+    "synthetic-turbine"
+   ],
+   "rule_recipients": [
+    "synthetic-boiler",
+    "synthetic-electric",
+    "synthetic-turbine"
+   ],
+   "agent_status": "ok",
+   "agent_recommendation": "push",
+   "agent_score": 0.9,
+   "agent_decision": "must",
+   "agent_tool_calls": 5,
+   "agent_ms": 6770,
+   "agent_error": null,
+   "agent_summary": "#1炉汽包水位持续下降接近低保护动作值，属本岗位核心设备锅炉的紧急事件，须立即到场。",
+   "understood_devices": [
+    "BOILER"
+   ],
+   "understood_level": "紧急",
+   "by_policy": false
+  },
+  {
+   "event_id": "HOLD3-03",
+   "category": "D",
+   "user_id": "synthetic-turbine",
+   "role": "汽轮机专工",
+   "target": 0.6,
+   "target_reason": "虽是变压器问题，但发生在本人负责机组且为紧急，需要知晓",
+   "rule_score": 0.75,
+   "flagged": true,
+   "triage_reasons": [
+    "大模型建议把等级从「一般」上调为「紧急」"
+   ],
+   "device_tags": [
+    "TRANSFORMER"
+   ],
+   "effective_level": "紧急",
+   "truth_recipients": [
+    "synthetic-boiler",
+    "synthetic-electric",
+    "synthetic-turbine"
+   ],
+   "rule_recipients": [
+    "synthetic-boiler",
+    "synthetic-electric",
+    "synthetic-turbine"
+   ],
+   "agent_status": "ok",
+   "agent_recommendation": "push",
+   "agent_score": 0.9,
+   "agent_decision": "must",
+   "agent_tool_calls": 5,
+   "agent_ms": 6537,
+   "agent_error": null,
+   "agent_summary": "#1机组紧急事件，规程要求本机组各专业知晓，虽非本专业设备也须推送",
+   "understood_devices": [
+    "TRANSFORMER"
+   ],
+   "understood_level": "紧急",
+   "by_policy": false,
+   "true_level": "紧急",
+   "filed_level": "一般",
+   "urgency_level": "紧急",
+   "final_level": "紧急",
+   "fast_path": true,
+   "urgency_ms": 3817,
+   "agent_recipients": [
+    "synthetic-boiler",
+    "synthetic-electric",
+    "synthetic-turbine"
+   ],
+   "dispatch": {
+    "missed": [],
+    "extra": []
+   }
+  },
+  {
+   "event_id": "HOLD3-03",
+   "category": "D",
+   "user_id": "synthetic-electric",
+   "role": "电气专工",
+   "target": 0.9,
+   "target_reason": "本人负责机组的变压器问题，必须第一时间掌握",
+   "rule_score": 0.75,
+   "flagged": true,
+   "triage_reasons": [
+    "大模型建议把等级从「一般」上调为「紧急」"
+   ],
+   "device_tags": [
+    "TRANSFORMER"
+   ],
+   "effective_level": "紧急",
+   "truth_recipients": [
+    "synthetic-boiler",
+    "synthetic-electric",
+    "synthetic-turbine"
+   ],
+   "rule_recipients": [
+    "synthetic-boiler",
+    "synthetic-electric",
+    "synthetic-turbine"
+   ],
+   "agent_status": "ok",
+   "agent_recommendation": "push",
+   "agent_score": 0.9,
+   "agent_decision": "must",
+   "agent_tool_calls": 5,
+   "agent_ms": 6537,
+   "agent_error": null,
+   "agent_summary": "主变属本岗位核心设备，且#1为本机组，紧急事件须第一时间处理",
+   "understood_devices": [
+    "TRANSFORMER"
+   ],
+   "understood_level": "紧急",
+   "by_policy": false
+  },
+  {
+   "event_id": "HOLD3-03",
+   "category": "D",
+   "user_id": "synthetic-boiler",
+   "role": "锅炉专工",
+   "target": 0.6,
+   "target_reason": "虽是变压器问题，但发生在本人负责机组且为紧急，需要知晓",
+   "rule_score": 0.75,
+   "flagged": true,
+   "triage_reasons": [
+    "大模型建议把等级从「一般」上调为「紧急」"
+   ],
+   "device_tags": [
+    "TRANSFORMER"
+   ],
+   "effective_level": "紧急",
+   "truth_recipients": [
+    "synthetic-boiler",
+    "synthetic-electric",
+    "synthetic-turbine"
+   ],
+   "rule_recipients": [
+    "synthetic-boiler",
+    "synthetic-electric",
+    "synthetic-turbine"
+   ],
+   "agent_status": "ok",
+   "agent_recommendation": "push",
+   "agent_score": 0.9,
+   "agent_decision": "must",
+   "agent_tool_calls": 5,
+   "agent_ms": 6537,
+   "agent_error": null,
+   "agent_summary": "#1机组紧急事件，按规程本机组各专业须知晓，需第一时间掌握",
+   "understood_devices": [
+    "TRANSFORMER"
+   ],
+   "understood_level": "紧急",
+   "by_policy": false
+  },
+  {
+   "event_id": "HOLD3-04",
+   "category": "D",
+   "user_id": "synthetic-turbine",
+   "role": "汽轮机专工",
+   "target": 0.6,
+   "target_reason": "虽是发电机问题，但发生在本人负责机组且为紧急，需要知晓",
+   "rule_score": 0.141,
+   "flagged": true,
+   "triage_reasons": [
+    "大模型建议把等级从「一般」上调为「重要」"
+   ],
+   "device_tags": [
+    "GENERATOR"
+   ],
+   "effective_level": "重要",
+   "truth_recipients": [
+    "synthetic-boiler",
+    "synthetic-electric",
+    "synthetic-turbine"
+   ],
+   "rule_recipients": [
+    "synthetic-electric"
+   ],
+   "agent_status": "ok",
+   "agent_recommendation": "push",
+   "agent_score": 0.9,
+   "agent_decision": "must",
+   "agent_tool_calls": 5,
+   "agent_ms": 6549,
+   "agent_error": null,
+   "agent_summary": "#1机为本人负责机组，紧急事件按规程本机组各专业须知晓",
+   "understood_devices": [
+    "GENERATOR"
+   ],
+   "understood_level": "紧急",
+   "by_policy": false,
+   "true_level": "紧急",
+   "filed_level": "一般",
+   "urgency_level": "紧急",
+   "final_level": "紧急",
+   "fast_path": true,
+   "urgency_ms": 4812,
+   "agent_recipients": [
+    "synthetic-boiler",
+    "synthetic-electric",
+    "synthetic-turbine"
+   ],
+   "dispatch": {
+    "missed": [
+     {
+      "user_id": "synthetic-turbine",
+      "name": "synthetic-turbine",
+      "role": "汽轮机专工",
+      "relation": "own_unit",
+      "relation_label": "本机组",
+      "decision": "must",
+      "decision_label": "必须推送",
+      "by_policy": false,
+      "current_score": 0.141,
+      "currently_pushed": false
+     },
+     {
+      "user_id": "synthetic-boiler",
+      "name": "synthetic-boiler",
+      "role": "锅炉专工",
+      "relation": "own_unit",
+      "relation_label": "本机组",
+      "decision": "must",
+      "decision_label": "必须推送",
+      "by_policy": false,
+      "current_score": 0.084,
+      "currently_pushed": false
+     }
+    ],
+    "extra": []
+   }
+  },
+  {
+   "event_id": "HOLD3-04",
+   "category": "D",
+   "user_id": "synthetic-electric",
+   "role": "电气专工",
+   "target": 0.9,
+   "target_reason": "本人负责机组的发电机问题，必须第一时间掌握",
+   "rule_score": 0.624,
+   "flagged": true,
+   "triage_reasons": [
+    "大模型建议把等级从「一般」上调为「重要」"
+   ],
+   "device_tags": [
+    "GENERATOR"
+   ],
+   "effective_level": "重要",
+   "truth_recipients": [
+    "synthetic-boiler",
+    "synthetic-electric",
+    "synthetic-turbine"
+   ],
+   "rule_recipients": [
+    "synthetic-electric"
+   ],
+   "agent_status": "ok",
+   "agent_recommendation": "push",
+   "agent_score": 0.9,
+   "agent_decision": "must",
+   "agent_tool_calls": 5,
+   "agent_ms": 6549,
+   "agent_error": null,
+   "agent_summary": "发电机为电气专工核心设备，本机组发生紧急温度超限，须立即到场处理",
+   "understood_devices": [
+    "GENERATOR"
+   ],
+   "understood_level": "紧急",
+   "by_policy": false
+  },
+  {
+   "event_id": "HOLD3-04",
+   "category": "D",
+   "user_id": "synthetic-boiler",
+   "role": "锅炉专工",
+   "target": 0.6,
+   "target_reason": "虽是发电机问题，但发生在本人负责机组且为紧急，需要知晓",
+   "rule_score": 0.084,
+   "flagged": true,
+   "triage_reasons": [
+    "大模型建议把等级从「一般」上调为「重要」"
+   ],
+   "device_tags": [
+    "GENERATOR"
+   ],
+   "effective_level": "重要",
+   "truth_recipients": [
+    "synthetic-boiler",
+    "synthetic-electric",
+    "synthetic-turbine"
+   ],
+   "rule_recipients": [
+    "synthetic-electric"
+   ],
+   "agent_status": "ok",
+   "agent_recommendation": "push",
+   "agent_score": 0.9,
+   "agent_decision": "must",
+   "agent_tool_calls": 5,
+   "agent_ms": 6549,
+   "agent_error": null,
+   "agent_summary": "本机组紧急事件，按规程本机组各专业须知晓，锅炉专工需掌握降负荷影响",
+   "understood_devices": [
+    "GENERATOR"
+   ],
+   "understood_level": "紧急",
+   "by_policy": false
+  },
+  {
+   "event_id": "HOLD3-05",
+   "category": "D",
+   "user_id": "synthetic-turbine",
+   "role": "汽轮机专工",
+   "target": 0.65,
+   "target_reason": "其他机组的给水泵问题，可作同类设备参考",
+   "rule_score": 0.599,
+   "flagged": true,
+   "triage_reasons": [
+    "匹配分 0.60 处于灰区（0.4–0.6），推或不推都有理由",
+    "大模型建议把等级从「一般」上调为「重要」"
+   ],
+   "device_tags": [
+    "FWP",
+    "BOILER"
+   ],
+   "effective_level": "重要",
+   "truth_recipients": [
+    "synthetic-boiler",
+    "synthetic-turbine"
+   ],
+   "rule_recipients": [
+    "synthetic-boiler",
+    "synthetic-turbine"
+   ],
+   "agent_status": "ok",
+   "agent_recommendation": "push",
+   "agent_score": 0.65,
+   "agent_decision": "reference",
+   "agent_tool_calls": 5,
+   "agent_ms": 6896,
+   "agent_error": null,
+   "agent_summary": "给水泵为本岗位核心设备，发生在其他机组可作同类设备汽蚀经验参考",
+   "understood_devices": [
+    "FWP",
+    "BOILER"
+   ],
+   "understood_level": "紧急",
+   "by_policy": false,
+   "true_level": "紧急",
+   "filed_level": "一般",
+   "urgency_level": "紧急",
+   "final_level": "紧急",
+   "fast_path": true,
+   "urgency_ms": 6170,
+   "agent_recipients": [
+    "synthetic-boiler",
+    "synthetic-turbine"
+   ],
+   "dispatch": {
+    "missed": [],
+    "extra": []
+   }
+  },
+  {
+   "event_id": "HOLD3-05",
+   "category": "D",
+   "user_id": "synthetic-electric",
+   "role": "电气专工",
+   "target": 0.1,
+   "target_reason": "给水泵不属于电气专工职责范围，应推给对应专工",
+   "rule_score": 0.0,
+   "flagged": true,
+   "triage_reasons": [
+    "大模型建议把等级从「一般」上调为「重要」"
+   ],
+   "device_tags": [
+    "FWP",
+    "BOILER"
+   ],
+   "effective_level": "重要",
+   "truth_recipients": [
+    "synthetic-boiler",
+    "synthetic-turbine"
+   ],
+   "rule_recipients": [
+    "synthetic-boiler",
+    "synthetic-turbine"
+   ],
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.1,
+   "agent_decision": "none",
+   "agent_tool_calls": 5,
+   "agent_ms": 6896,
+   "agent_error": null,
+   "agent_summary": "给水泵、汽包属锅炉/汽机专业设备，非电气专工核心设备，其他机组不推送",
+   "understood_devices": [
+    "FWP",
+    "BOILER"
+   ],
+   "understood_level": "紧急",
+   "by_policy": false
+  },
+  {
+   "event_id": "HOLD3-05",
+   "category": "D",
+   "user_id": "synthetic-boiler",
+   "role": "锅炉专工",
+   "target": 0.65,
+   "target_reason": "其他机组的给水泵问题，可作同类设备参考",
+   "rule_score": 0.616,
+   "flagged": true,
+   "triage_reasons": [
+    "大模型建议把等级从「一般」上调为「重要」"
+   ],
+   "device_tags": [
+    "FWP",
+    "BOILER"
+   ],
+   "effective_level": "重要",
+   "truth_recipients": [
+    "synthetic-boiler",
+    "synthetic-turbine"
+   ],
+   "rule_recipients": [
+    "synthetic-boiler",
+    "synthetic-turbine"
+   ],
+   "agent_status": "ok",
+   "agent_recommendation": "push",
+   "agent_score": 0.65,
+   "agent_decision": "reference",
+   "agent_tool_calls": 5,
+   "agent_ms": 6896,
+   "agent_error": null,
+   "agent_summary": "本岗位核心设备给水泵汽蚀、汽包水位事件发生在其他机组，可作同类参考。",
+   "understood_devices": [
+    "FWP",
+    "BOILER"
+   ],
+   "understood_level": "紧急",
+   "by_policy": false
+  },
+  {
+   "event_id": "HOLD3-06",
+   "category": "F",
+   "user_id": "synthetic-turbine",
+   "role": "汽轮机专工",
+   "target": 0.05,
+   "target_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+   "rule_score": 0.141,
+   "flagged": true,
+   "triage_reasons": [
+    "未识别出设备：工单可能用了词典外的叫法，无法按岗位判断，规则分可能偏低"
+   ],
+   "device_tags": [],
+   "effective_level": "一般",
+   "truth_recipients": [],
+   "rule_recipients": [],
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.1,
+   "agent_decision": "none",
+   "agent_tool_calls": 5,
+   "agent_ms": 7080,
+   "agent_error": null,
+   "agent_summary": "油库区消防演练，属厂房公用区域活动，非本岗位生产设备，无实际故障",
+   "understood_devices": [],
+   "understood_level": "一般",
+   "by_policy": false,
+   "true_level": "一般",
+   "filed_level": "一般",
+   "urgency_level": "一般",
+   "final_level": "一般",
+   "fast_path": false,
+   "urgency_ms": 3134,
+   "agent_recipients": [],
+   "dispatch": {
+    "missed": [],
+    "extra": []
+   }
+  },
+  {
+   "event_id": "HOLD3-06",
+   "category": "F",
+   "user_id": "synthetic-electric",
+   "role": "电气专工",
+   "target": 0.05,
+   "target_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+   "rule_score": 0.096,
+   "flagged": true,
+   "triage_reasons": [
+    "未识别出设备：工单可能用了词典外的叫法，无法按岗位判断，规则分可能偏低"
+   ],
+   "device_tags": [],
+   "effective_level": "一般",
+   "truth_recipients": [],
+   "rule_recipients": [],
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.1,
+   "agent_decision": "none",
+   "agent_tool_calls": 5,
+   "agent_ms": 7080,
+   "agent_error": null,
+   "agent_summary": "消防演练非设备故障，油库区消防器材属公用辅助设施，非电气专工设备",
+   "understood_devices": [],
+   "understood_level": "一般",
+   "by_policy": false
+  },
+  {
+   "event_id": "HOLD3-06",
+   "category": "F",
+   "user_id": "synthetic-boiler",
+   "role": "锅炉专工",
+   "target": 0.05,
+   "target_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+   "rule_score": 0.084,
+   "flagged": true,
+   "triage_reasons": [
+    "未识别出设备：工单可能用了词典外的叫法，无法按岗位判断，规则分可能偏低"
+   ],
+   "device_tags": [],
+   "effective_level": "一般",
+   "truth_recipients": [],
+   "rule_recipients": [],
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.1,
+   "agent_decision": "none",
+   "agent_tool_calls": 4,
+   "agent_ms": 7080,
+   "agent_error": null,
+   "agent_summary": "油库区消防演练，非锅炉专业设备，属公用辅助/消防活动，不推送",
+   "understood_devices": [],
+   "understood_level": "一般",
+   "by_policy": false
+  },
+  {
+   "event_id": "HOLD3-07",
+   "category": "F",
+   "user_id": "synthetic-turbine",
+   "role": "汽轮机专工",
+   "target": 0.1,
+   "target_reason": "锅炉不属于汽轮机专工职责范围，应推给对应专工",
+   "rule_score": 0.141,
+   "flagged": false,
+   "triage_reasons": [],
+   "device_tags": [
+    "BOILER"
+   ],
+   "effective_level": "一般",
+   "truth_recipients": [
+    "synthetic-boiler"
+   ],
+   "rule_recipients": [
+    "synthetic-boiler"
+   ],
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.1,
+   "agent_decision": "none",
+   "agent_tool_calls": 4,
+   "agent_ms": 6951,
+   "agent_error": null,
+   "agent_summary": "燃烧器火检属锅炉专工核心设备，非汽轮机专工职责，且非紧急事件",
+   "understood_devices": [
+    "BOILER"
+   ],
+   "understood_level": "一般",
+   "by_policy": false,
+   "true_level": "一般",
+   "filed_level": "一般",
+   "urgency_level": "一般",
+   "final_level": "一般",
+   "fast_path": false,
+   "urgency_ms": 4480,
+   "agent_recipients": [
+    "synthetic-boiler"
+   ],
+   "dispatch": {
+    "missed": [],
+    "extra": []
+   }
+  },
+  {
+   "event_id": "HOLD3-07",
+   "category": "F",
+   "user_id": "synthetic-electric",
+   "role": "电气专工",
+   "target": 0.1,
+   "target_reason": "锅炉不属于电气专工职责范围，应推给对应专工",
+   "rule_score": 0.096,
+   "flagged": false,
+   "triage_reasons": [],
+   "device_tags": [
+    "BOILER"
+   ],
+   "effective_level": "一般",
+   "truth_recipients": [
+    "synthetic-boiler"
+   ],
+   "rule_recipients": [
+    "synthetic-boiler"
+   ],
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.1,
+   "agent_decision": "none",
+   "agent_tool_calls": 4,
+   "agent_ms": 6951,
+   "agent_error": null,
+   "agent_summary": "火检属锅炉燃烧系统，非电气专工核心设备，燃烧稳定非紧急",
+   "understood_devices": [
+    "BOILER"
+   ],
+   "understood_level": "一般",
+   "by_policy": false
+  },
+  {
+   "event_id": "HOLD3-07",
+   "category": "F",
+   "user_id": "synthetic-boiler",
+   "role": "锅炉专工",
+   "target": 0.9,
+   "target_reason": "本人负责机组的锅炉问题，必须第一时间掌握",
+   "rule_score": 0.7,
+   "flagged": false,
+   "triage_reasons": [],
+   "device_tags": [
+    "BOILER"
+   ],
+   "effective_level": "一般",
+   "truth_recipients": [
+    "synthetic-boiler"
+   ],
+   "rule_recipients": [
+    "synthetic-boiler"
+   ],
+   "agent_status": "ok",
+   "agent_recommendation": "push",
+   "agent_score": 0.9,
+   "agent_decision": "must",
+   "agent_tool_calls": 5,
+   "agent_ms": 6951,
+   "agent_error": null,
+   "agent_summary": "燃烧器属锅炉燃烧系统，是锅炉专工核心设备，发生在本人负责的#1机组，须第一时间掌握。",
+   "understood_devices": [
+    "BOILER"
+   ],
+   "understood_level": "一般",
+   "by_policy": false
+  },
+  {
+   "event_id": "HOLD3-08",
+   "category": "E",
+   "user_id": "synthetic-turbine",
+   "role": "汽轮机专工",
+   "target": 0.1,
+   "target_reason": "锅炉不属于汽轮机专工职责范围，应推给对应专工",
+   "rule_score": 0.0,
+   "flagged": false,
+   "triage_reasons": [],
+   "device_tags": [
+    "BOILER"
+   ],
+   "effective_level": "紧急",
+   "truth_recipients": [
+    "synthetic-boiler"
+   ],
+   "rule_recipients": [
+    "synthetic-boiler"
+   ],
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.1,
+   "agent_decision": "none",
+   "agent_tool_calls": 5,
+   "agent_ms": 6892,
+   "agent_error": null,
+   "agent_summary": "锅炉设备不属汽轮机专工职责，其他机组人员一律不推送",
+   "understood_devices": [
+    "BOILER"
+   ],
+   "understood_level": "紧急",
+   "by_policy": false,
+   "true_level": "紧急",
+   "filed_level": "紧急",
+   "urgency_level": "紧急",
+   "final_level": "紧急",
+   "fast_path": true,
+   "urgency_ms": 2616,
+   "agent_recipients": [
+    "synthetic-boiler"
+   ],
+   "dispatch": {
+    "missed": [],
+    "extra": []
+   }
+  },
+  {
+   "event_id": "HOLD3-08",
+   "category": "E",
+   "user_id": "synthetic-electric",
+   "role": "电气专工",
+   "target": 0.1,
+   "target_reason": "锅炉不属于电气专工职责范围，应推给对应专工",
+   "rule_score": 0.0,
+   "flagged": false,
+   "triage_reasons": [],
+   "device_tags": [
+    "BOILER"
+   ],
+   "effective_level": "紧急",
+   "truth_recipients": [
+    "synthetic-boiler"
+   ],
+   "rule_recipients": [
+    "synthetic-boiler"
+   ],
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.1,
+   "agent_decision": "none",
+   "agent_tool_calls": 5,
+   "agent_ms": 6892,
+   "agent_error": null,
+   "agent_summary": "锅炉水冷壁属锅炉专工核心设备，非电气专工职责，其他机组不推送。",
+   "understood_devices": [
+    "BOILER"
+   ],
+   "understood_level": "紧急",
+   "by_policy": false
+  },
+  {
+   "event_id": "HOLD3-08",
+   "category": "E",
+   "user_id": "synthetic-boiler",
+   "role": "锅炉专工",
+   "target": 0.65,
+   "target_reason": "其他机组的锅炉问题，可作同类设备参考",
+   "rule_score": 0.8,
+   "flagged": false,
+   "triage_reasons": [],
+   "device_tags": [
+    "BOILER"
+   ],
+   "effective_level": "紧急",
+   "truth_recipients": [
+    "synthetic-boiler"
+   ],
+   "rule_recipients": [
+    "synthetic-boiler"
+   ],
+   "agent_status": "ok",
+   "agent_recommendation": "push",
+   "agent_score": 0.65,
+   "agent_decision": "reference",
+   "agent_tool_calls": 5,
+   "agent_ms": 6892,
+   "agent_error": null,
+   "agent_summary": "本岗位核心设备（锅炉）发生在其他机组，可作同类设备泄漏经验参考。",
+   "understood_devices": [
+    "BOILER"
+   ],
+   "understood_level": "紧急",
+   "by_policy": false
+  },
+  {
+   "event_id": "HOLD3-09",
+   "category": "E",
+   "user_id": "synthetic-turbine",
+   "role": "汽轮机专工",
+   "target": 0.1,
+   "target_reason": "发电机不属于汽轮机专工职责范围，应推给对应专工",
+   "rule_score": 0.0,
+   "flagged": false,
+   "triage_reasons": [],
+   "device_tags": [
+    "GENERATOR"
+   ],
+   "effective_level": "紧急",
+   "truth_recipients": [
+    "synthetic-electric"
+   ],
+   "rule_recipients": [
+    "synthetic-electric"
+   ],
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.1,
+   "agent_decision": "none",
+   "agent_tool_calls": 5,
+   "agent_ms": 5946,
+   "agent_error": null,
+   "agent_summary": "发电机非汽轮机专工设备，其他机组人员无需推送",
+   "understood_devices": [
+    "GENERATOR"
+   ],
+   "understood_level": "紧急",
+   "by_policy": false,
+   "true_level": "紧急",
+   "filed_level": "紧急",
+   "urgency_level": "紧急",
+   "final_level": "紧急",
+   "fast_path": true,
+   "urgency_ms": 3429,
+   "agent_recipients": [
+    "synthetic-electric"
+   ],
+   "dispatch": {
+    "missed": [],
+    "extra": []
+   }
+  },
+  {
+   "event_id": "HOLD3-09",
+   "category": "E",
+   "user_id": "synthetic-electric",
+   "role": "电气专工",
+   "target": 0.65,
+   "target_reason": "其他机组的发电机问题，可作同类设备参考",
+   "rule_score": 0.6014,
+   "flagged": false,
+   "triage_reasons": [],
+   "device_tags": [
+    "GENERATOR"
+   ],
+   "effective_level": "紧急",
+   "truth_recipients": [
+    "synthetic-electric"
+   ],
+   "rule_recipients": [
+    "synthetic-electric"
+   ],
+   "agent_status": "ok",
+   "agent_recommendation": "push",
+   "agent_score": 0.65,
+   "agent_decision": "reference",
+   "agent_tool_calls": 5,
+   "agent_ms": 5946,
+   "agent_error": null,
+   "agent_summary": "本岗位核心设备（发电机）发生在其他机组，可作同类设备经验参考。",
+   "understood_devices": [
+    "GENERATOR"
+   ],
+   "understood_level": "紧急",
+   "by_policy": false
+  },
+  {
+   "event_id": "HOLD3-09",
+   "category": "E",
+   "user_id": "synthetic-boiler",
+   "role": "锅炉专工",
+   "target": 0.1,
+   "target_reason": "发电机不属于锅炉专工职责范围，应推给对应专工",
+   "rule_score": 0.0,
+   "flagged": false,
+   "triage_reasons": [],
+   "device_tags": [
+    "GENERATOR"
+   ],
+   "effective_level": "紧急",
+   "truth_recipients": [
+    "synthetic-electric"
+   ],
+   "rule_recipients": [
+    "synthetic-electric"
+   ],
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.1,
+   "agent_decision": "none",
+   "agent_tool_calls": 4,
+   "agent_ms": 5946,
+   "agent_error": null,
+   "agent_summary": "发电机定子接地属电气/发电机专工职责，非锅炉核心或相关设备，不推送",
+   "understood_devices": [
+    "GENERATOR"
+   ],
+   "understood_level": "紧急",
+   "by_policy": false
+  },
+  {
+   "event_id": "HOLD3-10",
+   "category": "E",
+   "user_id": "synthetic-turbine",
+   "role": "汽轮机专工",
+   "target": 0.65,
+   "target_reason": "其他机组的汽轮机问题，可作同类设备参考",
+   "rule_score": 0.629,
+   "flagged": false,
+   "triage_reasons": [],
+   "device_tags": [
+    "TURBINE"
+   ],
+   "effective_level": "紧急",
+   "truth_recipients": [
+    "synthetic-turbine"
+   ],
+   "rule_recipients": [
+    "synthetic-turbine"
+   ],
+   "agent_status": "ok",
+   "agent_recommendation": "push",
+   "agent_score": 0.65,
+   "agent_decision": "reference",
+   "agent_tool_calls": 5,
+   "agent_ms": 7180,
+   "agent_error": null,
+   "agent_summary": "汽轮机轴向位移/推力瓦为本岗位核心设备，发生在其他机组可作同类经验参考",
+   "understood_devices": [
+    "TURBINE"
+   ],
+   "understood_level": "紧急",
+   "by_policy": false,
+   "true_level": "紧急",
+   "filed_level": "紧急",
+   "urgency_level": "紧急",
+   "final_level": "紧急",
+   "fast_path": true,
+   "urgency_ms": 3609,
+   "agent_recipients": [
+    "synthetic-turbine"
+   ],
+   "dispatch": {
+    "missed": [],
+    "extra": []
+   }
+  },
+  {
+   "event_id": "HOLD3-10",
+   "category": "E",
+   "user_id": "synthetic-electric",
+   "role": "电气专工",
+   "target": 0.1,
+   "target_reason": "汽轮机不属于电气专工职责范围，应推给对应专工",
+   "rule_score": 0.0,
+   "flagged": false,
+   "triage_reasons": [],
+   "device_tags": [
+    "TURBINE"
+   ],
+   "effective_level": "紧急",
+   "truth_recipients": [
+    "synthetic-turbine"
+   ],
+   "rule_recipients": [
+    "synthetic-turbine"
+   ],
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.1,
+   "agent_decision": "none",
+   "agent_tool_calls": 5,
+   "agent_ms": 7180,
+   "agent_error": null,
+   "agent_summary": "设备不属本岗位职责，其他机组本岗位人员不推送",
+   "understood_devices": [
+    "TURBINE"
+   ],
+   "understood_level": "紧急",
+   "by_policy": false
+  },
+  {
+   "event_id": "HOLD3-10",
+   "category": "E",
+   "user_id": "synthetic-boiler",
+   "role": "锅炉专工",
+   "target": 0.1,
+   "target_reason": "汽轮机不属于锅炉专工职责范围，应推给对应专工",
+   "rule_score": 0.0,
+   "flagged": false,
+   "triage_reasons": [],
+   "device_tags": [
+    "TURBINE"
+   ],
+   "effective_level": "紧急",
+   "truth_recipients": [
+    "synthetic-turbine"
+   ],
+   "rule_recipients": [
+    "synthetic-turbine"
+   ],
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.1,
+   "agent_decision": "none",
+   "agent_tool_calls": 5,
+   "agent_ms": 7180,
+   "agent_error": null,
+   "agent_summary": "汽轮机设备不属锅炉专工职责，其他机组人员一律不推送",
+   "understood_devices": [
+    "TURBINE"
+   ],
+   "understood_level": "紧急",
+   "by_policy": false
+  },
+  {
+   "event_id": "HOLD3-11",
+   "category": "G",
+   "user_id": "synthetic-turbine",
+   "role": "汽轮机专工",
+   "target": 0.6,
+   "target_reason": "虽是变压器问题，但发生在本人负责机组且为紧急，需要知晓",
+   "rule_score": 0.75,
+   "flagged": false,
+   "triage_reasons": [],
+   "device_tags": [
+    "TRANSFORMER"
+   ],
+   "effective_level": "紧急",
+   "truth_recipients": [
+    "synthetic-boiler",
+    "synthetic-electric",
+    "synthetic-turbine"
+   ],
+   "rule_recipients": [
+    "synthetic-boiler",
+    "synthetic-electric",
+    "synthetic-turbine"
+   ],
+   "agent_status": "ok",
+   "agent_recommendation": "push",
+   "agent_score": 0.9,
+   "agent_decision": "must",
+   "agent_tool_calls": 5,
+   "agent_ms": 6440,
+   "agent_error": null,
+   "agent_summary": "#1机组主变喷油起火跳闸，紧急事件，本机组各专业须知晓",
+   "understood_devices": [
+    "TRANSFORMER"
+   ],
+   "understood_level": "紧急",
+   "by_policy": false,
+   "true_level": "紧急",
+   "filed_level": "紧急",
+   "urgency_level": "紧急",
+   "final_level": "紧急",
+   "fast_path": true,
+   "urgency_ms": 2799,
+   "agent_recipients": [
+    "synthetic-boiler",
+    "synthetic-electric",
+    "synthetic-turbine"
+   ],
+   "dispatch": {
+    "missed": [],
+    "extra": []
+   }
+  },
+  {
+   "event_id": "HOLD3-11",
+   "category": "G",
+   "user_id": "synthetic-electric",
+   "role": "电气专工",
+   "target": 0.9,
+   "target_reason": "本人负责机组的变压器问题，必须第一时间掌握",
+   "rule_score": 0.75,
+   "flagged": false,
+   "triage_reasons": [],
+   "device_tags": [
+    "TRANSFORMER"
+   ],
+   "effective_level": "紧急",
+   "truth_recipients": [
+    "synthetic-boiler",
+    "synthetic-electric",
+    "synthetic-turbine"
+   ],
+   "rule_recipients": [
+    "synthetic-boiler",
+    "synthetic-electric",
+    "synthetic-turbine"
+   ],
+   "agent_status": "ok",
+   "agent_recommendation": "push",
+   "agent_score": 0.9,
+   "agent_decision": "must",
+   "agent_tool_calls": 5,
+   "agent_ms": 6440,
+   "agent_error": null,
+   "agent_summary": "主变属电气专工核心设备，发生在本人负责的#1机组，且已跳闸起火，须第一时间掌握。",
+   "understood_devices": [
+    "TRANSFORMER"
+   ],
+   "understood_level": "紧急",
+   "by_policy": false
+  },
+  {
+   "event_id": "HOLD3-11",
+   "category": "G",
+   "user_id": "synthetic-boiler",
+   "role": "锅炉专工",
+   "target": 0.6,
+   "target_reason": "虽是变压器问题，但发生在本人负责机组且为紧急，需要知晓",
+   "rule_score": 0.75,
+   "flagged": false,
+   "triage_reasons": [],
+   "device_tags": [
+    "TRANSFORMER"
+   ],
+   "effective_level": "紧急",
+   "truth_recipients": [
+    "synthetic-boiler",
+    "synthetic-electric",
+    "synthetic-turbine"
+   ],
+   "rule_recipients": [
+    "synthetic-boiler",
+    "synthetic-electric",
+    "synthetic-turbine"
+   ],
+   "agent_status": "ok",
+   "agent_recommendation": "push",
+   "agent_score": 0.9,
+   "agent_decision": "must",
+   "agent_tool_calls": 5,
+   "agent_ms": 6440,
+   "agent_error": null,
+   "agent_summary": "主变属电气专工核心设备，非锅炉专工职责，本机组也不推送",
+   "understood_devices": [
+    "TRANSFORMER"
+   ],
+   "understood_level": "紧急",
+   "by_policy": true
+  },
+  {
+   "event_id": "HOLD3-12",
+   "category": "E",
+   "user_id": "synthetic-turbine",
+   "role": "汽轮机专工",
+   "target": 0.65,
+   "target_reason": "其他机组的高压缸问题，可作同类设备参考",
+   "rule_score": 0.1502,
+   "flagged": false,
+   "triage_reasons": [],
+   "device_tags": [
+    "TURBINE_HP"
+   ],
+   "effective_level": "一般",
+   "truth_recipients": [
+    "synthetic-turbine"
+   ],
+   "rule_recipients": [],
+   "agent_status": "ok",
+   "agent_recommendation": "push",
+   "agent_score": 0.65,
+   "agent_decision": "reference",
+   "agent_tool_calls": 5,
+   "agent_ms": 6417,
+   "agent_error": null,
+   "agent_summary": "高压缸属本岗位核心设备，发生在其他机组可作同类设备经验参考",
+   "understood_devices": [
+    "TURBINE_HP"
+   ],
+   "understood_level": "重要",
+   "by_policy": false,
+   "true_level": "一般",
+   "filed_level": "一般",
+   "urgency_level": "重要",
+   "final_level": "重要",
+   "fast_path": false,
+   "urgency_ms": 5631,
+   "agent_recipients": [
+    "synthetic-turbine"
+   ],
+   "dispatch": {
+    "missed": [
+     {
+      "user_id": "synthetic-turbine",
+      "name": "synthetic-turbine",
+      "role": "汽轮机专工",
+      "relation": "other_units",
+      "relation_label": "其他机组",
+      "decision": "reference",
+      "decision_label": "可作参考",
+      "by_policy": false,
+      "current_score": 0.1502,
+      "currently_pushed": false
+     }
+    ],
+    "extra": []
+   }
+  },
+  {
+   "event_id": "HOLD3-12",
+   "category": "E",
+   "user_id": "synthetic-electric",
+   "role": "电气专工",
+   "target": 0.1,
+   "target_reason": "高压缸不属于电气专工职责范围，应推给对应专工",
+   "rule_score": 0.0,
+   "flagged": false,
+   "triage_reasons": [],
+   "device_tags": [
+    "TURBINE_HP"
+   ],
+   "effective_level": "一般",
+   "truth_recipients": [
+    "synthetic-turbine"
+   ],
+   "rule_recipients": [],
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.1,
+   "agent_decision": "none",
+   "agent_tool_calls": 5,
+   "agent_ms": 6417,
+   "agent_error": null,
+   "agent_summary": "设备不属本岗位职责，对其他机组本岗位人员一律不推送",
+   "understood_devices": [
+    "TURBINE_HP"
+   ],
+   "understood_level": "重要",
+   "by_policy": false
+  },
+  {
+   "event_id": "HOLD3-12",
+   "category": "E",
+   "user_id": "synthetic-boiler",
+   "role": "锅炉专工",
+   "target": 0.1,
+   "target_reason": "高压缸不属于锅炉专工职责范围，应推给对应专工",
+   "rule_score": 0.0,
+   "flagged": false,
+   "triage_reasons": [],
+   "device_tags": [
+    "TURBINE_HP"
+   ],
+   "effective_level": "一般",
+   "truth_recipients": [
+    "synthetic-turbine"
+   ],
+   "rule_recipients": [],
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.1,
+   "agent_decision": "none",
+   "agent_tool_calls": 5,
+   "agent_ms": 6417,
+   "agent_error": null,
+   "agent_summary": "设备不属锅炉专工职责，对其他机组本岗位人员一律不推送",
+   "understood_devices": [
+    "TURBINE_HP"
+   ],
+   "understood_level": "重要",
+   "by_policy": false
+  },
+  {
+   "event_id": "HOLD3-13",
+   "category": "E",
+   "user_id": "synthetic-turbine",
+   "role": "汽轮机专工",
+   "target": 0.1,
+   "target_reason": "锅炉不属于汽轮机专工职责范围，应推给对应专工",
+   "rule_score": 0.0896,
+   "flagged": false,
+   "triage_reasons": [],
+   "device_tags": [
+    "BOILER"
+   ],
+   "effective_level": "一般",
+   "truth_recipients": [
+    "synthetic-boiler"
+   ],
+   "rule_recipients": [
+    "synthetic-boiler"
+   ],
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.1,
+   "agent_decision": "none",
+   "agent_tool_calls": 5,
+   "agent_ms": 6531,
+   "agent_error": null,
+   "agent_summary": "设备不属本岗位职责，对其他机组本岗位人员一律不推送。",
+   "understood_devices": [
+    "BOILER"
+   ],
+   "understood_level": "一般",
+   "by_policy": false,
+   "true_level": "一般",
+   "filed_level": "一般",
+   "urgency_level": "一般",
+   "final_level": "一般",
+   "fast_path": false,
+   "urgency_ms": 6281,
+   "agent_recipients": [
+    "synthetic-boiler"
+   ],
+   "dispatch": {
+    "missed": [],
+    "extra": []
+   }
+  },
+  {
+   "event_id": "HOLD3-13",
+   "category": "E",
+   "user_id": "synthetic-electric",
+   "role": "电气专工",
+   "target": 0.1,
+   "target_reason": "锅炉不属于电气专工职责范围，应推给对应专工",
+   "rule_score": 0.0,
+   "flagged": false,
+   "triage_reasons": [],
+   "device_tags": [
+    "BOILER"
+   ],
+   "effective_level": "一般",
+   "truth_recipients": [
+    "synthetic-boiler"
+   ],
+   "rule_recipients": [
+    "synthetic-boiler"
+   ],
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.1,
+   "agent_decision": "none",
+   "agent_tool_calls": 5,
+   "agent_ms": 6531,
+   "agent_error": null,
+   "agent_summary": "设备不属电气专工职责，对其他机组本岗位人员一律不推送。",
+   "understood_devices": [
+    "BOILER"
+   ],
+   "understood_level": "一般",
+   "by_policy": false
+  },
+  {
+   "event_id": "HOLD3-13",
+   "category": "E",
+   "user_id": "synthetic-boiler",
+   "role": "锅炉专工",
+   "target": 0.65,
+   "target_reason": "其他机组的锅炉问题，可作同类设备参考",
+   "rule_score": 0.616,
+   "flagged": false,
+   "triage_reasons": [],
+   "device_tags": [
+    "BOILER"
+   ],
+   "effective_level": "一般",
+   "truth_recipients": [
+    "synthetic-boiler"
+   ],
+   "rule_recipients": [
+    "synthetic-boiler"
+   ],
+   "agent_status": "ok",
+   "agent_recommendation": "push",
+   "agent_score": 0.65,
+   "agent_decision": "reference",
+   "agent_tool_calls": 5,
+   "agent_ms": 6531,
+   "agent_error": null,
+   "agent_summary": "本岗位核心设备（锅炉一次风机）发生在其他机组，可作同类设备经验参考。",
+   "understood_devices": [
+    "BOILER"
+   ],
+   "understood_level": "一般",
+   "by_policy": false
+  },
+  {
+   "event_id": "HOLD3-14",
+   "category": "A",
+   "user_id": "synthetic-turbine",
+   "role": "汽轮机专工",
+   "target": 0.45,
+   "target_reason": "循环水泵与本岗位设备运行相关，了解即可",
+   "rule_score": 0.201,
+   "flagged": false,
+   "triage_reasons": [],
+   "device_tags": [
+    "CWP"
+   ],
+   "effective_level": "一般",
+   "truth_recipients": [],
+   "rule_recipients": [],
+   "agent_status": "ok",
+   "agent_recommendation": "push",
+   "agent_score": 0.65,
+   "agent_decision": "reference",
+   "agent_tool_calls": 5,
+   "agent_ms": 6909,
+   "agent_error": null,
+   "agent_summary": "循泵属本岗位相关设备，非核心设备，一般事件，了解即可",
+   "understood_devices": [
+    "CWP"
+   ],
+   "understood_level": "一般",
+   "by_policy": false,
+   "true_level": "一般",
+   "filed_level": "一般",
+   "urgency_level": "一般",
+   "final_level": "一般",
+   "fast_path": false,
+   "urgency_ms": 5115,
+   "agent_recipients": [
+    "synthetic-turbine"
+   ],
+   "dispatch": {
+    "missed": [
+     {
+      "user_id": "synthetic-turbine",
+      "name": "synthetic-turbine",
+      "role": "汽轮机专工",
+      "relation": "own_unit",
+      "relation_label": "本机组",
+      "decision": "reference",
+      "decision_label": "可作参考",
+      "by_policy": false,
+      "current_score": 0.201,
+      "currently_pushed": false
+     }
+    ],
+    "extra": []
+   }
+  },
+  {
+   "event_id": "HOLD3-14",
+   "category": "A",
+   "user_id": "synthetic-electric",
+   "role": "电气专工",
+   "target": 0.1,
+   "target_reason": "循环水泵不属于电气专工职责范围，应推给对应专工",
+   "rule_score": 0.096,
+   "flagged": false,
+   "triage_reasons": [],
+   "device_tags": [
+    "CWP"
+   ],
+   "effective_level": "一般",
+   "truth_recipients": [],
+   "rule_recipients": [],
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.1,
+   "agent_decision": "none",
+   "agent_tool_calls": 5,
+   "agent_ms": 6909,
+   "agent_error": null,
+   "agent_summary": "循泵出口蝶阀属循环冷却水系统，非电气专工核心设备，一般等级不推送",
+   "understood_devices": [
+    "CWP"
+   ],
+   "understood_level": "一般",
+   "by_policy": false
+  },
+  {
+   "event_id": "HOLD3-14",
+   "category": "A",
+   "user_id": "synthetic-boiler",
+   "role": "锅炉专工",
+   "target": 0.1,
+   "target_reason": "循环水泵不属于锅炉专工职责范围，应推给对应专工",
+   "rule_score": 0.084,
+   "flagged": false,
+   "triage_reasons": [],
+   "device_tags": [
+    "CWP"
+   ],
+   "effective_level": "一般",
+   "truth_recipients": [],
+   "rule_recipients": [],
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.1,
+   "agent_decision": "none",
+   "agent_tool_calls": 4,
+   "agent_ms": 6909,
+   "agent_error": null,
+   "agent_summary": "循泵属循环冷却水系统，非锅炉专工核心或相关设备，等级一般非紧急。",
+   "understood_devices": [
+    "CWP"
+   ],
+   "understood_level": "一般",
+   "by_policy": false
+  },
+  {
+   "event_id": "HOLD3-15",
+   "category": "B",
+   "user_id": "synthetic-turbine",
+   "role": "汽轮机专工",
+   "target": 0.05,
+   "target_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+   "rule_score": 0.0,
+   "flagged": true,
+   "triage_reasons": [
+    "大模型识别出规则未覆盖的设备：锅炉"
+   ],
+   "device_tags": [
+    "BOILER"
+   ],
+   "effective_level": "一般",
+   "truth_recipients": [],
+   "rule_recipients": [],
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.1,
+   "agent_decision": "none",
+   "agent_tool_calls": 5,
+   "agent_ms": 7249,
+   "agent_error": null,
+   "agent_summary": "非本岗位设备，其他机组人员一律不推送",
+   "understood_devices": [
+    "BOILER"
+   ],
+   "understood_level": "一般",
+   "by_policy": false,
+   "true_level": "一般",
+   "filed_level": "一般",
+   "urgency_level": "一般",
+   "final_level": "一般",
+   "fast_path": false,
+   "urgency_ms": 3723,
+   "agent_recipients": [],
+   "dispatch": {
+    "missed": [],
+    "extra": []
+   }
+  },
+  {
+   "event_id": "HOLD3-15",
+   "category": "B",
+   "user_id": "synthetic-electric",
+   "role": "电气专工",
+   "target": 0.05,
+   "target_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+   "rule_score": 0.0,
+   "flagged": true,
+   "triage_reasons": [
+    "大模型识别出规则未覆盖的设备：锅炉"
+   ],
+   "device_tags": [
+    "BOILER"
+   ],
+   "effective_level": "一般",
+   "truth_recipients": [],
+   "rule_recipients": [],
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.1,
+   "agent_decision": "none",
+   "agent_tool_calls": 5,
+   "agent_ms": 7249,
+   "agent_error": null,
+   "agent_summary": "非本岗位设备，其他机组人员无需知晓",
+   "understood_devices": [],
+   "understood_level": "一般",
+   "by_policy": false
+  },
+  {
+   "event_id": "HOLD3-15",
+   "category": "B",
+   "user_id": "synthetic-boiler",
+   "role": "锅炉专工",
+   "target": 0.05,
+   "target_reason": "工单未写明设备，无法判断与本岗位相关，暂不推送",
+   "rule_score": 0.4228,
+   "flagged": true,
+   "triage_reasons": [
+    "匹配分 0.42 处于灰区（0.4–0.6），推或不推都有理由",
+    "大模型识别出规则未覆盖的设备：锅炉"
+   ],
+   "device_tags": [
+    "BOILER"
+   ],
+   "effective_level": "一般",
+   "truth_recipients": [],
+   "rule_recipients": [],
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.1,
+   "agent_decision": "none",
+   "agent_tool_calls": 5,
+   "agent_ms": 7249,
+   "agent_error": null,
+   "agent_summary": "非本岗位核心设备，且发生在其他机组，对其他机组人员一律不推送",
+   "understood_devices": [],
+   "understood_level": "一般",
+   "by_policy": false
+  },
+  {
+   "event_id": "HOLD3-16",
+   "category": "A",
+   "user_id": "synthetic-turbine",
+   "role": "汽轮机专工",
+   "target": 0.9,
+   "target_reason": "本人负责机组的DEH问题，必须第一时间掌握",
+   "rule_score": 0.141,
+   "flagged": true,
+   "triage_reasons": [
+    "大模型调用失败，本条只用了规则结果",
+    "未识别出设备：工单可能用了词典外的叫法，无法按岗位判断，规则分可能偏低"
+   ],
+   "device_tags": [],
+   "effective_level": "一般",
+   "truth_recipients": [
+    "synthetic-turbine"
+   ],
+   "rule_recipients": [],
+   "agent_status": "ok",
+   "agent_recommendation": "push",
+   "agent_score": 0.9,
+   "agent_decision": "must",
+   "agent_tool_calls": 5,
+   "agent_ms": 6299,
+   "agent_error": null,
+   "agent_summary": "#1机EH油压波动属本岗位核心设备DEH液压部分异常，需第一时间掌握",
+   "understood_devices": [
+    "DEH_CTRL",
+    "TURBINE"
+   ],
+   "understood_level": "一般",
+   "by_policy": false,
+   "true_level": "一般",
+   "filed_level": "一般",
+   "urgency_level": "一般",
+   "final_level": "一般",
+   "fast_path": false,
+   "urgency_ms": 4497,
+   "agent_recipients": [
+    "synthetic-turbine"
+   ],
+   "dispatch": {
+    "missed": [
+     {
+      "user_id": "synthetic-turbine",
+      "name": "synthetic-turbine",
+      "role": "汽轮机专工",
+      "relation": "own_unit",
+      "relation_label": "本机组",
+      "decision": "must",
+      "decision_label": "必须推送",
+      "by_policy": false,
+      "current_score": 0.141,
+      "currently_pushed": false
+     }
+    ],
+    "extra": []
+   }
+  },
+  {
+   "event_id": "HOLD3-16",
+   "category": "A",
+   "user_id": "synthetic-electric",
+   "role": "电气专工",
+   "target": 0.1,
+   "target_reason": "DEH不属于电气专工职责范围，应推给对应专工",
+   "rule_score": 0.096,
+   "flagged": false,
+   "triage_reasons": [],
+   "device_tags": [
+    "DEH_CTRL"
+   ],
+   "effective_level": "一般",
+   "truth_recipients": [
+    "synthetic-turbine"
+   ],
+   "rule_recipients": [],
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.1,
+   "agent_decision": "none",
+   "agent_tool_calls": 4,
+   "agent_ms": 6299,
+   "agent_error": null,
+   "agent_summary": "EH油压力波动属DEH液压系统，归汽轮机专工，非电气核心设备，等级一般非紧急",
+   "understood_devices": [
+    "DEH_CTRL",
+    "TURBINE"
+   ],
+   "understood_level": "一般",
+   "by_policy": false
+  },
+  {
+   "event_id": "HOLD3-16",
+   "category": "A",
+   "user_id": "synthetic-boiler",
+   "role": "锅炉专工",
+   "target": 0.1,
+   "target_reason": "DEH不属于锅炉专工职责范围，应推给对应专工",
+   "rule_score": 0.084,
+   "flagged": false,
+   "triage_reasons": [],
+   "device_tags": [
+    "DEH_CTRL"
+   ],
+   "effective_level": "一般",
+   "truth_recipients": [
+    "synthetic-turbine"
+   ],
+   "rule_recipients": [],
+   "agent_status": "ok",
+   "agent_recommendation": "no_push",
+   "agent_score": 0.1,
+   "agent_decision": "none",
+   "agent_tool_calls": 5,
+   "agent_ms": 6299,
+   "agent_error": null,
+   "agent_summary": "EH油属DEH液压部分，为汽轮机专工核心设备，非锅炉专工职责",
+   "understood_devices": [
+    "DEH_CTRL",
+    "TURBINE"
+   ],
+   "understood_level": "一般",
+   "by_policy": false
+  }
+ ]
+}

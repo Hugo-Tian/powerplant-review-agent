@@ -2,7 +2,7 @@
 import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
 import {
   explainPrediction, fetchLlmStatus, fetchOrders, fetchProfile, getAgentReview, predict, recordBehavior,
-  runAgentFocus, runAgentReview, runDispatch, getDispatch,
+  runAgentFocus, runAgentReview, runDispatch, getDispatch, confirmEmergency,
   registerUser, runPush, submitFeedback,
 } from './api.js'
 import ScoreGauge from './components/ScoreGauge.vue'
@@ -235,6 +235,14 @@ async function dispatchOrder(row) {
     dispatchRuns[eid] = await runDispatch(eid)
   } catch (e) {
     dispatchRuns[eid] = { status: 'error', error: e.message }
+  }
+}
+async function decideEmergency(row, confirmed) {
+  const eid = row.order.event_id
+  try {
+    dispatchRuns[eid] = await confirmEmergency(eid, { confirmed, reviewer: reviewer.value.trim() || '值班人员' })
+  } catch (e) {
+    error.value = `确认失败：${e.message}`
   }
 }
 const myDispatch = computed(() => {
@@ -497,9 +505,27 @@ onMounted(() => {
               <section class="fp-section agent" aria-label="这条工单推给谁">
                 <h3>这条工单推给谁（按岗位调查）</h3>
                 <template v-if="['ok', 'partial'].includes(dispatchRuns[selected.order.event_id]?.status)">
+                  <div class="team-block" :class="{ challenged: dispatchRuns[selected.order.event_id].level === '紧急' }">
+                    <b>紧急程度</b>
+                    <span>推送按「{{ dispatchRuns[selected.order.event_id].level }}」<template v-if="dispatchRuns[selected.order.event_id].level !== dispatchRuns[selected.order.event_id].filed_level">（填报为{{ dispatchRuns[selected.order.event_id].filed_level }}，等级复核已上调）</template></span>
+                    <ul v-if="dispatchRuns[selected.order.event_id].urgency">
+                      <li>紧急程度智能体：{{ dispatchRuns[selected.order.event_id].urgency.level }}<template v-if="dispatchRuns[selected.order.event_id].urgency.level_span">，原文依据“{{ dispatchRuns[selected.order.event_id].urgency.level_span }}”</template></li>
+                      <li v-for="e in dispatchRuns[selected.order.event_id].escalations || []" :key="e.span">岗位代理上报：{{ e.level }}，原文“{{ e.span }}”</li>
+                      <li v-if="dispatchRuns[selected.order.event_id].urgency.reason" class="fine">{{ dispatchRuns[selected.order.event_id].urgency.reason }}</li>
+                    </ul>
+                  </div>
+                  <div v-if="dispatchRuns[selected.order.event_id].suspected_emergency?.status === 'pending'" class="message warning">
+                    <p><b>疑似紧急，请值班人员确认。</b>紧急程度智能体判为紧急，等级复核没有。确认后按规程推送本机组各专业 {{ dispatchRuns[selected.order.event_id].suspected_emergency.would_notify.length }} 人。</p>
+                    <div class="row-actions">
+                      <button class="primary" @click="decideEmergency(selected, true)" :disabled="busy">确认为紧急</button>
+                      <button @click="decideEmergency(selected, false)" :disabled="busy">不是紧急</button>
+                    </div>
+                  </div>
+                  <p v-else-if="['confirmed', 'rejected'].includes(dispatchRuns[selected.order.event_id].suspected_emergency?.status)" class="fine">疑似紧急已由 {{ dispatchRuns[selected.order.event_id].suspected_emergency.reviewer }} {{ dispatchRuns[selected.order.event_id].suspected_emergency.status === 'confirmed' ? '确认为紧急' : '判定为不紧急' }}。</p>
+                  <p v-if="dispatchRuns[selected.order.event_id].fast_path?.triggered" class="message error">紧急快速通道：按推送规程，已将本机组各专业 {{ dispatchRuns[selected.order.event_id].fast_path.people.length }} 人列为必须推送（不等岗位代理）。</p>
                   <div v-if="myDispatch" class="verdict-row" :class="recClass[decisionClass[myDispatch.decision]] || ''">
                     <strong>对你：{{ myDispatch.decision_label }}</strong>
-                    <span>{{ myDispatch.role }} · {{ myDispatch.relation_label }}</span>
+                    <span>{{ myDispatch.role }} · {{ myDispatch.relation_label }}{{ myDispatch.by_policy ? ' · 按规程（本机组紧急）' : '' }}</span>
                   </div>
                   <div v-for="(r, role) in dispatchRuns[selected.order.event_id].roles" :key="role" class="team-block">
                     <b>{{ role }}</b>
@@ -523,7 +549,7 @@ onMounted(() => {
                 <p v-else-if="dispatchRuns[selected.order.event_id]?.status === 'error'" class="message error">调查失败：{{ dispatchRuns[selected.order.event_id].error }}</p>
                 <p v-else-if="dispatchRuns[selected.order.event_id]?.note" class="fine">{{ dispatchRuns[selected.order.event_id].note }}</p>
                 <template v-else>
-                  <p class="fine">每个岗位一个智能体，并行判断这条工单该推给本岗位哪些人（本机组 / 其他机组：必须推送、可作参考、不推送），再和当前推送对比，找出可能漏推和多推。一条工单只调查一次，人数增加不会增加调查次数。</p>
+                  <p class="fine">推送按等级复核的等级（只能上调，须引用原文；紧急则按规程立即通知本机组各专业）；紧急程度智能体同时判断，它独自判为紧急时转值班人员确认。每个岗位一个智能体并行判断这条工单该推给本岗位哪些人（本机组 / 其他机组：必须推送、可作参考、不推送），和当前推送对比找出可能漏推和多推。一条工单只调查一次，人数增加不会增加调查次数。</p>
                   <button @click="dispatchOrder(selected)" :disabled="!llm?.enabled || busy">按岗位调查</button>
                 </template>
               </section>

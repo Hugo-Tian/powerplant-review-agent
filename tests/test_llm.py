@@ -142,7 +142,7 @@ class DeepSeekTests(unittest.TestCase):
 
 class PredictorTests(unittest.TestCase):
     def test_llm_tags_and_upgrade_change_the_score(self):
-        order = WorkOrder("e1", "#2机组异常", TEXT, "一般", "#2")
+        order = WorkOrder("e1", "#1机组异常", TEXT, "一般", "#1")  # 本人负责的机组：紧急保底生效
         base = PushPredictor().predict(order, PROFILE)
         calls = []
         llm = PushPredictor(analyzer=OrderAnalyzer(OPENAI, client=LLMClient(OPENAI, openai_transport(ANSWER, calls))))
@@ -154,6 +154,9 @@ class PredictorTests(unittest.TestCase):
         self.assertEqual(result["push_type"], "emergency")
         self.assertGreaterEqual(result["score"], 0.75)
         self.assertTrue(result["push_reasons"][0].startswith("AI 复核：等级由「一般」上调为「紧急」"))
+        other = llm.predict(WorkOrder("e2", "#2机组异常", TEXT, "一般", "#2"), PROFILE)  # 其他机组：不套紧急保底
+        self.assertEqual(other["effective_level"], "紧急")
+        self.assertNotEqual(other["push_type"], "emergency")
         conf = lambda r, code: next(t["confidence"] for t in r["tags"] if t["code"] == code)  # noqa: E731
         self.assertEqual(next(t["source"] for t in result["tags"] if t["code"] == "TURBINE"), "merged")
         self.assertTrue(next(t["llm"] for t in result["tags"] if t["code"] == "TURBINE"))

@@ -52,8 +52,9 @@ class SyntheticDataTests(unittest.TestCase):
                 result = response.json()
                 self.assertTrue(0 <= result['score'] <= 1)
                 self.assertIsNone(result['confidence'])
-                if request['order']['level'] == '紧急':
-                    self.assertGreaterEqual(result['score'], 0.75)
+                unit = request['order'].get('unit_no')
+                if request['order']['level'] == '紧急' and (not unit or unit in request['profile']['responsible_units']):
+                    self.assertGreaterEqual(result['score'], 0.75)  # 紧急保底只对本人机组（或未填机组）生效
             self.assertEqual(client.get('/orders').json()['total'], 320)
             first = client.get('/orders?limit=200').json()['items']
             second = client.get('/orders?offset=200&limit=200').json()['items']

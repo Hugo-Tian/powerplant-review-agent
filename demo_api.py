@@ -290,6 +290,12 @@ class AgentBatchInput(InputModel):
     limit: int = Field(default=5, ge=1, le=30, description="最多调查多少条待确认的重点审核工单")
 
 
+class EmergencyConfirmInput(InputModel):
+    confirmed: bool = Field(description="true：确认是紧急事件，按规程推送本机组各专业；false：不是紧急")
+    reviewer: str = Field(min_length=1, max_length=200)
+    comment: str = Field(default="", max_length=500)
+
+
 class DispatchBatchInput(InputModel):
     limit: int = Field(default=5, ge=1, le=30, description="最多按岗位调查多少条工单")
 
@@ -604,35 +610,102 @@ def create_app(db_path: str | Path | None = None, *, llm_config: LLMConfig | Non
         return {"status": "ok", "reviewed": out, "remaining": max(0, len(todo) - len(out))}
 
     # ── 按岗位调查：一条工单一次，各岗位代理并行 ─────────────────────────────
-    def run_dispatch(event_id: str) -> dict:
+    def agent_unavailable(what: str) -> dict | None:
+        if not app.state.analyzer.enabled:
+            return {"status": "disabled", "note": f"未配置大模型，{what}不可用。"}
+        from core.agent_openjiuwen import available
+        if not available():
+            return {"status": "unavailable", "note": f"{what}需要 openjiuwen（.jiuwen-venv）。"}
+        return None
+
+    def find_order(event_id: str) -> dict:
         order = next((o for o in store().all_orders() if o['event_id'] == event_id), None)
         if order is None:
             raise HTTPException(status_code=404, detail="工单不存在")
-        analyzer = app.state.analyzer
-        if not analyzer.enabled:
-            return {"status": "disabled", "note": "未配置大模型，按岗位调查不可用。"}
-        from core.agent_openjiuwen import available
-        if not available():
-            return {"status": "unavailable", "note": "按岗位调查需要 openjiuwen（.jiuwen-venv）。"}
-        from core.agent_dispatch import RoleDispatchAgent  # heavy import, only when used
+        return order
+
+    def run_urgency(event_id: str) -> dict:
+        """紧急程度智能体：一条工单判断一次实际等级（只能维持或上调，上调须引用原文）。"""
+        order = find_order(event_id)
+        if (off := agent_unavailable("紧急程度判断")):
+            return off
+        from core.agent_urgency import UrgencyAgent, UrgencyToolbox  # heavy import, only when used
+        prediction = next(iter(store().latest_for_event(event_id).values()), None)
+        tags = [t['code'] for t in (prediction or {}).get('tags', [])]
+        box = UrgencyToolbox(order=order, prediction=prediction, unit_orders=store().all_orders,
+                             tags_by_event=store().latest_tags_by_event,
+                             similar=lambda k: similarity_index().query(order_text(order), tags, exclude=event_id, k=k))
+        return store().save_urgency_run(event_id, UrgencyAgent(app.state.analyzer.config).run(box))
+
+    @router.post("/orders/{event_id}/urgency", tags=["审核助手"],
+                 summary="紧急程度智能体判断这条工单的实际等级（只能维持或上调，上调须引用原文；不修改分数）")
+    def urgency_review(event_id: str):
+        return run_urgency(event_id)
+
+    @router.get("/orders/{event_id}/urgency", tags=["审核助手"], summary="读取最近一次紧急程度判断")
+    def get_urgency(event_id: str):
+        run = store().latest_urgency_run(event_id)
+        if run is None:
+            raise HTTPException(status_code=404, detail="这条工单还没有紧急程度判断")
+        return run
+
+    @router.post("/urgency/scan", tags=["审核助手"],
+                 summary="对还没判断过紧急程度的工单依次判断（演示中手动触发；正式部署时在新工单进入时自动触发）")
+    def urgency_scan(body: DispatchBatchInput = DispatchBatchInput()):
+        done = store().urgency_events()
+        todo = [o['event_id'] for o in store().all_orders() if o['event_id'] not in done]
+        out = []
+        for e in todo[:body.limit]:
+            run = run_urgency(e)
+            out.append({k: run.get(k) for k in ('status', 'level', 'filed_level', 'raised', 'duration_ms')} | {"event_id": e})
+        return {"status": "ok", "reviewed": out, "remaining": max(0, len(todo) - len(out))}
+
+    def dispatch_users(event_id: str) -> tuple[dict, list[dict]]:
+        """Latest result per user for this order, and every user with role, units and current push."""
         latest = store().latest_for_event(event_id)
         users = [{"user_id": u['user_id'], "name": u.get('name'), "role": u['role'],
                   "responsible_units": u['responsible_units'],
                   "current_score": (latest.get(u['user_id']) or {}).get('score'),
                   "currently_pushed": bool(latest.get(u['user_id']) and latest[u['user_id']]['score'] >= 0.5)}
                  for u in store().list_users() if u.get('role')]
+        return latest, users
+
+    def run_dispatch(event_id: str) -> dict:
+        order = find_order(event_id)
+        if (off := agent_unavailable("按岗位调查")):
+            return off
+        from core.agent_dispatch import RoleDispatchAgent  # heavy import, only when used
+        # 紧急程度智能体先判断（已有判断就复用）；推送用的等级取等级复核，智能体独自判紧急时转值班人员确认
+        urgency = store().latest_urgency_run(event_id) or run_urgency(event_id)
+        latest, users = dispatch_users(event_id)
         prediction = next(iter(latest.values()), None)
         tags = [t['code'] for t in (prediction or {}).get('tags', [])]
-        out = RoleDispatchAgent(analyzer.config).run(
+        out = RoleDispatchAgent(app.state.analyzer.config).run(
             order, prediction, users,
             similar=lambda k: similarity_index().query(order_text(order), tags, exclude=event_id, k=k),
-            feedback_rows=store().feedback_rows)
+            feedback_rows=store().feedback_rows,
+            urgency={k: urgency.get(k) for k in ('level', 'level_span', 'reason', 'raised', 'status', 'run_id',
+                                                 'duration_ms', 'evidence', 'notes')})
         return store().save_dispatch_run(event_id, out)
 
     @router.post("/orders/{event_id}/dispatch-review", tags=["审核助手"],
                  summary="按岗位调查这条工单该推给谁：每个岗位一个智能体并行判断（不修改分数，过程留痕）")
     def dispatch_review(event_id: str):
         return run_dispatch(event_id)
+
+    @router.post("/orders/{event_id}/emergency-confirm", tags=["审核助手"],
+                 summary="值班人员确认或否定“疑似紧急”：确认后按规程推送本机组各专业（只由代码重算，不调用大模型）")
+    def emergency_confirm(event_id: str, body: EmergencyConfirmInput):
+        run = store().latest_dispatch_run(event_id)
+        if run is None:
+            raise HTTPException(status_code=404, detail="这条工单还没有按岗位调查")
+        if (run.get('suspected_emergency') or {}).get('status') != 'pending':
+            raise HTTPException(status_code=409, detail="这条工单没有待确认的疑似紧急")
+        from core.agent_dispatch import confirm_emergency
+        _, users = dispatch_users(event_id)
+        out = confirm_emergency(run, find_order(event_id), users, confirmed=body.confirmed,
+                                reviewer=body.reviewer, comment=body.comment)
+        return store().save_dispatch_run(event_id, out)
 
     @router.get("/orders/{event_id}/dispatch-review", tags=["审核助手"], summary="读取最近一次按岗位调查")
     def get_dispatch_review(event_id: str):

@@ -126,6 +126,15 @@ CREATE TABLE IF NOT EXISTS dispatch_runs (
     created_at TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_dispatch_runs_event ON dispatch_runs(event_id, sequence);
+CREATE TABLE IF NOT EXISTS urgency_runs (
+    sequence INTEGER PRIMARY KEY AUTOINCREMENT,
+    run_id TEXT NOT NULL UNIQUE,
+    event_id TEXT NOT NULL,
+    level TEXT,
+    result_json TEXT NOT NULL,
+    created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_urgency_runs_event ON urgency_runs(event_id, sequence);
 CREATE TABLE IF NOT EXISTS profiles (
     user_id TEXT PRIMARY KEY REFERENCES users(user_id),
     profile_json TEXT NOT NULL,
@@ -561,6 +570,25 @@ class SQLiteOrderStore:
             row = conn.execute('SELECT result_json FROM dispatch_runs WHERE event_id=? ORDER BY sequence DESC LIMIT 1',
                                (event_id,)).fetchone()
         return json.loads(row['result_json']) if row else None
+
+    def save_urgency_run(self, event_id, result):
+        """紧急程度智能体的判断（一条工单一次）。"""
+        record = dict(result, run_id=str(uuid4()), event_id=event_id,
+                      created_at=datetime.now(timezone.utc).isoformat())
+        with self.connection() as conn:
+            conn.execute('INSERT INTO urgency_runs (run_id,event_id,level,result_json,created_at) VALUES (?,?,?,?,?)',
+                         (record['run_id'], event_id, record.get('level'), encode(record), record['created_at']))
+        return record
+
+    def latest_urgency_run(self, event_id):
+        with self.connection() as conn:
+            row = conn.execute('SELECT result_json FROM urgency_runs WHERE event_id=? ORDER BY sequence DESC LIMIT 1',
+                               (event_id,)).fetchone()
+        return json.loads(row['result_json']) if row else None
+
+    def urgency_events(self):
+        with self.connection() as conn:
+            return {r[0] for r in conn.execute('SELECT DISTINCT event_id FROM urgency_runs').fetchall()}
 
     def dispatched_events(self):
         with self.connection() as conn:

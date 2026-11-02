@@ -119,9 +119,15 @@ def main():
                                agent_decision=d, agent_tool_calls=role_run.get("tool_calls"),
                                agent_ms=drun.get("duration_ms"), agent_error=role_run.get("error") or drun.get("error"),
                                agent_summary=(res.get("decisions", {}).get(person["relation"]) or {}).get("reason") or res.get("summary"),
-                               understood_devices=[x["code"] for x in res.get("devices", [])], understood_level=res.get("level"))
-                    if uid == USERS[0]:  # 一条工单一次调查：漏推统计每条工单只算一次
-                        row.update(agent_recipients=sorted(p["user_id"] for p in drun["people"]
+                               understood_devices=[x["code"] for x in res.get("devices", [])], understood_level=drun.get("level"),
+                               by_policy=person.get("by_policy"))
+                    if uid == USERS[0]:  # 一条工单一次调查：漏推统计、等级判断每条工单只算一次
+                        row.update(true_level=case.get("true_level") or case["level"], filed_level=case["level"],
+                                   urgency_level=(drun.get("urgency") or {}).get("level"), final_level=drun.get("level"),
+                                   fast_path=(drun.get("fast_path") or {}).get("triggered"),
+                                   suspected=(drun.get("suspected_emergency") or {}).get("flag"),
+                                   urgency_ms=(drun.get("urgency") or {}).get("duration_ms"),
+                                   agent_recipients=sorted(p["user_id"] for p in drun["people"]
                                                            if p["user_id"] in USERS and p["decision"] in ("must", "reference")),
                                    dispatch={"missed": drun.get("missed"), "extra": drun.get("extra")})
                 elif engine and (row["flagged"] or not args.flagged_only):
@@ -186,6 +192,29 @@ def main():
                                     if m["user_id"] not in r["truth_recipients"]),
                 "reviews": {s: sum(1 for r in ran if r.get("review") == s) for s in {r.get("review") for r in ran}},
             }
+    lv = [r for r in rows if "true_level" in r]
+    if lv:  # 按岗位调查：每条工单的等级判断（填报 / 大模型等级复核 / 紧急程度智能体 / 最终）
+        report["level"] = {"cases": len(lv), "filed": sum(r["filed_level"] == r["true_level"] for r in lv),
+                           "llm_review": sum(r["effective_level"] == r["true_level"] for r in lv),
+                           "urgency_agent": sum(r["urgency_level"] == r["true_level"] for r in lv),
+                           "final": sum(r["final_level"] == r["true_level"] for r in lv),
+                           "fast_path": sum(1 for r in lv if r.get("fast_path")),
+                           "suspected": sum(1 for r in lv if r.get("suspected")),
+                           "suspected_real": sum(1 for r in lv if r.get("suspected") and r["true_level"] == "紧急"),
+                           "suspected_false": sum(1 for r in lv if r.get("suspected") and r["true_level"] != "紧急"),
+                           "emergency_total": sum(1 for r in lv if r["true_level"] == "紧急"),
+                           "emergency_auto": sum(1 for r in lv if r["true_level"] == "紧急" and r["final_level"] == "紧急"),
+                           "emergency_missed": [r["event_id"] for r in lv if r["true_level"] == "紧急"
+                                                and r["final_level"] != "紧急" and not r.get("suspected")],
+                           "mismatches": [{k: r[k] for k in ("event_id", "filed_level", "effective_level", "urgency_level",
+                                                             "final_level", "true_level")}
+                                          for r in lv if r["final_level"] != r["true_level"]]}
+    if roles:  # 假设值班人员对“疑似紧急”的判断都正确：真紧急确认后，本机组人员按规程须推送
+        real = {r["event_id"] for r in lv if r.get("suspected") and r["true_level"] == "紧急"}
+        own = {c["event_id"] for c in cases if c.get("unit_no") == "#1"}  # 三位评测用户都负责 #1
+        conf = [dict(r, agent_score=0.9) if r["event_id"] in real & own and r.get("agent_score") is not None else r
+                for r in rows if r.get("agent_score") is not None]
+        report["agent_with_correct_confirmation"] = summarize(conf, "agent_score")
     print(json.dumps(report, ensure_ascii=False, indent=2))
     if args.out:
         Path(args.out).parent.mkdir(parents=True, exist_ok=True)

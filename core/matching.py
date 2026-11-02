@@ -135,12 +135,16 @@ class MatchingEngine:
         if matched_mfrs and breakdown["device_type"] <= 0.5 and breakdown["role"] <= 0.5:
             total = min(total + 0.15, 1.0)
 
-        # 紧急事件强制保底分数
-        if event_level == "紧急":
+        # 紧急事件强制保底分数：只对本人负责的机组（或工单未填机组时）生效。
+        # 推送规程只要求本机组各专业知晓；其他机组的紧急工单按正常评分（本专业核心设备仍会因岗位维度得到较高分）。
+        emergency = event_level == "紧急" and (not event_unit or event_unit in profile.responsible_units)
+        if emergency:
             total = max(total, 0.75)
             reasons.insert(0, "紧急等级事件，优先推送")
+        elif event_level == "紧急":
+            reasons.insert(0, f"其他机组（{event_unit}）的紧急事件，按设备相关性评分")
 
-        push_type = "emergency" if event_level == "紧急" else (
+        push_type = "emergency" if emergency else (
             "personal" if (breakdown["device_type"] > 0.5 or breakdown["role"] > 0.5)
             else "device_group"
         )

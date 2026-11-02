@@ -99,6 +99,9 @@ main { flex: 1; min-width: 0; padding: 0 28px 24px; }
 .message { padding: 10px 14px; border-radius: var(--r); font-size: 13px; margin-bottom: 14px; overflow-wrap: anywhere; border: 1px solid; }
 .message.error { background: var(--red-bg); color: #8f2a17; border-color: #efc4b9; }
 .message.success { background: var(--green-bg); color: #1f5c3b; border-color: #bfdcc9; }
+.message.warning { background: var(--amber-bg); color: var(--amber-text); border-color: #ecd28a; }
+.message.warning p { margin: 0 0 8px; }
+.message.warning .row-actions button { margin-left: 0; }
 .message button { margin-left: 10px; padding: 4px 10px; font-size: 12px; }
 
 /* ── 工作台 ───────────────────────────────── */
