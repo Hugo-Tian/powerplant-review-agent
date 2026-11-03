@@ -71,9 +71,9 @@
     <div class="row">
       <div class="box flex1"><b>运维专工（汽轮机 / 电气 / 锅炉）</b><small>只看与自己相关的工单；查看智能体的结论与证据</small></div>
       <div class="arrow">⇄</div>
-      <div class="box flex1 dark"><b>Vue 3 工作台</b><small>推送工作台 · 评分仪表盘 · 审核助手面板（含多智能体复核、漏推提示）· 批量预审 · 学习与评估页</small></div>
+      <div class="box flex1 dark"><b>Vue 3 工作台</b><small>推送工作台 · 评分仪表盘 · 审核助手面板 · 这条工单推给谁（按岗位调查、疑似紧急确认）· 批量预审 · 学习与评估页</small></div>
       <div class="arrow">⇄</div>
-      <div class="box flex1"><b>值班审核员</b><small>确认 / 修改推送，填写理由；批准权重、画像与词典调整</small></div>
+      <div class="box flex1"><b>值班审核员</b><small>确认 / 修改推送，填写理由；确认“疑似紧急”；批准权重、画像与词典调整</small></div>
     </div>
   </div>
 
@@ -88,7 +88,7 @@
         <div class="arrow">▶</div>
         <div class="box" style="width:190px"><b><span class="num">2</span>用户画像</b><small>基础兴趣 + 行为学习（动作权重 × 停留 × 时间衰减，饱和映射）</small></div>
         <div class="arrow">▶</div>
-        <div class="box" style="width:200px"><b><span class="num">3</span>四维评分 v2</b><small>设备 / 行为 / 岗位 / 厂家；岗位专属权重；紧急保底</small></div>
+        <div class="box" style="width:200px"><b><span class="num">3</span>四维评分 v2</b><small>设备 / 行为 / 岗位 / 厂家；岗位专属权重；本机组紧急保底</small></div>
         <div class="arrow">▶</div>
         <div class="box amber" style="width:250px"><b><span class="num">4</span>分流（重点审核）</b><small>灰区 0.4–0.6 · 大模型上调等级 · 新设备 · 未识别设备 · 设备字段与原文不符 · 设备词只作地点 · 相似工单被本人改过</small></div>
       </div>
@@ -98,9 +98,9 @@
           <div class="split">
             <div class="box"><b>单智能体 · ReActAgent</b><small>Thought → Action → Observation；9 个只读工具以 LocalFunction 注册，最多 8 次调用；回调记录每一步推理</small>
               <div><span class="chip">查看工单</span><span class="chip">评分构成</span><span class="chip">用户画像</span><span class="chip">相似工单+人工结论</span><span class="chip">同机组工单</span><span class="chip">本人审核历史</span><span class="chip">假设试算</span><span class="chip">推送规程</span><span class="chip">部件知识库</span></div></div>
-            <div class="box"><b>多智能体团队 · HandoffTeam</b><small>工单理解 → 调查 → 复核，三个 ReActAgent 用 transfer_to 交接；复核可退回一次；另给出“还应推给谁”（漏推 / 多推发现）</small></div>
+            <div class="box"><b>按岗位调查 · 多个 ReActAgent 并行</b><small>每条工单一次：紧急程度智能体 → 各岗位代理并行判断本机组 / 其他机组“必须推送 / 可作参考 / 不推送” → 代码汇总到每个人，找出漏推、多推；调查次数不随人数增长</small><div><span class="chip">本机组紧急：快速通道</span><span class="chip">仅智能体判紧急：转值班确认</span></div></div>
           </div>
-          <div class="guard">结论护栏（代码校验）：证据必须来自本次调用过的工具 · 数字必须能在工具返回中找到 · 建议与分数矛盾或无有效证据 → 降级为“需人工判断” · 复核仍有异议 → 需人工判断</div>
+          <div class="guard">结论护栏（代码校验）：证据必须来自本次调用过的工具 · 数字必须能在工具返回中找到 · 建议与分数矛盾或无有效证据 → 降级为“需人工判断” · 岗位判断只能把等级往上报、须引用原文</div>
         </div>
         <div class="arrow">▶</div>
         <div class="box green flex1"><b><span class="num">6</span>人工审核</b><small>“按建议审核”预填表单；确认或修改后保存。原始评分永不覆盖，修改全部留历史。未被分流的推送直接进入此队列快速通过。</small></div>
@@ -127,7 +127,7 @@
   <div class="layer">
     <div class="tag">评测与<br>验证</div>
     <div class="row">
-      <div class="box flex1"><b>困难工单集 + 两批留出集</b><small>47 条刻意构造的难例（俗称、地点词、字段填错、等级低估、其他机组）；留出集在相应改动前提交</small></div>
+      <div class="box flex1"><b>困难工单集 + 四批留出集</b><small>79 条刻意构造的难例（俗称、地点词、字段填错、等级低估、其他机组紧急）；四批留出集各在相应改动前提交</small></div>
       <div class="arrow"></div>
       <div class="box flex1"><b>模拟审核员</b><small>按推送规程给出标准答案，用于在没有真实审核数据时检验流程</small></div>
       <div class="arrow"></div>
@@ -136,6 +136,37 @@
   </div>
   <div class="legend"><span class="la">智能体相关 / 需重点审核</span><span class="lg">人工环节</span><span class="lb">数据与知识</span></div>
   <div class="note">所有数据为虚构的模拟工单；效果数字均对照模拟审核规则，不代表真实电厂效果。</div>
+</section>
+
+<section class="fig" id="agent_dispatch">
+  <h1>按岗位调查：一条工单推给谁（openJiuwen，多个 ReActAgent）</h1>
+  <div class="sub">一条工单只调查一次；各岗位代理并行；等级、证据、推送规程由代码校验和执行，智能体只读、不改任何分数。</div>
+  <div class="team" style="grid-template-columns: 1fr 86px 1.25fr 86px 1fr;">
+    <div class="agent">
+      <h3>① 定等级</h3>
+      <div class="role">推送用的等级 = 大模型等级复核（只能上调，须引用原文）。紧急程度智能体同时判断：查同机组近期工单、相似工单等级、部件知识库。</div>
+      <ul><li>两者都判紧急 → 快速通道</li><li>只有智能体判紧急 → <b>疑似紧急</b>，转值班人员确认</li><li>智能体不能下调填报等级</li></ul>
+    </div>
+    <div class="handoff"><div class="a">▶</div>等级交给<br>各岗位</div>
+    <div class="agent">
+      <h3>② 岗位代理并行（每岗位一个）</h3>
+      <div class="role">只读本岗位职责、本岗位人员当前推送情况、本岗位同事对相似工单的审核。对两类人各给一个判断：</div>
+      <div><span class="chip">本机组：必须 / 参考 / 不推</span><span class="chip">其他机组：必须 / 参考 / 不推</span></div>
+      <ul><li>“可作参考”只用于本岗位核心设备发生在其他机组</li><li>设备须在词表内并引用原文；证据须来自已调用的工具</li><li>可上报更高等级（须引用原文），不能下调</li></ul>
+    </div>
+    <div class="handoff"><div class="a">▶</div>代码<br>汇总</div>
+    <div class="agent">
+      <h3>③ 展开到每个人</h3>
+      <div class="role">同岗位、同机组关系的人结论相同，展开后与系统当前推送对比。</div>
+      <ul><li>可能漏推 / 可能多推 / 需人工判断</li><li>等级紧急：本机组各专业一律必须推送（按规程，由代码执行）</li><li>每条约 12 秒，与人数无关</li></ul>
+    </div>
+  </div>
+  <div class="out">
+    <div class="box amber"><b>紧急快速通道</b><small>等级复核判为紧急，或值班人员确认了疑似紧急：按推送规程立即推送本机组各专业，不等岗位代理</small></div>
+    <div class="box amber"><b>疑似紧急 → 值班人员</b><small>只有紧急程度智能体（或岗位代理）判紧急时不自动推送，界面提示确认；确认后由代码重算，不再调用大模型</small></div>
+    <div class="box green"><b>交给人工审核</b><small>界面展示等级依据、各岗位的判断与证据、漏推 / 多推提示；人工拍板</small></div>
+  </div>
+  <div class="note">实现：core/agent_urgency.py、core/agent_dispatch.py。另保留串行团队引擎（理解 → 调查 → 复核）作对照。数据为模拟工单。</div>
 </section>
 
 <section class="fig" id="agent_team">

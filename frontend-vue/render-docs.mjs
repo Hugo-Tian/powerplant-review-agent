@@ -1,6 +1,6 @@
 // Render the architecture diagrams (docs/diagrams/diagrams.html) to PNG and the
 // competition docs (docs/competition/*.md) to PDF, using Playwright's Chromium.
-//   node render-docs.mjs diagrams        -> docs/images/architecture.png, agent_team.png
+//   node render-docs.mjs diagrams        -> docs/images/architecture.png, agent_dispatch.png, agent_team.png
 //   node render-docs.mjs pdf <out-dir> <a.md> [b.md ...]
 import { chromium } from '@playwright/test'
 import { readFile, writeFile, mkdir } from 'node:fs/promises'
@@ -12,7 +12,7 @@ const ROOT = resolve(import.meta.dirname, '..')
 async function diagrams(browser) {
   const page = await browser.newPage({ viewport: { width: 1600, height: 1000 }, deviceScaleFactor: 2 })
   await page.goto(pathToFileURL(join(ROOT, 'docs/diagrams/diagrams.html')).href)
-  for (const id of ['architecture', 'agent_team']) {
+  for (const id of ['architecture', 'agent_dispatch', 'agent_team']) {
     const out = join(ROOT, 'docs/images', `${id}.png`)
     await page.locator(`#${id}`).screenshot({ path: out })
     console.log(out)

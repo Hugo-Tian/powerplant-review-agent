@@ -39,6 +39,10 @@
 | 分流文本检查 | `core/inference.py` | 未识别设备、设备字段与原文不符、设备词只作地点 |
 | 困难工单评测 | `data/synthetic/hard_cases*.json`、`scripts/eval_hard_cases.py`、`data/eval/` | 47 条刻意构造的难例（主集 + 两批留出集），规则、单智能体、团队分批对比 |
 | 专工盲评工具 | `scripts/make_blind_review.py`、`scripts/score_blind_review.py`、`data/blind_review/` | 只给专工看工单原文的盲评表、答案键与计分（含专工间 kappa、标注争议、专工出题导出） |
+| **按岗位调查（多个 openJiuwen ReActAgent 并行）** | `core/agent_dispatch.py` | 一条工单调查一次，每个岗位一个智能体并行判断推给谁（必须推送 / 可作参考 / 不推送），代码展开到每个人；紧急快速通道 |
+| 紧急程度智能体与值班确认 | `core/agent_urgency.py`、`demo_api.py` | 每条工单判断实际等级（只能上调、须引用原文）；独自判紧急时标为疑似紧急，值班人员确认后由代码按规程重算 |
+| 员工规模扩展 | `demo_api.py`、`core/sqlite_store.py`、`core/inference.py`、`scripts/scale_test.py` | 修复批量评分随人数变慢（相似工单索引反复重建、每对多次数据库连接、重复文本提取）；规模测试脚本 |
+| 困难工单留出集 3、4 | `data/synthetic/hard_cases_holdout3.json`、`hard_cases_holdout4.json` | 分别在紧急程度智能体、最终组合规则之前编写并提交 |
 | 补充文档 | `docs/competition/`、`docs/diagrams/`、`frontend-vue/render-docs.mjs` | 需求与场景、架构、落地方案、亮点、界面示意、参考文档；架构图与 PDF 生成脚本 |
 | 测试 | `tests/test_llm.py`、`tests/test_steps345.py`、`tests/test_agent.py`、`tests/test_agent_openjiuwen.py`、`tests/test_agent_team.py`、`tests/test_blind_review.py` 等 | 含用本地假模型服务驱动 openJiuwen ReActAgent 的端到端测试 |
 
