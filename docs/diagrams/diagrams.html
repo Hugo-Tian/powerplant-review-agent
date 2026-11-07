@@ -58,6 +58,26 @@
   .back { margin: 10px 0 0 calc(40% - 20px); width: 40%; border-top: 2px dashed var(--red); position: relative; text-align: center;
           color: var(--red); font-size: 13.5px; padding-top: 6px; }
   .out { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 18px; }
+
+  /* 评测结果页 */
+  .res { display: grid; grid-template-columns: 1.15fr 1fr; gap: 16px; }
+  .card { background: #fff; border: 1.5px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+  .card h3 { margin: 0 0 4px; font-size: 18px; }
+  .card .hint { color: var(--muted); font-size: 13px; margin-bottom: 10px; }
+  .bar { display: grid; grid-template-columns: 210px 1fr 64px; align-items: center; gap: 10px; margin: 7px 0; font-size: 15px; }
+  .bar .track { height: 18px; background: var(--cabinet); border-radius: 4px; overflow: hidden; }
+  .bar .fill { height: 100%; background: var(--line); }
+  .bar .fill.hi { background: var(--amber); }
+  .bar .fill.ok { background: var(--green); }
+  .bar b { font-variant-numeric: tabular-nums; text-align: right; }
+  table.t { border-collapse: collapse; width: 100%; font-size: 15px; }
+  table.t th, table.t td { border-bottom: 1px solid #dde2e6; padding: 6px 8px; text-align: center; }
+  table.t th { color: var(--muted); font-weight: 600; font-size: 13.5px; }
+  table.t td:first-child, table.t th:first-child { text-align: left; }
+  .big { font-size: 26px; font-weight: 700; }
+  .em3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 4px; }
+  .em3 div { border-radius: 8px; padding: 8px 10px; font-size: 13.5px; }
+  .card ul { margin: 4px 0 0; padding-left: 18px; font-size: 14.5px; line-height: 1.65; }
 </style>
 </head>
 <body>
@@ -201,6 +221,50 @@
     <div class="box green"><b>交给人工审核</b><small>界面展示三个智能体各自的输出、复核意见和漏推提示；人工拍板</small></div>
   </div>
   <div class="note">实现：core/agent_team.py；智能体 id 每次运行加后缀（openJiuwen 按 id 全局注册工具）。数据为模拟工单。</div>
+</section>
+
+
+<section class="fig" id="results">
+  <div class="res">
+    <div class="card">
+      <h3>推送判断：留出集 4（方案定稿前编写并提交，独立检验）</h3>
+      <div class="hint">16 条刻意构造的难例 × 3 位专工 = 48 个判断，与标准答案一致的个数</div>
+      <div class="bar"><span>规则评分</span><div class="track"><div class="fill" style="width:83.3%"></div></div><b>40/48</b></div>
+      <div class="bar"><span>单智能体（按人逐个调查）</span><div class="track"><div class="fill" style="width:87.5%"></div></div><b>42/48</b></div>
+      <div class="bar"><span>按岗位调查（自动推送）</span><div class="track"><div class="fill hi" style="width:87.5%"></div></div><b>42/48</b></div>
+      <div class="bar"><span>+ 值班人员确认疑似紧急</span><div class="track"><div class="fill ok" style="width:93.75%"></div></div><b>45/48</b></div>
+      <div class="hint" style="margin-top:10px">另外四批（已用于选方案，不算独立）：按岗位调查 188/189，单智能体 187/189。“值班确认”一行假设确认都正确，是上限。</div>
+      <h3 style="margin-top:14px">紧急程度：留出集 4 的 6 条真紧急</h3>
+      <div class="em3">
+        <div style="background:var(--green-soft)"><span class="big">3</span> 条<br>等级复核判出，按规程自动推送本机组</div>
+        <div style="background:var(--amber-soft)"><span class="big">2</span> 条<br>只有智能体判紧急，转值班人员确认</div>
+        <div style="background:#f6e1dd"><span class="big">1</span> 条<br>都没判出（励磁调节器故障），待改进</div>
+      </div>
+    </div>
+    <div style="display:grid; gap:16px">
+      <div class="card">
+        <h3>人数增加，调查次数不变</h3>
+        <div class="hint">模拟名单：4 台机组 × 3 个岗位，320 条模拟工单</div>
+        <table class="t">
+          <tr><th>员工数</th><th>按人调查（次）</th><th>按岗位调查（次）</th><th>批量评分</th></tr>
+          <tr><td>12</td><td>688</td><td><b>185</b></td><td>4.3 秒</td></tr>
+          <tr><td>24</td><td>1352</td><td><b>185</b></td><td>7.0 秒</td></tr>
+          <tr><td>48</td><td>2623</td><td><b>185</b></td><td>12.9 秒</td></tr>
+        </table>
+        <div class="hint" style="margin-top:8px">每条工单约 12 秒（三个岗位并行），单智能体按人逐个约 26 秒</div>
+      </div>
+      <div class="card">
+        <h3>评测怎么做的</h3>
+        <ul>
+          <li>79 条刻意构造的难例：俗称、地点词、字段填错、等级低估、其他机组紧急</li>
+          <li>四批留出集，各在相应改动之前编写并提交，以 git 时间为证</li>
+          <li>失败的版本也报告：紧急程度智能体直接定等级时误报 8 条、整体退步，据此改方案</li>
+          <li>专工盲评表已就绪：专工只看原文独立判断</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="note">所有数字对照模拟审核规则、数据为模拟工单，不代表真实电厂效果；每批样本少，1–2 处差异不宜过度解读。</div>
 </section>
 
 </body>

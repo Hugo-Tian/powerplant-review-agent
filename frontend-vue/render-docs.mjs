@@ -12,7 +12,7 @@ const ROOT = resolve(import.meta.dirname, '..')
 async function diagrams(browser) {
   const page = await browser.newPage({ viewport: { width: 1600, height: 1000 }, deviceScaleFactor: 2 })
   await page.goto(pathToFileURL(join(ROOT, 'docs/diagrams/diagrams.html')).href)
-  for (const id of ['architecture', 'agent_dispatch', 'agent_team']) {
+  for (const id of ['architecture', 'agent_dispatch', 'agent_team', 'results']) {
     const out = join(ROOT, 'docs/images', `${id}.png`)
     await page.locator(`#${id}`).screenshot({ path: out })
     console.log(out)
